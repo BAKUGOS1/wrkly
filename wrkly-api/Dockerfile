@@ -30,15 +30,11 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Copy production artifacts + full node_modules (prisma CLI needed)
+# Copy production artifacts + full node_modules (prisma CLI needed for db push)
 COPY --from=builder /app/dist         ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma       ./prisma
 COPY --from=builder /app/package.json ./package.json
-
-# Copy startup script
-COPY start.sh ./start.sh
-RUN chmod +x ./start.sh
 
 # Non-root user
 RUN addgroup -S wrkly && adduser -S wrkly -G wrkly
@@ -51,4 +47,5 @@ EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:4000/health || exit 1
 
-CMD ["./start.sh"]
+# Use shell form so && works. Use explicit binary path (not npx).
+CMD sh -c "echo '=== Running Prisma DB Push ===' && ./node_modules/.bin/prisma db push --schema=./prisma/schema.prisma --accept-data-loss --skip-generate && echo '=== DB Push Complete ===' && node dist/server.js"
