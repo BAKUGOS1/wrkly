@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Product Roadmap - Lucid Curator</title>
+<!-- Google Fonts: Manrope & Inter -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "inverse-primary": "#8582ff",
+              "outline-variant": "#b2a6d5",
+              "secondary-fixed-dim": "#81ccff",
+              "surface-container-low": "#f5eeff",
+              "primary-dim": "#3d30d4",
+              "on-surface-variant": "#5f557f",
+              "surface-container-highest": "#e2d7ff",
+              "error-container": "#f74b6d",
+              "primary-fixed-dim": "#8885ff",
+              "tertiary-dim": "#5e26c7",
+              "tertiary-fixed": "#bda2ff",
+              "surface-dim": "#dacdff",
+              "secondary-dim": "#00557b",
+              "tertiary": "#6a37d4",
+              "surface-container": "#ede4ff",
+              "background": "#faf4ff",
+              "surface-container-high": "#e8deff",
+              "primary": "#4a40e0",
+              "on-primary-fixed": "#000000",
+              "inverse-on-surface": "#a296c4",
+              "surface-bright": "#faf4ff",
+              "inverse-surface": "#10062d",
+              "secondary-fixed": "#a4d8ff",
+              "on-primary-container": "#14007e",
+              "surface-variant": "#e2d7ff",
+              "on-secondary-fixed-variant": "#00567c",
+              "surface": "#faf4ff",
+              "on-secondary": "#e9f4ff",
+              "on-tertiary": "#f8f0ff",
+              "secondary-container": "#a4d8ff",
+              "tertiary-container": "#bda2ff",
+              "on-error": "#ffefef",
+              "outline": "#7b719c",
+              "error-dim": "#a70138",
+              "error": "#b41340",
+              "on-tertiary-fixed-variant": "#4600a8",
+              "on-tertiary-fixed": "#1f0052",
+              "on-secondary-container": "#004c6f",
+              "primary-container": "#9795ff",
+              "on-error-container": "#510017",
+              "on-secondary-fixed": "#003853",
+              "tertiary-fixed-dim": "#b091ff",
+              "on-background": "#32294f",
+              "surface-tint": "#4a40e0",
+              "on-tertiary-container": "#3c0091",
+              "on-surface": "#32294f",
+              "on-primary": "#f4f1ff",
+              "on-primary-fixed-variant": "#1a0099",
+              "surface-container-lowest": "#ffffff",
+              "secondary": "#00628c",
+              "primary-fixed": "#9795ff"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "1rem", "xl": "1.5rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #faf4ff;
+            color: #32294f;
+        }
+        .kanban-column {
+            min-width: 320px;
+        }
+        .glass-header {
+            background: rgba(250, 244, 255, 0.7);
+            backdrop-filter: blur(24px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface">
+<!-- SideNavBar (Shared Component) -->
+<aside class="h-screen w-64 fixed left-0 top-0 flex flex-col py-8 px-4 bg-[#f5eeff] dark:bg-slate-900 no-border shadow-[inset_-1px_0_0_0_rgba(50,41,79,0.04)] z-50">
+<div class="mb-10 px-4">
+<h1 class="text-xl font-bold text-[#32294f] dark:text-slate-100 font-['Manrope'] tracking-tight">Lucid Curator</h1>
+<p class="text-xs text-[#32294f]/60 font-medium font-['Inter']">The Fluid Workspace</p>
+</div>
+<nav class="flex-grow space-y-2">
+<!-- Home (Inactive) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#32294f]/60 dark:text-slate-400 font-medium font-['Manrope'] hover:bg-[#e2d7ff] dark:hover:bg-slate-800 transition-colors duration-200 Active: scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span>Home</span>
+</a>
+<!-- Boards (Active) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#4a40e0] dark:text-[#9795ff] font-bold border-r-4 border-[#4a40e0] font-['Manrope'] hover:bg-[#e2d7ff] dark:hover:bg-slate-800 transition-colors duration-200 Active: scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard_customize">dashboard_customize</span>
+<span>Boards</span>
+</a>
+<!-- Team (Inactive) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#32294f]/60 dark:text-slate-400 font-medium font-['Manrope'] hover:bg-[#e2d7ff] dark:hover:bg-slate-800 transition-colors duration-200 Active: scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span>Team</span>
+</a>
+<!-- Settings (Inactive) -->
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-[#32294f]/60 dark:text-slate-400 font-medium font-['Manrope'] hover:bg-[#e2d7ff] dark:hover:bg-slate-800 transition-colors duration-200 Active: scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+</nav>
+<div class="mt-auto px-4">
+<button class="w-full py-3 px-4 bg-gradient-to-br from-primary to-primary-container text-on-primary rounded-xl font-bold font-['Manrope'] shadow-lg shadow-primary/20 hover:opacity-90 transition-all flex items-center justify-center gap-2">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                New Board
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen flex flex-col">
+<!-- TopAppBar (Shared Component) -->
+<header class="flex justify-between items-center w-full px-8 h-16 sticky top-0 z-40 bg-[#faf4ff]/70 backdrop-blur-xl no-border shadow-sm shadow-[#32294f]/5">
+<div class="flex items-center gap-4">
+<h2 class="text-lg font-bold text-[#32294f] dark:text-slate-100 font-['Inter']">Product Roadmap</h2>
+<div class="flex -space-x-2 ml-4">
+<img alt="Team member" class="w-8 h-8 rounded-full border-2 border-surface" data-alt="Portrait of a smiling professional woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB-acB1cbAdKX0Wb59Y_A6AD2uAceIknNJOcQowdzZ7KNBVv8yQTIb55-5rU9dXQf51eV2-2-ECXg6l3w8JviMzLcyrS-7afC26w9iw8OZmsOXu-zhSQ_65gm1ABtUfVLPThNfuN8W9x3CrXGVXGKUU7zYqsBl6MIW2hjRSfHnsqC3duFOw_RL0-hglJP2yXaj20XmrePV766yZpmonU5azihU6b3G1H3ZnWm_rFonGfM5T5PCGgz2tJYW7sjVdfL90K2yYzD1TWUc"/>
+<img alt="Team member" class="w-8 h-8 rounded-full border-2 border-surface" data-alt="Portrait of a creative man with glasses" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCfG0WK8FtWavJ82l_revGSp-YIynp7z14zmPGktWFRGiEp-mQzDtAMH3bupazf6yPlP32MgvPc4kHAI5Hmc5G7I9-xYAy1NIqZ3aDKLVrZf05toOkdGh-IdyfjTXDxgY-5kEhJDaL0ITYVZbKZlNYiBah5UaYk4I49qfHcxmqHTNT4ExqdNkq6NFF70lzCCuFHNLiDyv0sZh2PsbLXCVIrGKSJDU9PAnHXOc0mUwiJFVjQowjzNiI96SD1gc2FTtqbABs3NWmtGy8"/>
+<img alt="Team member" class="w-8 h-8 rounded-full border-2 border-surface" data-alt="Headshot of a focused female developer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAByB3LoVbEpwffE_keiS3bMX6bRvjtaAaj_Ru7oAStp1MLynmEGhk-7txEGaDSunm41e9K2z_bAhD3_41hfXWjARG8D14j3nwFVk18YuQ-PA0iwAq-mCYChKHWWikogJxviXDDyx_wkZQl0GRgArYGKf88JGuod3ntmnpFLNfoRm9Knn1bilc9BYesQAM_NXlmXEYb47j-X-0RLYwg5M3HQS5RwaDNFJfmL_EI_NrY2PZJqxszUUcI6qyAPPOg6trRJ_e136HnZXI"/>
+<div class="w-8 h-8 rounded-full border-2 border-surface bg-surface-container-highest flex items-center justify-center text-[10px] font-bold text-primary">+4</div>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative group">
+<span class="absolute left-3 top-1/2 -translate-y-1/2 material-symbols-outlined text-on-surface-variant text-sm" data-icon="search">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-high border-none rounded-lg text-sm focus:ring-2 focus:ring-primary/20 w-64 transition-all" placeholder="Search roadmap..." type="text"/>
+</div>
+<div class="flex items-center gap-4 text-[#32294f]/70">
+<button class="hover:text-[#4a40e0] transition-all"><span class="material-symbols-outlined" data-icon="notifications">notifications</span></button>
+<button class="hover:text-[#4a40e0] transition-all"><span class="material-symbols-outlined" data-icon="share">share</span></button>
+</div>
+<div class="w-8 h-8 rounded-lg overflow-hidden border border-outline-variant/20 shadow-sm">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="Sophisticated woman in a profile picture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrkDJHcO8i1OTCCRfcUYLNlo-ElMkv-k466w5eST-uRDxQ7w2RJxOFSJwbfk17ZmH5keWG3ZnKDpijIzKtcWbQWmY5VdHTiRHp3TvHxTZseyTKDMeffSHWx1PPJ8OO5UpyuDkcYQkMzVihoDDB7mwAQ_edIEFFKofiKaDA60frr8yBVIbnG0FJy6pkES4ue0pTasrxtqj2-juH2kjK8Q1RWPFfaPUdtV-zFco53ZUZIYx_FWd9r2YE-aWDqvrTKRDCmAcfQfRZgXA"/>
+</div>
+</div>
+</header>
+<!-- Board Canvas -->
+<section class="flex-grow p-8 overflow-x-auto">
+<div class="flex gap-8 h-full items-start">
+<!-- Column: To Do -->
+<div class="kanban-column flex flex-col w-1/3">
+<div class="flex items-center justify-between mb-6 px-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<h3 class="font-headline font-bold text-on-surface tracking-tight uppercase text-xs">To Do</h3>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-[10px] font-bold text-primary">4</span>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<div class="space-y-4">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-xl shadow-[#32294f]/5 border border-outline-variant/10 hover:shadow-2xl transition-all group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[10px] font-bold font-label uppercase tracking-wider text-error-dim bg-error-container/10 px-2 py-1 rounded">High</span>
+<button class="opacity-0 group-hover:opacity-100 transition-opacity"><span class="material-symbols-outlined text-sm" data-icon="edit">edit</span></button>
+</div>
+<h4 class="font-headline font-bold text-on-surface leading-snug mb-4">User Authentication Overhaul</h4>
+<div class="flex items-center justify-between mt-6">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-[11px] font-medium">Oct 24</span>
+</div>
+<img alt="Assignee" class="w-6 h-6 rounded-full" data-alt="Portrait of a female manager" src="https://lh3.googleusercontent.com/aida-public/AB6AXuALMeOjFedHWp2HlUWWFsHXkJ6e4yVaNvHX0-HXqH76yve9yuS8IOOb7QKYF0FDwGVik1N_EVnTFyg9VPGVU327pnyWooi9fclGKjAngyiGFz_OAB3KVufAe2dSYyxWoin5NVe9vlzvb5BWSChk7b9WW3ns9Oggv2UtZQlrtqVs_IWepvwkIjQKDfyftdJgfD9rkTAax9nU58IVzK09NzhW-jRjKJdB4b_F8PT25XZRhbp6bxixfL999EGTCl3EWz9vAy5cL7GN7-o"/>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-xl shadow-[#32294f]/5 border border-outline-variant/10 hover:shadow-2xl transition-all group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[10px] font-bold font-label uppercase tracking-wider text-secondary bg-secondary-container/20 px-2 py-1 rounded">Medium</span>
+</div>
+<h4 class="font-headline font-bold text-on-surface leading-snug mb-4">Mobile App Dark Mode</h4>
+<div class="flex items-center justify-between mt-6">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-[11px] font-medium">Oct 26</span>
+</div>
+<img alt="Assignee" class="w-6 h-6 rounded-full" data-alt="Portrait of a young man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBf32olOEIQ0OvQ7hQ3B2AR9CJGMe1pNoQan_CQ6gN5e8pXHPK1UquosCJn9f_K0uNfLlLVQ68gQG-438_xyqrxQQYJ478uqRjS8RJHP3NEjVB5RAG_lyPG8R_yMIvmKyMwb_xd4rfUyv9T86DKy_IyW6anQVsgx9rbHO74AfHDKRSYGlNMo8HA3DQGClQchjniKv4HQLfzsCSxsN6xoANyxlkvcdxWoaP36EAmbq973M-hlZgSMzSZjoSuz1BB2OM1fYQ_xSXKDMk"/>
+</div>
+</div>
+</div>
+<button class="mt-4 w-full py-4 rounded-xl border-2 border-dashed border-outline-variant/20 text-on-surface-variant hover:border-primary/40 hover:text-primary transition-all font-bold text-xs uppercase tracking-widest flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                        Add Task
+                    </button>
+</div>
+<!-- Column: In Progress -->
+<div class="kanban-column flex flex-col w-1/3">
+<div class="flex items-center justify-between mb-6 px-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<h3 class="font-headline font-bold text-on-surface tracking-tight uppercase text-xs">In Progress</h3>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-[10px] font-bold text-primary">2</span>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<div class="space-y-4">
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-xl shadow-[#32294f]/5 border border-outline-variant/10 hover:shadow-2xl transition-all group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[10px] font-bold font-label uppercase tracking-wider text-error-dim bg-error-container/10 px-2 py-1 rounded">High</span>
+</div>
+<h4 class="font-headline font-bold text-on-surface leading-snug mb-4">Integrate Stripe Connect</h4>
+<div class="mb-4">
+<div class="flex justify-between mb-2">
+<span class="text-[10px] font-bold text-on-surface-variant">Progress</span>
+<span class="text-[10px] font-bold text-primary">65%</span>
+</div>
+<div class="h-1.5 w-full bg-surface-container-highest rounded-full overflow-hidden">
+<div class="h-full w-[65%] bg-gradient-to-r from-secondary to-secondary-container rounded-full"></div>
+</div>
+</div>
+<div class="flex items-center justify-between mt-6">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-[11px] font-medium">Oct 22</span>
+</div>
+<img alt="Assignee" class="w-6 h-6 rounded-full" data-alt="Sophisticated woman profile" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8voXD3qvmIEImVhONEwKDs6OGpoEfRvjreEyxOXFyyuccYsMZ1_zH0UPh5r-qlHwOiWUoXZ-RxkOZWnPPBxg2PMdplePpdh8ggvK0Gv4qOBrxey-hZAeVjjZi2PF5vaqrNertKaNUPq2sHdlSLjwN92pos9M463G1MWkrks3fRoMsy1vfvbyYN1gmHW14Qj6Cxj7gRrzi7has47w77p3mcobFYwal7AmqMlEBrcCefuBKheMeXthhxbC_w17GbN37EDc9vlg5oUQ"/>
+</div>
+</div>
+</div>
+</div>
+<!-- Column: Completed -->
+<div class="kanban-column flex flex-col w-1/3">
+<div class="flex items-center justify-between mb-6 px-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<h3 class="font-headline font-bold text-on-surface tracking-tight uppercase text-xs">Completed</h3>
+<span class="px-2 py-0.5 rounded-full bg-surface-container-highest text-[10px] font-bold text-primary">12</span>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined" data-icon="more_horiz">more_horiz</span>
+</button>
+</div>
+<div class="space-y-4 opacity-75 grayscale-[0.3]">
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest p-6 rounded-xl shadow-sm border border-outline-variant/10 hover:shadow-md transition-all group cursor-pointer">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[10px] font-bold font-label uppercase tracking-wider text-on-surface-variant bg-surface-container-high px-2 py-1 rounded">Low</span>
+<span class="material-symbols-outlined text-primary text-lg" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h4 class="font-headline font-bold text-on-surface leading-snug mb-4 line-through decoration-primary/30">Analytics Dashboard Export</h4>
+<div class="flex items-center justify-between mt-6">
+<div class="flex items-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-[11px] font-medium">Oct 18</span>
+</div>
+<img alt="Assignee" class="w-6 h-6 rounded-full" data-alt="Portrait of a bearded man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCEvqsIF4CNeGWs4jQyFfdsLApOTDW-0p51sO60pEr7Tw-8_q1o8KRIwQwlLct9Lg60uwBsydtLsGL25qtXP49fjt5ZfmMuXZRvLRZfy-6Fc9j_XEAGZSFlPkyeYsc3G0CmTQJFitbPhekXCLOskMmDvrcXeAt8HmWIRfdImVIQBjEgVf9DqzBk2aZSg8bjWtXq-V28UiTN9As_-rtIVTtRg5YKrAQaid5v5S_prWHWojg2GEYWdHyeH-clQvysRTOA_oB9H7mQ6MU"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Contextual Toast -->
+<div class="fixed bottom-20 right-8 bg-inverse-surface/80 backdrop-blur-md text-on-primary-container p-4 rounded-xl flex items-center gap-4 shadow-2xl z-50 animate-bounce">
+<div class="bg-primary p-2 rounded-lg">
+<span class="material-symbols-outlined text-on-primary" data-icon="sync">sync</span>
+</div>
+<div>
+<p class="text-sm font-bold text-surface-bright">Board auto-synced</p>
+<p class="text-xs text-on-surface-variant/80">3 new updates from the team</p>
+</div>
+<button class="ml-4 text-on-surface-variant hover:text-surface-bright"><span class="material-symbols-outlined" data-icon="close">close</span></button>
+</div>
+</main>
+</body></html>

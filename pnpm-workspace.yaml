@@ -1,0 +1,3 @@
+packages:
+  - "wrkly-web"
+  - "wrkly-api"

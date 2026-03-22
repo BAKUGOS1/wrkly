@@ -1,0 +1,158 @@
+name: CI / CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: "20"
+  PNPM_VERSION: "9"
+
+# ─────────────────────────────────────────────────────────────────────────────
+
+jobs:
+  # ── 1. Test + Lint ──────────────────────────────────────────────────────────
+  test:
+    name: Test & Lint
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER:     wrkly
+          POSTGRES_PASSWORD: wrkly
+          POSTGRES_DB:       wrkly_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U wrkly"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      # ── API ────────────────────────────────────────────────────────────────
+
+      - name: Install API dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: wrkly-api
+
+      - name: Generate Prisma client
+        run: pnpm exec prisma generate
+        working-directory: wrkly-api
+
+      - name: Run Prisma migrations (test DB)
+        run: pnpm exec prisma migrate deploy
+        working-directory: wrkly-api
+        env:
+          DATABASE_URL: postgresql://wrkly:wrkly@localhost:5432/wrkly_test
+
+      - name: Type-check API
+        run: pnpm tsc --noEmit
+        working-directory: wrkly-api
+
+      - name: Run API tests
+        run: pnpm test
+        working-directory: wrkly-api
+        env:
+          DATABASE_URL:  postgresql://wrkly:wrkly@localhost:5432/wrkly_test
+          REDIS_HOST:    localhost
+          REDIS_PORT:    "6379"
+          JWT_SECRET:    ci-test-secret
+          NODE_ENV:      test
+
+      # ── Frontend ───────────────────────────────────────────────────────────
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+        working-directory: wrkly-web
+
+      - name: Type-check frontend
+        run: pnpm tsc --noEmit
+        working-directory: wrkly-web
+
+  # ── 2. Deploy Frontend → Vercel ─────────────────────────────────────────────
+  deploy-frontend:
+    name: Deploy Frontend (Vercel)
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+
+      - name: Install Vercel CLI
+        run: pnpm add -g vercel@latest
+
+      - name: Pull Vercel environment
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: wrkly-web
+
+      - name: Build project artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: wrkly-web
+
+      - name: Deploy to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        working-directory: wrkly-web
+
+  # ── 3. Deploy Backend → Railway ─────────────────────────────────────────────
+  deploy-backend:
+    name: Deploy Backend (Railway)
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway
+        run: railway up --service wrkly-api --detach
+        working-directory: wrkly-api
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}

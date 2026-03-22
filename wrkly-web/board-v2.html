@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Wrkly - Product Roadmap</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "error": "#ba1a1a",
+                        "on-secondary-fixed-variant": "#413f82",
+                        "error-container": "#ffdad6",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "secondary-container": "#b6b4ff",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#7e3000",
+                        "tertiary-container": "#a44100",
+                        "surface-container": "#eaedff",
+                        "surface": "#faf8ff",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "surface-container-high": "#e2e7ff",
+                        "inverse-primary": "#c3c0ff",
+                        "on-secondary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#ffd2be",
+                        "outline-variant": "#c7c4d8",
+                        "tertiary-fixed": "#ffdbcc",
+                        "primary-fixed": "#e2dfff",
+                        "surface-dim": "#d2d9f4",
+                        "on-secondary-container": "#454386",
+                        "background": "#faf8ff",
+                        "surface-container-low": "#f2f3ff",
+                        "on-tertiary-fixed": "#351000",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary-container": "#dad7ff",
+                        "on-surface": "#131b2e",
+                        "on-surface-variant": "#464555",
+                        "on-error-container": "#93000a",
+                        "on-primary-fixed": "#0f0069",
+                        "on-error": "#ffffff",
+                        "primary-container": "#4f46e5",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "surface-container-highest": "#dae2fd",
+                        "primary": "#3525cd",
+                        "secondary-fixed": "#e2dfff",
+                        "on-secondary-fixed": "#140f54",
+                        "inverse-on-surface": "#eef0ff",
+                        "surface-variant": "#dae2fd",
+                        "surface-tint": "#4d44e3",
+                        "on-background": "#131b2e",
+                        "outline": "#777587",
+                        "surface-bright": "#faf8ff",
+                        "secondary": "#58579b",
+                        "secondary-fixed-dim": "#c3c0ff",
+                        "inverse-surface": "#283044"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .kanban-scroll::-webkit-scrollbar {
+            height: 8px;
+        }
+        .kanban-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .kanban-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface flex overflow-hidden h-screen">
+<!-- SideNavBar (Authority: JSON & Design System) -->
+<aside class="bg-slate-900 dark:bg-slate-950 font-manrope antialiased tracking-tight h-screen w-[260px] docked left-0 border-r border-slate-800 shadow-2xl flex flex-col h-full py-6 shrink-0 z-50">
+<div class="px-6 mb-8 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-lg" data-icon="auto_awesome">auto_awesome</span>
+</div>
+<div>
+<h1 class="text-2xl font-bold tracking-tighter text-white">Wrkly</h1>
+<p class="text-xs text-slate-500 font-medium">Acme Corp</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<!-- Active State Logic: Product Roadmap is the current view -->
+<a class="bg-slate-800 text-white font-semibold rounded-lg mx-2 px-4 py-2 flex items-center gap-3 transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-indigo-400" data-icon="dashboard">dashboard</span>
+<span>Product Roadmap</span>
+</a>
+<a class="text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 px-4 py-2 mx-2 rounded-lg flex items-center gap-3 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span>Design System</span>
+</a>
+<a class="text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 px-4 py-2 mx-2 rounded-lg flex items-center gap-3 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="campaign">campaign</span>
+<span>Marketing Q4</span>
+</a>
+<a class="text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 px-4 py-2 mx-2 rounded-lg flex items-center gap-3 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+<span>Engineering Sprint</span>
+</a>
+<a class="text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 px-4 py-2 mx-2 rounded-lg flex items-center gap-3 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span>User Research</span>
+</a>
+</nav>
+<div class="px-4 mt-auto space-y-1 border-t border-slate-800 pt-6">
+<button class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-lg mb-6 flex items-center justify-center gap-2 transition-transform active:scale-95">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+                New Board
+            </button>
+<a class="text-slate-400 hover:text-slate-100 px-4 py-2 flex items-center gap-3 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Settings</span>
+</a>
+<a class="text-slate-400 hover:text-slate-100 px-4 py-2 flex items-center gap-3 transition-colors" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span>Help &amp; Support</span>
+</a>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col min-w-0 bg-[#F8FAFC]">
+<!-- TopAppBar (Authority: JSON & Design System) -->
+<header class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-md docked top-0 w-full h-14 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center px-6 sticky top-0 z-40">
+<div class="flex items-center gap-4">
+<h2 class="text-lg font-bold text-slate-900 dark:text-white font-manrope">Product Roadmap</h2>
+<div class="h-4 w-[1px] bg-slate-200"></div>
+<div class="flex gap-4">
+<button class="text-indigo-600 border-b-2 border-indigo-600 font-manrope text-sm font-medium h-14 px-1">Board</button>
+<button class="text-slate-500 hover:text-slate-900 font-manrope text-sm font-medium h-14 px-1 transition-all">Timeline</button>
+<button class="text-slate-500 hover:text-slate-900 font-manrope text-sm font-medium h-14 px-1 transition-all">List</button>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="relative hidden md:block">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-lg" data-icon="search">search</span>
+<input class="bg-slate-50 border-none rounded-full pl-10 pr-4 py-1.5 text-xs w-64 focus:ring-1 focus:ring-indigo-500" placeholder="Search or press ⌘K..." type="text"/>
+</div>
+<button class="hover:bg-slate-50 dark:hover:bg-slate-800 rounded-full p-2 transition-all relative">
+<span class="material-symbols-outlined text-slate-600" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-white"></span>
+</button>
+<div class="flex items-center gap-2 pl-2 cursor-pointer hover:bg-slate-50 rounded-full p-1 pr-3 transition-all">
+<img alt="User" class="w-8 h-8 rounded-full bg-slate-200" data-alt="User profile avatar photo" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwzem0Gd233bhRAO3WMQ8wi0NmDYKY0vxGsCcElWerBUE_M66iVchVh31g1ZReDccrUJl_nLZm0jcTC8-hFhadueWVMCE58zHmlNNkQOmPP3FJSxd1LcH88kUbxpB9OO73lbcBANded2aHaHBwz4cXvdXYw21Q6VKMFTawWvmRTbqZnl9XLZ6DiXNt-cnOVO6iWmV6KWmPuAYKOPqzI4FR3kFhtZWyz6zZgCCDvCm_trrxGrrmcVgrxe2EZuFT0eLLfdTq334lIz8"/>
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="keyboard_arrow_down">keyboard_arrow_down</span>
+</div>
+</div>
+</header>
+<!-- Kanban Workspace -->
+<div class="flex-1 overflow-x-auto kanban-scroll p-6">
+<div class="flex gap-6 h-full min-w-max">
+<!-- Column 1: Backlog -->
+<section class="w-[300px] flex flex-col h-full">
+<div class="flex items-center justify-between mb-4 px-1">
+<div class="flex items-center gap-2">
+<h3 class="font-semibold text-slate-600 uppercase text-[11px] tracking-wider">Backlog</h3>
+<span class="bg-slate-100 text-slate-500 text-[10px] font-bold px-1.5 py-0.5 rounded-md">3</span>
+</div>
+<button class="text-slate-400 hover:text-indigo-600 transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+</button>
+</div>
+<div class="space-y-3">
+<!-- Card: Backlog 1 -->
+<article class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 hover:shadow-md transition-shadow group cursor-grab">
+<div class="flex gap-1.5 mb-2">
+<span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Feature</span>
+</div>
+<h4 class="text-sm font-medium text-slate-800 mb-1">User interview analysis</h4>
+<p class="text-[12px] text-slate-400 line-clamp-1 mb-3">Synthesize findings from Q3 research</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 bg-slate-50 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-[10px] text-slate-500 font-medium">Apr 12</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-slate-200" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjqFs6f748fh7AVl73rpVkMMGUjaeEAtbx52TPqmH7KKKo9yCL8q4eEJO57NZhImBluZ1DZdRl57U7ipFxsHmj3lOhuK8a9kmVLB_AezzduTjYaDlqcQ4hf3gGOQ1v68djHg1vEFQBfXQ_TnXjgTnkVwhORBvCLG66PFHGF0wyTnyANKFZVV2tdH4-70C5n3xszZzO8sHcpeJr-afZC4KDX5X6V2dqMD-WL6hj9AHb_kJAFMg7uvDv0CYPJgXLwjLgbFLztj_UhtE"/>
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-indigo-100" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDmw_M7S6ric05XmqyunYuZL5C18ClFDmWqzvX7hmByo9bZLF5J0F8GYLcVQjVyyN86v2ELLmPz7uaDJYOA7Qf2oMEoji6v98f1up39EpfbnH-Zuf-7pPrkuRyonkmERLaOm0FddG2g7nnqjioFThGbdJ18qAHg6dxuDZjc5XLcYMnP62wSFrHEupxIdKipwbSsVPm03bR5iON2KDzNxQxuWmQ_TsDahmPszJMl1LBzwq0xNLB3AiCkMIidFSy6ZSYn72SiYFWdywc"/>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[10px] font-bold">2</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Card: Backlog 2 -->
+<article class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 hover:shadow-md transition-shadow group cursor-grab">
+<div class="flex gap-1.5 mb-2">
+<span class="bg-purple-50 text-purple-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Design</span>
+</div>
+<h4 class="text-sm font-medium text-slate-800 mb-1">Marketing landing page</h4>
+<p class="text-[12px] text-slate-400 line-clamp-1 mb-3">Hero section exploration for Q4 launch</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 bg-slate-50 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-[10px] text-slate-500 font-medium">Apr 15</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-slate-200" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWfcdjDsOaL0xf1Lq5L6udVVMB6Orq-u8btjrfZFb0OJWjwpbv0-KzQLF9vPHsbQDhYKMpkomtaALlto8elf-ezTijXGHePyJVfdBbZbu7BzpKxhbyz0ZsFIcTszDxSPhzPIxAoNpFwnOv1C6s8LrM-D8UlptsVf6iUxq2a8KxU0EVIna7Q0VwUH1fWLITd1Wq6fqCw9eCavWw9cbQyJrPmi5GFypenQ3hn3U-jK5BGgdxgXinOC_MipOZJmSck6nCv4XauLQoAc8"/>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[10px] font-bold">0</span>
+</div>
+</div>
+</div>
+</article>
+<!-- Card: Backlog 3 -->
+<article class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 hover:shadow-md transition-shadow group cursor-grab">
+<div class="flex gap-1.5 mb-2">
+<span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Feature</span>
+</div>
+<h4 class="text-sm font-medium text-slate-800 mb-1">SSO Authentication</h4>
+<p class="text-[12px] text-slate-400 line-clamp-1 mb-3">Okta and Azure AD integration scope</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 bg-slate-50 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-[10px] text-slate-500 font-medium">May 1</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-slate-200" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBdvoNvMLbVruTcJEgHxOkhdkhAggEkDPLYDtTxIQVmTvN0mzr6O4TLn9DCtmbPsC-u4_cJp6lLC5inZ7ySgCr6JrQiO3bCEfXf4a-xIsdHICauoRYTYppNpDdnpB1pI-2dkX3SlOFMpxK2TaNb-p5dTezbQ2AfcHchtgsQ5zYMnXqWFghGXYyhbSsBxxOwvcLJd3sr0B5yKaOzcP2PX79IP2FFpgolMyssv4v4uaMWNycv42YJfC7X2_tUVhrKTkFiTP053xY7Ch0"/>
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-indigo-100" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3tv1sSxrIxMmhjsxd_B2zcxJg18GFzvWa4O8SkW8cafGntP1Pjf0UQxo-Yy3fy1B9jrjA9UQDC8jp7PTtI6nnA5I3oYQfgmA2NJcVsj44VuZGl_AZKHj2OuG2mPkqvKnYYa7XFWmIJvsIbMTGZ78hwF9Le3G30_d34BblsDsVduSaW3TF3DmfMpOhXyZQ0NwWT4FKv2s1gh-LnGTQlwmjwt7IcjrI9QuARPT3m9D_Ex-pAUg1xSd2wwNhBU_-H7HFqtETGSci-VI"/>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[10px] font-bold">8</span>
+</div>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Column 2: In Progress -->
+<section class="w-[300px] flex flex-col h-full">
+<div class="flex items-center justify-between mb-4 px-1">
+<div class="flex items-center gap-2">
+<h3 class="font-semibold text-indigo-600 uppercase text-[11px] tracking-wider">In Progress</h3>
+<span class="bg-indigo-100 text-indigo-600 text-[10px] font-bold px-1.5 py-0.5 rounded-md">4</span>
+</div>
+<button class="text-slate-400 hover:text-indigo-600 transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+</button>
+</div>
+<div class="space-y-3">
+<!-- SAMPLE CARD 1 -->
+<article class="bg-white rounded-xl border border-slate-200 border-t-4 border-t-indigo-500 shadow-sm p-3 hover:shadow-md transition-shadow group cursor-grab">
+<div class="flex flex-wrap gap-1.5 mb-2">
+<span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Feature</span>
+<span class="bg-yellow-50 text-yellow-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Urgent</span>
+</div>
+<h4 class="text-sm font-medium text-slate-800 mb-1">Redesign dashboard layout</h4>
+<p class="text-[12px] text-slate-400 line-clamp-1 mb-3">Modular widget system for custom views</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 bg-slate-50 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-[10px] text-slate-500 font-medium">Mar 28</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-slate-200" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCyBGJwU8nUPA7gqCT2Z5EAAYEAnKPwqdY5mxf5zJjw02C7fkk7QsEf7MVJQTLv4Uyi60-5WaoGHwf2mtgJp1koXx-xxSKl6HKuC3VR42_MdpB-LtvVwlYIY7PdlwAQFcBA_r7qD1ZKVfMmKRoe6ZhALflBwraJ2anXbrWsa2TocTYlhlOeMXQQwlYBYUm_BKU1hBJfXS0H7RNzvWpnXT-Ff8d-6zOsCyoZOqIKdLHEddqHOAAItRp5rBW6yRdUbEfcagEAu5GkOOQ"/>
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-indigo-100" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFJKfw36qlRZE7FMeC89iGt1O_Q8dVYvKeuFRpR0XtgMEvw9q1ALT7x8bPgR2uG994_x-MCXgvz8t8os0WxlU6GfTpiWS5N160JKLpWbl8fB5WB74MnCLdBggG73H4TijhioDF3hFrb5XAK6itf3dMGrpAzqlXaHvl2qxdLDu4BywiQCnLyVk0Ifv725yALX9ueNjQNvoWuF8hTP_tG2JWr22-kue6k8M2eIJR-hsCpClThAR_ujAWLz5z7-CLrldMaI4D8PVLJhw"/>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[10px] font-bold">3</span>
+</div>
+</div>
+</div>
+</article>
+<!-- SAMPLE CARD 2 -->
+<article class="bg-white rounded-xl border border-slate-200 border-t-4 border-t-red-500 shadow-sm p-3 hover:shadow-md transition-shadow group cursor-grab">
+<div class="flex gap-1.5 mb-2">
+<span class="bg-red-50 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Bug</span>
+</div>
+<h4 class="text-sm font-medium text-slate-800 mb-1">Fix auth token refresh bug</h4>
+<p class="text-[12px] text-slate-400 line-clamp-1 mb-3">Session expiring prematurely on mobile</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 bg-slate-50 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-[10px] text-slate-500 font-medium">Mar 22</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-slate-200" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA06qmyfTXlx05ZUI7su8qVAx96wsWGKixf8MINVriHdrBGlJXfv9W__P-Wo-h2f4qY6BA95DPg6GywWf7XMhu84HMStaEG9_0pIWux9s5KhdhnJyqxLKFmCIFfsG4Cg0Yrq9RU35qOdqjl9oIX4jBuCb0NhG7F4-B3xjhTzQxRESiogL-QD9oJXUTevb-zAW3jKMvdZh5-XEkJDcjwGzy0zY-d1t29MuwStH6Ugc6o1nL9C8qJxWj12iK7OBjJNq4Q_zPT_7nx-4c"/>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[10px] font-bold">1</span>
+</div>
+</div>
+</div>
+</article>
+<!-- SAMPLE CARD 3 -->
+<article class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 hover:shadow-md transition-shadow group cursor-grab">
+<div class="flex gap-1.5 mb-2">
+<span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Feature</span>
+</div>
+<h4 class="text-sm font-medium text-slate-800 mb-1">Mobile responsive breakpoints</h4>
+<p class="text-[12px] text-slate-400 line-clamp-1 mb-3">Optimizing board view for tablet devices</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 bg-slate-50 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-[10px] text-slate-500 font-medium">Apr 5</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-slate-200" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9pPOa_2TnUzOlcT4WR8nt2ru15b9SmwOYFoC_j2MHIsmJt9A-iJbbODZxs8f7GMB42rwbsZ72UE9BMGK9x4VxmPV6113yMk736bD6bkgsXLjJZj_CwbtH_gVj5ob5xbpnI29zco4z5YjZNuPv3KABbCP4MAEp04wb5Wnxwax4SuG0a3ivDKVdgdwH-T1D5XtcMoPbGRIWv83WKIcVFbIEXVpNw5xXZUYPU53_l2BnAknc2MUsEprXaxYMtYt0Fz6b4NDwTAgcegM"/>
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-slate-300" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAkCWT0yh9AMBkkOEWE8CWaKa0VAmU9tImADnNzNE28iWqfMfT-qeosQW3f_8-2z84jW_PLi7NOrcl8dibf8PTlJYsYpOkpD9yEtrV0sZlL4Qwm5eivwXbDtSp1agMqViCZNs-MaaXJDwPVnnsp7ZxXkCC2URjmkfCxPfnnow71UZAgOCz25dH35v-yYmsmXu-ZrFMnee5WHeIKY8NIMDD-sOd0AJIMZGNVlVcKiTZqkxFbd8wAB6ggcXSST0UhUpv_90itUcVEOR0"/>
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-indigo-100" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA08C3JVKlBj6I4PFvhY-YYxNG97XB2KaJuqG8WbhibLX_UuQSqYrLkb3BdVBxX1W-cbEKwp1B60PUYt5WFuomk4O4zL_J2icR-ZqImEBG8S6Fd2wNxibB9cWgZDA5_QsuVhivE2j_mClu7VExR_93xh_X3OVFEXuXG5kkemr4tNBn-6sKkylJD6pzsLDzel5FaVNRBfkDZJ_TRtrzLfh5DWKbTsHQ4ykuuFwKICAc_MAjHjpOWy-Mr_h2gRx6ZwUo7REhWafObl6s"/>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[10px] font-bold">5</span>
+</div>
+</div>
+</div>
+</article>
+<!-- SAMPLE CARD 4 -->
+<article class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 hover:shadow-md transition-shadow group cursor-grab">
+<div class="flex gap-1.5 mb-2">
+<span class="bg-purple-50 text-purple-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Design</span>
+</div>
+<h4 class="text-sm font-medium text-slate-800 mb-1">Update API documentation</h4>
+<p class="text-[12px] text-slate-400 line-clamp-1 mb-3">Adding dark mode styles to Swagger UI</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 bg-slate-50 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-[10px] text-slate-500 font-medium">Apr 10</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-slate-200" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC13bvVIIVrX3yqsZgrMrp4O9dzyc19uErw04YeORSjpVKQrj7v8HJtvl4Je5F7QVoPUa44j-7LulqSnVzuvTpoeTtYtRtCar1TZMc4aSsw0sk10bdWNG1vxhoqBgfQ5yZq3MObw0newXdCC0Xbkj31VJl3rM5wdrtKIRASpI4yY3nybfAVM2Mqt7eUq2W40gpC4Gqt61XXuOaU6cPbCZjH_yk58c-0BwcgRCEl2RSdK79S_CID5GHcLw1sFTBZ4vg2cEvVvWr4rm8"/>
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-indigo-100" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDHcUfoCIIbSw4XWpVGvsXW_aVpEcN5jmN_NwJKl0e14BZoopFmqfShI7sKOpsv65kpSaUS_lLPJJTilr2X33sPLxWJgaVVU2iZsAlc3DutmfrG3uSDkbPmZbIS3WaukvuI3hWLloTCPDA1CBNqDQDYPb9USkDYd1vA-VxodnMxqgUnXlGqUxsQr7vqhFGvucdB1mUiGxmyqUbcUa0FTBaVvbB6WX5WqSLII4snev5-FG22bCUeJFKNDJDWTHBLwEUz3OGrAbZ1xCY"/>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[10px] font-bold">2</span>
+</div>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Column 3: Review -->
+<section class="w-[300px] flex flex-col h-full">
+<div class="flex items-center justify-between mb-4 px-1">
+<div class="flex items-center gap-2">
+<h3 class="font-semibold text-amber-600 uppercase text-[11px] tracking-wider">Review</h3>
+<span class="bg-amber-100 text-amber-600 text-[10px] font-bold px-1.5 py-0.5 rounded-md">2</span>
+</div>
+<button class="text-slate-400 hover:text-indigo-600 transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+</button>
+</div>
+<div class="space-y-3">
+<article class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 hover:shadow-md transition-shadow group cursor-grab">
+<div class="flex gap-1.5 mb-2">
+<span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Feature</span>
+</div>
+<h4 class="text-sm font-medium text-slate-800 mb-1">Weekly digest email</h4>
+<p class="text-[12px] text-slate-400 line-clamp-1 mb-3">Refactor MJML templates for better compatibility</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 bg-slate-50 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-[10px] text-slate-500 font-medium">Mar 30</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-slate-200" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBcCOjS7FcV_6cnQzu1gWmWX26bStL4NgBIjqg_At6zma_dhzF8vvtTSwZ-XZX_5BjxjVAgL1eQfjT30-eTE4Ljgga5T2q0_xPO4IdM4x0cxPBmArAfH8ZGLxYMCUIxTBBD7GKfmuOfpZrk7vjsfgW_4Q-jDonEceCqT8KFLaDFEYQwzMdLehOLLpsgaTYuwPF5extPMSkHnk0q3eIh8oBKa6zFGd2O-xjsWg7igsiW71agv17G0CJcE5T8ZFxn30cFU_kcJ0UUhA"/>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[10px] font-bold">4</span>
+</div>
+</div>
+</div>
+</article>
+<article class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 hover:shadow-md transition-shadow group cursor-grab">
+<div class="flex gap-1.5 mb-2">
+<span class="bg-red-50 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Bug</span>
+</div>
+<h4 class="text-sm font-medium text-slate-800 mb-1">Broken image upload on safari</h4>
+<p class="text-[12px] text-slate-400 line-clamp-1 mb-3">Fix HEIC conversion errors</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 bg-slate-50 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-slate-400 text-sm" data-icon="calendar_today">calendar_today</span>
+<span class="text-[10px] text-slate-500 font-medium">Mar 31</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-slate-200" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCCMtPW76I1AwHSyysWEmdSitsV-SpQ5ZWzT1f1Izn8IWrAZgCnJcoV76Qx7wNRWa2sD6LNAgjADrvIIk76pdx7_lr4uoIonuyfGFrtYw9KcI8GW9MVfqpwsC-tgNBxKJoN5tbHTWNV6q2VhZK9MX3sDmDoWpXOVt4d2L0Yu8DO4B4p4gw9A95WpPZTgPjU-xqeshODfWNahyBManRk5M4dM76FBHYMpV37hfow6u21ejaIsDfFe5ys8nr5WdcohmxEg26GGCY1vDU"/>
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-indigo-100" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8N9oArIRg3KidtpXaZMzONd3Ij4NUHzY7gTlzxTIw9x_vCkb7IsJYGBPhNI6akNSF4rEY0FLUeEWRH4HgyD_SLTasGh5z4R7OOfcFnV4F6fewSlSzFnInnw5-FE3yNvbKZC49MTSDniHRoSIEP1gddH4wWLyh0G8r_STT4CP4h2Z9eGTcmyd7fbFAAu5JyzZJ_GZIyxMPalnASqmRZpj6zSn9Khnh8VEXuxVMRrtcgT76SP1scCQ599Y-L9YaNHuceIzFgLcDtCM"/>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[10px] font-bold">1</span>
+</div>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Column 4: Done -->
+<section class="w-[300px] flex flex-col h-full">
+<div class="flex items-center justify-between mb-4 px-1">
+<div class="flex items-center gap-2">
+<h3 class="font-semibold text-green-600 uppercase text-[11px] tracking-wider">Done</h3>
+<span class="bg-green-100 text-green-600 text-[10px] font-bold px-1.5 py-0.5 rounded-md">2</span>
+</div>
+<button class="text-slate-400 hover:text-indigo-600 transition-colors">
+<span class="material-symbols-outlined text-lg" data-icon="add">add</span>
+</button>
+</div>
+<div class="space-y-3 opacity-80">
+<article class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 hover:shadow-md transition-shadow group cursor-grab">
+<div class="flex gap-1.5 mb-2">
+<span class="bg-slate-50 text-slate-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Infrastructure</span>
+</div>
+<h4 class="text-sm font-medium text-slate-800 mb-1 line-through decoration-slate-300">Database migration to V2</h4>
+<p class="text-[12px] text-slate-400 line-clamp-1 mb-3">Upgraded Postgres instances</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 bg-green-50 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-green-600 text-sm" data-icon="check_circle">check_circle</span>
+<span class="text-[10px] text-green-600 font-bold uppercase">Completed</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-slate-200" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSoMF-AWKB5clEq0ouju0-kEoo94BOqIONul_ixxwEZBxiehHM8QB45Zo6rPisAyqN7eEhChEpO5dG4BHQ9WVkInmYJ3gCs8gev6MFY233YoQ7bCM1nqmZhN3RZZvwdYcYr1xBW4jw2P-0KbhaSbcDzOIgh0s4QnFTBTu-W5Lfn5x8TDUW93ZAXmWDwJKJRilot-burHtfx99SjcJwneYOUUlwAQWkiaYYfENJMaW2bntKtQIIsF1DRD2WcFeYI0FNxs8Pn5158KU"/>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[10px] font-bold">12</span>
+</div>
+</div>
+</div>
+</article>
+<article class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 hover:shadow-md transition-shadow group cursor-grab">
+<div class="flex gap-1.5 mb-2">
+<span class="bg-blue-50 text-blue-600 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Feature</span>
+</div>
+<h4 class="text-sm font-medium text-slate-800 mb-1 line-through decoration-slate-300">Custom emoji reactions</h4>
+<p class="text-[12px] text-slate-400 line-clamp-1 mb-3">Added support for workspace emojis</p>
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 bg-green-50 px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-green-600 text-sm" data-icon="check_circle">check_circle</span>
+<span class="text-[10px] text-green-600 font-bold uppercase">Completed</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="flex -space-x-2">
+<img alt="Avatar" class="w-5 h-5 rounded-full border border-white bg-indigo-100" data-alt="Team member avatar circle" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBD8pszC3p_zz-GHvZv4JEr4fuGGWDwOjwn0OEhXYOjzFagseoPr5OjLz9tglxhPIvnIIYQ5qn-nFdf6Pahka_499b34PX1o_yDU4IIPRxhw9NlAfzoKNlZjfnUESWwoNNTisnxeKxEYHMplb_vvIM3UVTOYA0FWcZpukjfqzUIuDQFDJnN8ovlhMmU_7dITOercYaEUtRgKb3cnxlwP4IDKYxExevlOdKmc-u8IXyBNOdLjmdGBy-j_6Hu4IDuQARxRFysapmbok8"/>
+</div>
+<div class="flex items-center gap-1 text-slate-400">
+<span class="material-symbols-outlined text-sm" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[10px] font-bold">5</span>
+</div>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- Add Column Placeholder -->
+<section class="w-[300px] flex flex-col h-full opacity-40 hover:opacity-60 transition-opacity">
+<button class="h-10 border-2 border-dashed border-slate-300 rounded-xl flex items-center justify-center gap-2 text-slate-500 font-medium">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+                        Add Column
+                    </button>
+</section>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (Supressed as per logic for Board views usually, but added if relevant to task focus) -->
+<button class="fixed bottom-8 right-8 w-14 h-14 bg-indigo-600 text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-105 transition-transform active:scale-95 md:hidden">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+</button>
+</body></html>
