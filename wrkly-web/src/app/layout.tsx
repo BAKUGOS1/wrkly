@@ -11,6 +11,14 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Wrkly",
   description: "AI-powered task orchestration and project management",
+  icons: {
+    icon: [
+      { url: '/brand/wrkly-favicon-light-32.svg', media: '(prefers-color-scheme: light)' },
+      { url: '/brand/wrkly-favicon-dark-32.svg', media: '(prefers-color-scheme: dark)' },
+    ],
+    shortcut: '/brand/wrkly-favicon-16.svg',
+    apple: '/brand/wrkly-app-icon-gradient.svg',
+  },
 };
 
 export default function RootLayout({

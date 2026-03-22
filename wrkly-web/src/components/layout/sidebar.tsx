@@ -88,6 +88,12 @@ export function Sidebar() {
   if (collapsed) {
     return (
       <div className="flex h-full w-[64px] flex-col items-center border-r border-border bg-background py-[16px] gap-[8px] transition-all">
+        {/* Brand Logo (Collapsed) */}
+        <div className="mb-[16px] mt-[8px]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/wrkly-app-icon-gradient.svg" alt="Wrkly" className="h-[28px] w-[28px]" />
+        </div>
+
         {navItems.map((item) => (
           <Button
             key={item.label}
