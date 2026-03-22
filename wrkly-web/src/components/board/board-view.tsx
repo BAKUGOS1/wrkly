@@ -280,7 +280,7 @@ export function BoardView({
         items={baseLists.map((l: AnyList) => l.id)}
         strategy={horizontalListSortingStrategy}
       >
-        <div className="flex h-full w-full overflow-x-auto p-4 gap-3 bg-transparent hide-scrollbar">
+        <div className="flex h-full w-full overflow-x-auto snap-x snap-mandatory sm:snap-none px-4 pb-4 gap-3 bg-transparent hide-scrollbar">
           {baseLists.map((list: AnyList) => (
             <SortableList key={list.id} listId={list.id}>
               <div className="group/list">

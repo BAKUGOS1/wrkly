@@ -61,15 +61,15 @@ export function CardDetailModal({
 
   return (
     <Dialog open={true} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-[800px] overflow-hidden p-0 gap-0 border-0 bg-surface-container-lowest shadow-[0_20px_40px_rgba(0,0,0,0.12)] sm:rounded-[16px] ring-1 ring-border/5">
+      <DialogContent className="w-full h-full sm:h-auto sm:max-h-[85vh] sm:max-w-[800px] overflow-hidden p-0 gap-0 border-0 bg-surface-container-lowest shadow-[0_20px_40px_rgba(0,0,0,0.12)] rounded-none sm:rounded-[16px] ring-1 ring-border/5">
          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
          {(card as any).coverImage && (
-            <div className="h-[120px] w-full bg-muted">
+            <div className="h-[80px] sm:h-[120px] w-full bg-muted">
                {/* eslint-disable-next-line @next/next/no-img-element, @typescript-eslint/no-explicit-any */}
                <img src={(card as any).coverImage} className="h-full w-full object-cover" alt="Cover" />
             </div>
          )}
-         <div className="flex flex-col md:flex-row h-[80vh] md:h-[650px] overflow-hidden">
+         <div className="flex flex-col sm:flex-row h-full sm:h-[650px] overflow-hidden">
              
              {/* Left Column - Main Content (65%) */}
              <div className="flex-[0.65] flex flex-col p-[24px] overflow-y-auto scrollbar-thin scrollbar-thumb-muted-foreground/20">

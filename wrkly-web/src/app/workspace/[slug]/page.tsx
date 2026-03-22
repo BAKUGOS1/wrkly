@@ -48,17 +48,17 @@ export default function WorkspaceDashboard({ params }: { params: { slug: string 
   ];
 
   return (
-    <div className="mx-auto max-w-[1200px] pt-[48px] px-[24px]">
+    <div className="mx-auto max-w-[1200px] pt-6 sm:pt-[48px] px-0">
       
       {/* Header */}
-      <div className="mb-[32px] flex items-end justify-between">
+      <div className="mb-[32px] flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
         <div>
-          <h1 className="text-[32px] font-bold tracking-tight font-manrope">Dashboard</h1>
+          <h1 className="text-[28px] sm:text-[32px] font-bold tracking-tight font-manrope">Dashboard</h1>
           <p className="mt-[8px] text-[15px] text-muted-foreground">
             Overview of your active boards and recent activity.
           </p>
         </div>
-        <Button className="h-[40px] px-[16px] rounded-[10px]">
+        <Button className="h-[40px] px-[16px] rounded-[10px] w-full sm:w-auto">
           <Plus className="mr-[8px] h-[16px] w-[16px]" />
           New Board
         </Button>

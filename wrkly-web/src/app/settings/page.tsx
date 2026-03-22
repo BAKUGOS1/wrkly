@@ -187,10 +187,35 @@ export default function SettingsPage() {
   const toggleNotif = (key: keyof NotifSettings) => setNotifSettings((s) => ({ ...s, [key]: !s[key] }));
 
   return (
-    <div className="flex h-[calc(100vh-64px)] bg-surface-container-low overflow-hidden">
+    <div className="flex flex-col md:flex-row h-[calc(100vh-64px)] bg-surface-container-low overflow-hidden">
       
-      {/* Settings Navigation Sidebar */}
-      <div className="w-[280px] shrink-0 border-r border-border bg-surface px-[24px] py-[32px] overflow-y-auto">
+      {/* Settings Navigation — horizontal tabs on mobile, sidebar on desktop */}
+      {/* Mobile Tabs */}
+      <div className="md:hidden border-b border-border bg-surface overflow-x-auto">
+        <nav className="flex gap-0 px-2 py-2 min-w-max">
+          {([
+            { key: 'profile' as const, label: 'Profile', icon: UserCircle },
+            { key: 'appearance' as const, label: 'Appearance', icon: Palette },
+            { key: 'notifications' as const, label: 'Notifications', icon: Bell },
+            { key: 'account' as const, label: 'Security', icon: Shield },
+          ]).map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              onClick={() => setActiveTab(key)}
+              className={cn(
+                "flex items-center gap-[8px] h-[40px] px-[14px] rounded-[8px] text-[13px] font-medium transition-colors whitespace-nowrap",
+                activeTab === key ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <Icon className="h-[16px] w-[16px]" />
+              {label}
+            </button>
+          ))}
+        </nav>
+      </div>
+
+      {/* Desktop Sidebar */}
+      <div className="hidden md:block w-[280px] shrink-0 border-r border-border bg-surface px-[24px] py-[32px] overflow-y-auto">
         <h2 className="text-[20px] font-bold text-foreground font-manrope mb-[24px]">User Settings</h2>
         
         <nav className="flex flex-col gap-[4px]">
@@ -241,7 +266,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-[1] overflow-y-auto p-[40px]">
+      <div className="flex-[1] overflow-y-auto p-4 sm:p-6 md:p-[40px]">
         <div className="max-w-[720px]">
           
           {/* PROFILE TAB */}
