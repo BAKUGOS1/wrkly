@@ -1,4 +1,3 @@
-import { Prisma } from '@prisma/client';
 import prisma from '../lib/prisma';
 
 // ── Standard action type constants ────────────────────────────────────────────
@@ -30,7 +29,7 @@ export interface LogActivityParams {
   cardId?:     string;
   userId?:     string;
   action:      string;
-  metadata?:   Prisma.InputJsonObject;
+  metadata?:   Record<string, any>;
 }
 
 /**
@@ -45,7 +44,7 @@ export async function logActivity(params: LogActivityParams): Promise<void> {
       cardId:      params.cardId,
       userId:      params.userId,
       action:      params.action,
-      metadata:    params.metadata as Prisma.InputJsonObject | undefined,
+      metadata:    params.metadata,
     },
   });
 }

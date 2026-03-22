@@ -125,12 +125,12 @@ export async function commentRoutes(app: FastifyInstance) {
         where: { workspaceId, userId: { in: mentionedIds } },
         select: { userId: true },
       });
-      const validIds = members.map((m) => m.userId);
+      const validIds = members.map((m: any) => m.userId);
 
       if (validIds.length > 0) {
         prisma.notification
           .createMany({
-            data: validIds.map((userId) => ({
+            data: validIds.map((userId: any) => ({
               userId,
               type: 'mention',
               title: `${commenterName} mentioned you in "${safeCardTitle}"`,

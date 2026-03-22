@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { BlockType } from '@prisma/client';
+
+export type BlockType = 'TEXT' | 'CHECKLIST' | 'CODE' | 'IMAGE' | 'FILE' | 'DIVIDER';
 
 // ── Per-type content schemas ──────────────────────────────────────────────────
 

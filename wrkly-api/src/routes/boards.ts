@@ -50,7 +50,7 @@ export async function boardRoutes(app: FastifyInstance) {
     });
 
     // Get card counts per board in one query
-    const boardIds = boards.map((b) => b.id);
+    const boardIds = boards.map((b: any) => b.id);
     const cardCounts = await prisma.card.groupBy({
       by: ['listId'],
       where: {
@@ -65,16 +65,16 @@ export async function boardRoutes(app: FastifyInstance) {
       where: { boardId: { in: boardIds }, isArchived: false },
       select: { id: true, boardId: true },
     });
-    const listBoardMap = new Map(listToBoard.map((l) => [l.id, l.boardId]));
+    const listBoardMap = new Map(listToBoard.map((l: any) => [l.id, l.boardId]));
     const cardCountByBoard = new Map<string, number>();
     for (const cc of cardCounts) {
       const boardId = listBoardMap.get(cc.listId);
       if (boardId) {
-        cardCountByBoard.set(boardId, (cardCountByBoard.get(boardId) ?? 0) + cc._count.id);
+        cardCountByBoard.set(boardId as string, (cardCountByBoard.get(boardId as string) ?? 0) + cc._count.id);
       }
     }
 
-    const result = boards.map((b) => ({
+    const result = boards.map((b: any) => ({
       id: b.id,
       name: b.name,
       description: b.description,
@@ -178,9 +178,9 @@ export async function boardRoutes(app: FastifyInstance) {
     // Flatten join table shapes for cleaner API response
     const shaped = {
       ...board,
-      lists: board.lists.map((list) => ({
+      lists: board.lists.map((list: any) => ({
         ...list,
-        cards: list.cards.map((card) => ({
+        cards: list.cards.map((card: any) => ({
           id: card.id,
           title: card.title,
           position: card.position,
@@ -188,8 +188,8 @@ export async function boardRoutes(app: FastifyInstance) {
           coverImage: card.coverImage,
           blockCount: card._count.blocks,
           commentCount: card._count.comments,
-          labels: card.labels.map((cl) => cl.label),
-          assignees: card.assignees.map((ca) => ca.user),
+          labels: card.labels.map((cl: any) => cl.label),
+          assignees: card.assignees.map((ca: any) => ca.user),
         })),
       })),
     };

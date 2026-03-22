@@ -1,7 +1,7 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
 import { randomUUID } from 'node:crypto';
-import { Prisma, type BlockType } from '@prisma/client';
+export type BlockType = 'TEXT' | 'CHECKLIST' | 'CODE' | 'IMAGE' | 'FILE' | 'DIVIDER';
 import { authenticate } from '../middleware/auth';
 import { requireWorkspaceMember } from '../middleware/workspace-auth';
 import { NotFoundError, AppError } from '../lib/errors';
@@ -24,7 +24,7 @@ const applyTemplateSchema = z.object({
 
 interface TemplateBlock {
   type:    string;
-  content: Prisma.InputJsonValue;
+  content: any;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -84,7 +84,7 @@ export async function cardTemplateRoutes(app: FastifyInstance) {
       select: { id: true, name: true, description: true, blocks: true },
     });
 
-    const result = templates.map((t) => ({
+    const result = templates.map((t: any) => ({
       id:          t.id,
       name:        t.name,
       description: t.description,
@@ -128,13 +128,13 @@ export async function cardTemplateRoutes(app: FastifyInstance) {
       select: { type: true, content: true },
     });
 
-    const blocksJson: TemplateBlock[] = blocks.map((b) => ({
+    const blocksJson: TemplateBlock[] = blocks.map((b: any) => ({
       type:    b.type,
-      content: b.content as Prisma.InputJsonValue,
+      content: b.content as any,
     }));
 
     const template = await prisma.cardTemplate.create({
-      data: { boardId, name, description, blocks: blocksJson as unknown as Prisma.InputJsonValue, createdById: request.userId },
+      data: { boardId, name, description, blocks: blocksJson as any, createdById: request.userId },
       select: { id: true, name: true, blocks: true },
     });
 

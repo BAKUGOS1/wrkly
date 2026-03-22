@@ -1,6 +1,6 @@
 import type { FastifyError, FastifyRequest, FastifyReply } from 'fastify';
 import { ZodError } from 'zod';
-import { Prisma } from '@prisma/client';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { AppError } from './errors';
 
 export function errorHandler(error: FastifyError, request: FastifyRequest, reply: FastifyReply) {
@@ -32,7 +32,7 @@ export function errorHandler(error: FastifyError, request: FastifyRequest, reply
   }
 
   // 3. PrismaClientKnownRequestError
-  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+  if (error instanceof PrismaClientKnownRequestError) {
     if (error.code === 'P2002') {
       return reply.status(409).send({ error: 'Resource already exists' });
     }

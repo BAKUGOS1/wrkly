@@ -253,7 +253,7 @@ export async function listRoutes(app: FastifyInstance) {
     });
 
     // Re-number cleanly: 1.0, 2.0, 3.0 ...
-    const updates = allLists.map((list, index) =>
+    const updates = allLists.map((list: any, index: any) =>
       prisma.list.update({
         where: { id: list.id },
         data: { position: index + 1.0 },

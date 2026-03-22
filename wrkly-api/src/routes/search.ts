@@ -1,6 +1,5 @@
 import type { FastifyInstance } from 'fastify';
 import { z } from 'zod';
-import { Prisma } from '@prisma/client';
 import { authenticate } from '../middleware/auth';
 import { AppError } from '../lib/errors';
 import prisma from '../lib/prisma';
@@ -56,7 +55,7 @@ export async function searchRoutes(app: FastifyInstance) {
         where: { userId: request.userId },
         select: { workspaceId: true },
       });
-      workspaceIds = memberships.map((m) => m.workspaceId);
+      workspaceIds = memberships.map((m: any) => m.workspaceId);
     }
 
     // No accessible workspaces → return empty
@@ -71,12 +70,12 @@ export async function searchRoutes(app: FastifyInstance) {
     // Escape special LIKE characters in user input
     const escapedQ = q.replace(/[\\%_]/g, '\\$&');
 
-    const rawResults = await prisma.$queryRaw<RawCardResult[]>(Prisma.sql`
+    const queryString = `
       SELECT
         c.id,
         ts_rank(
           to_tsvector('english', c.title || ' ' || COALESCE(c.description, '')),
-          plainto_tsquery('english', ${q})
+          plainto_tsquery('english', $1)
         ) AS rank
       FROM "Card"  c
       JOIN "List"  l ON l.id  = c."listId"
@@ -84,16 +83,23 @@ export async function searchRoutes(app: FastifyInstance) {
       WHERE c."isArchived" = false
         AND l."isArchived"  = false
         AND b."isArchived"  = false
-        AND b."workspaceId" = ANY(ARRAY[${Prisma.join(workspaceIds)}]::text[])
+        AND b."workspaceId" = ANY(ARRAY[${workspaceIds.map(id => `'${id}'`).join(',')}]::text[])
         AND (
               to_tsvector('english', c.title || ' ' || COALESCE(c.description, ''))
-                @@ plainto_tsquery('english', ${q})
-              OR c.title       ILIKE ${'%' + escapedQ + '%'}
-              OR c.description ILIKE ${'%' + escapedQ + '%'}
+                @@ plainto_tsquery('english', $1)
+              OR c.title       ILIKE $2
+              OR c.description ILIKE $2
             )
       ORDER BY rank DESC, c."updatedAt" DESC
-      LIMIT ${limit}
-    `);
+      LIMIT $3
+    `;
+
+    const rawResults = await prisma.$queryRawUnsafe<RawCardResult[]>(
+      queryString,
+      q,
+      '%' + escapedQ + '%',
+      Number(limit)
+    );
 
     const totalCount = rawResults.length;
 
@@ -102,10 +108,10 @@ export async function searchRoutes(app: FastifyInstance) {
     }
 
     // ── 3. Enrich results via ORM (labels, list, board context) ───────────
-    const matchedIds = rawResults.map((r) => r.id);
+    const matchedIds = rawResults.map((r: any) => r.id);
 
     // Preserve the rank-order from the raw query
-    const rankOrder = new Map(rawResults.map((r, i) => [r.id, i]));
+    const rankOrder = new Map<string, number>(rawResults.map((r: any, i: number) => [r.id, i]));
 
     const cards = await prisma.card.findMany({
       where: { id: { in: matchedIds } },
@@ -130,9 +136,9 @@ export async function searchRoutes(app: FastifyInstance) {
     });
 
     // Re-sort cards to match the relevance order from raw SQL
-    cards.sort((a, b) => (rankOrder.get(a.id) ?? 0) - (rankOrder.get(b.id) ?? 0));
+    cards.sort((a: any, b: any) => (rankOrder.get(a.id) ?? 0) - (rankOrder.get(b.id) ?? 0));
 
-    const results = cards.map((card) => ({
+    const results = cards.map((card: any) => ({
       type:        'card' as const,
       id:          card.id,
       title:       card.title,
@@ -140,7 +146,7 @@ export async function searchRoutes(app: FastifyInstance) {
       board:       { id: card.list.board.id,  name: card.list.board.name },
       list:        { id: card.list.id,         name: card.list.name },
       dueDate:     card.dueDate,
-      labels:      card.labels.map((cl) => ({ name: cl.label.name, color: cl.label.color })),
+      labels:      card.labels.map((cl: any) => ({ name: cl.label.name, color: cl.label.color })),
     }));
 
     return reply.send({ results, totalCount });
