@@ -87,7 +87,7 @@ export default function RegisterPage() {
 
       const resp = await apiFetch<{ token: string; user: User }>("/api/auth/google", {
         method: "POST",
-        body: JSON.stringify({ idToken: tokenResponse.access_token, googleUser }),
+        body: JSON.stringify({ access_token: tokenResponse.access_token, googleUser }),
       });
       setAuth(resp.user, resp.token);
       router.push("/workspaces");
