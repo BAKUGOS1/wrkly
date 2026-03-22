@@ -635,7 +635,7 @@ export default function BoardSettingsPage({
         <TabsContent value="automations">
           <AutomationsTab
             boardId={params.id}
-            lists={((board as unknown) as { lists: unknown[] }).lists ?? []}
+            lists={((board as unknown) as { lists: { id: string; name: string }[] }).lists ?? []}
             labels={labels}
             workspaceId={board.workspaceId}
           />
