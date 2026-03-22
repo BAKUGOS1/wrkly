@@ -1,6 +1,6 @@
 import type { FastifyError, FastifyRequest, FastifyReply } from 'fastify';
 import { ZodError } from 'zod';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
+import { PrismaClientKnownRequestError, PrismaClientInitializationError, PrismaClientValidationError } from '@prisma/client/runtime/library';
 import { AppError } from './errors';
 
 export function errorHandler(error: FastifyError, request: FastifyRequest, reply: FastifyReply) {
@@ -31,7 +31,7 @@ export function errorHandler(error: FastifyError, request: FastifyRequest, reply
     });
   }
 
-  // 3. PrismaClientKnownRequestError
+  // 3. PrismaClientKnownRequestError (query errors)
   if (error instanceof PrismaClientKnownRequestError) {
     if (error.code === 'P2002') {
       return reply.status(409).send({ error: 'Resource already exists' });
@@ -39,9 +39,20 @@ export function errorHandler(error: FastifyError, request: FastifyRequest, reply
     if (error.code === 'P2025') {
       return reply.status(404).send({ error: 'Resource not found' });
     }
-    // Return the actual database error to frontend so we can debug Railway connection
     request.server.log.error(error);
-    return reply.status(500).send({ error: `DB Error: ${error.message}` });
+    return reply.status(500).send({ error: `Database error (${error.code}): ${error.message}` });
+  }
+
+  // 3b. PrismaClientInitializationError (connection refused, bad URL, etc.)
+  if (error instanceof PrismaClientInitializationError) {
+    request.server.log.error(error);
+    return reply.status(503).send({ error: `Database connection error: ${error.message}` });
+  }
+
+  // 3c. PrismaClientValidationError (schema mismatch, missing fields)
+  if (error instanceof PrismaClientValidationError) {
+    request.server.log.error(error);
+    return reply.status(500).send({ error: `Database validation error: ${error.message}` });
   }
 
   // 4. JWT errors
@@ -52,7 +63,11 @@ export function errorHandler(error: FastifyError, request: FastifyRequest, reply
     return reply.status(401).send({ error: 'Invalid or expired token' });
   }
 
-  // 5. Unknown errors
+  // 5. Unknown errors — expose message in non-production for debugging
   request.server.log.error(error);
-  return reply.status(500).send({ error: 'Internal server error' });
+  const msg = process.env.NODE_ENV === 'production'
+    ? 'Internal server error'
+    : `Internal server error: ${error.message}`;
+  return reply.status(500).send({ error: msg });
 }
+
