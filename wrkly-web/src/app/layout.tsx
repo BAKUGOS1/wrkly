@@ -9,8 +9,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Wrkly — AI Task Orchestration",
-  description: "Smart project management powered by AI",
+  title: "Wrkly",
+  description: "AI-powered task orchestration and project management",
 };
 
 export default function RootLayout({
@@ -23,7 +23,7 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased`}>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >

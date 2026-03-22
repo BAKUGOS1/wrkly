@@ -47,104 +47,43 @@
     --color-success: #10B981;
     --color-warning: #F59E0B;
     --color-danger: #EF4444;
-
-    /* ── Wrkly / Lumina Workspace design tokens (from Stitch) ─────────────
-       These are the canonical tokens. Reference via var(--wrkly-*).
-       Do NOT use hardcoded hex values in components — use these vars.
-    ─────────────────────────────────────────────────────────────────────── */
-
-    /* Primary */
-    --wrkly-primary: #4a40e0;
-    --wrkly-primary-container: #9795ff;
-    --wrkly-primary-dim: #3d30d4;
-    --wrkly-on-primary: #f4f1ff;
-    --wrkly-on-primary-container: #14007e;
-
-    /* Secondary */
-    --wrkly-secondary: #00628c;
-    --wrkly-secondary-container: #a4d8ff;
-    --wrkly-secondary-dim: #00557b;
-    --wrkly-on-secondary: #e9f4ff;
-    --wrkly-on-secondary-container: #004c6f;
-
-    /* Tertiary */
-    --wrkly-tertiary: #6a37d4;
-    --wrkly-tertiary-container: #bda2ff;
-    --wrkly-on-tertiary: #f8f0ff;
-    --wrkly-on-tertiary-container: #3c0091;
-
-    /* Surfaces — The Layering Principle */
-    --wrkly-surface: #faf4ff;
-    --wrkly-surface-bright: #faf4ff;
-    --wrkly-surface-low: #f5eeff;       /* sidebar, secondary panels */
-    --wrkly-surface-container: #ede4ff; /* section backgrounds */
-    --wrkly-surface-high: #e8deff;      /* input fields, hover state */
-    --wrkly-surface-highest: #e2d7ff;   /* cards, badges, chips */
-    --wrkly-surface-lowest: #ffffff;    /* modals, popovers */
-    --wrkly-surface-dim: #dacdff;       /* dividers, separators */
-
-    /* Text */
-    --wrkly-on-surface: #32294f;         /* primary text — never pure black */
-    --wrkly-on-surface-variant: #5f557f; /* muted / secondary text */
-    --wrkly-on-background: #32294f;
-
-    /* Borders */
-    --wrkly-outline: #7b719c;           /* visible borders (inputs) */
-    --wrkly-outline-variant: #b2a6d5;   /* ghost borders (15% opacity max) */
-
-    /* Error */
-    --wrkly-error: #b41340;
-    --wrkly-error-container: #f74b6d;
-    --wrkly-on-error: #ffefef;
-
-    /* Inverse (dark toasts & tooltips) */
-    --wrkly-inverse-surface: #10062d;
-    --wrkly-inverse-on-surface: #a296c4;
-    --wrkly-inverse-primary: #8582ff;
-
-    /* Gradients */
-    --wrkly-gradient-primary: linear-gradient(135deg, #4a40e0, #9795ff);
-    --wrkly-gradient-secondary: linear-gradient(135deg, #00628c, #a4d8ff);
-    --wrkly-gradient-tertiary: linear-gradient(135deg, #6a37d4, #bda2ff);
-    --wrkly-gradient-hero: linear-gradient(135deg, #10062d 0%, #4a40e0 60%, #9795ff 100%);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 240 10% 5.5%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 240 10% 5.5%;
+    --popover-foreground: 0 0% 95%;
 
     --primary: 243 75% 59%;
-    --primary-foreground: 210 40% 98%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 240 5% 12%;
+    --secondary-foreground: 0 0% 95%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 240 5% 15%;
+    --muted-foreground: 240 4% 46%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 240 5% 15%;
+    --accent-foreground: 0 0% 95%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 63% 31%;
+    --destructive-foreground: 0 0% 95%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: 240 6% 15%;
+    --input: 240 6% 15%;
     --ring: 243 75% 59%;
 
-    /* Dark mode surface tokens */
-    --color-bg: #0F172A;
-    --color-surface: #1E293B;
-    --color-border: #334155;
-    --color-text: #F1F5F9;
-    --color-text-muted: #94A3B8;
-    --color-surface-2: #253047;
+    --color-bg: #09090b;
+    --color-surface: #0f0f12;
+    --color-border: #1c1c24;
+    --color-text: #fafafa;
+    --color-text-muted: #71717a;
+    --color-surface-2: #18181b;
   }
 }
 
@@ -158,8 +97,27 @@
     transition: background-color 0.2s ease, color 0.2s ease;
   }
 
-  /* Smooth scrolling for anchor links */
   html {
     scroll-behavior: smooth;
   }
+}
+
+/* ── Auth page background ──────────────────────────────────────────────── */
+.auth-bg {
+  background-color: hsl(var(--background));
+  background-image:
+    radial-gradient(ellipse 50% 80% at 50% -20%, hsla(243, 75%, 59%, 0.08), transparent),
+    radial-gradient(ellipse 60% 50% at 80% 50%, hsla(263, 70%, 50%, 0.05), transparent);
+}
+
+.auth-bg::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(hsla(0, 0%, 100%, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, hsla(0, 0%, 100%, 0.02) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 40%, black, transparent);
+  pointer-events: none;
 }

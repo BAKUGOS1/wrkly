@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth-store";
-import { Layers } from "lucide-react";
+import { Kanban } from "lucide-react";
 
 export default function AuthLayout({
   children,
@@ -25,26 +25,30 @@ export default function AuthLayout({
   }, [mounted, token, router]);
 
   if (!mounted || token) {
-    return null; // Avoid flicker during hydration or redirect
+    return null;
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-slate-50 p-4 dark:bg-slate-950">
-      <div className="w-full max-w-md space-y-6">
-        {/* Logo/Header */}
-        <div className="flex flex-col items-center space-y-2 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-            <Layers className="h-6 w-6" />
-          </div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Wrkly
-          </h1>
-          <p className="text-sm text-muted-foreground">AI Task Orchestration</p>
+    <div className="auth-bg relative flex min-h-screen flex-col items-center justify-center px-4 py-12">
+      {/* Brand */}
+      <div className="mb-8 flex items-center gap-2.5">
+        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/20">
+          <Kanban className="h-4.5 w-4.5 text-primary" />
         </div>
+        <span className="text-lg font-semibold tracking-tight text-foreground">
+          wrkly
+        </span>
+      </div>
 
-        {/* Auth Content */}
+      {/* Auth card */}
+      <div className="w-full max-w-sm">
         {children}
       </div>
+
+      {/* Footer */}
+      <p className="mt-10 text-center text-xs text-muted-foreground">
+        © {new Date().getFullYear()} Wrkly · AI Task Orchestration
+      </p>
     </div>
   );
 }
