@@ -1,0 +1,42 @@
+﻿
+> wrkly-web@0.1.0 build C:\Users\MOHIT KUMAR\OneDrive\Desktop\wrkly\wrkly-web
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/13) ...
+   Generating static pages (3/13) 
+   Generating static pages (6/13) 
+   Generating static pages (9/13) 
+ Γ£ô Generating static pages (13/13)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+Γöî Γùï /                                    5.84 kB         102 kB
+Γö£ Γùï /_not-found                          872 B          88.2 kB
+Γö£ ╞Æ /board/[id]                          181 kB          348 kB
+Γö£ ╞Æ /board/[id]/settings                 14.1 kB         151 kB
+Γö£ Γùï /design/board                        152 B          87.5 kB
+Γö£ Γùï /design/card-detail                  4.71 kB        92.1 kB
+Γö£ Γùï /design/dashboard                    152 B          87.5 kB
+Γö£ Γùï /design/login                        152 B          87.5 kB
+Γö£ Γùï /design/workspace                    152 B          87.5 kB
+Γö£ Γùï /login                               152 B          87.5 kB
+Γö£ Γùï /register                            3.48 kB         150 kB
+Γö£ Γùï /settings                            11.5 kB         163 kB
+Γöö ╞Æ /workspace/[slug]                    7.57 kB         196 kB
++ First Load JS shared by all            87.3 kB
+  Γö£ chunks/651-a4a8e0e180debc9e.js       31.7 kB
+  Γö£ chunks/90f62467-4eee78d2ff3ca6b3.js  53.6 kB
+  Γöö other shared chunks (total)          1.97 kB
+
+
+Γùï  (Static)   prerendered as static content
+╞Æ  (Dynamic)  server-rendered on demand
+
