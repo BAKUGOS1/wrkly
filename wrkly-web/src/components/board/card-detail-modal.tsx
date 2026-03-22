@@ -65,8 +65,7 @@ export function CardDetailModal({
          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
          {(card as any).coverImage && (
             <div className="h-32 w-full bg-muted">
-               {/* eslint-disable-next-line @next/next/no-img-element */}
-               {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+               {/* eslint-disable-next-line @next/next/no-img-element, @typescript-eslint/no-explicit-any */}
                <img src={(card as any).coverImage} className="h-full w-full object-cover" alt="Cover" />
             </div>
          )}

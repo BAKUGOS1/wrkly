@@ -4,7 +4,7 @@ import {
   Type,
   CheckSquare,
   Code2,
-  Image,
+  Image as ImageIcon,
   Paperclip,
   Minus,
 } from 'lucide-react';
@@ -45,7 +45,7 @@ const BLOCK_TYPES: BlockTypeDef[] = [
   },
   {
     type: 'IMAGE',
-    icon: <Image className="h-4 w-4" />,
+    icon: <ImageIcon className="h-4 w-4" />,
     label: 'Image',
     description: 'Image with optional caption',
   },

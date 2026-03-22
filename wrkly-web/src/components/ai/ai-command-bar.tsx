@@ -84,13 +84,13 @@ export function AiCommandBar() {
     setInternalOpen(commandBarOpen);
   }, [commandBarOpen]);
 
-  const handleOpenChange = (open: boolean) => {
+  const handleOpenChange = useCallback((open: boolean) => {
     if (!open) {
       setQuery('');
       setParsedCommand(null);
     }
     toggleCommandBar();
-  };
+  }, [toggleCommandBar]);
 
   // Keyboard shortcut: Cmd+K / Ctrl+K
   useEffect(() => {

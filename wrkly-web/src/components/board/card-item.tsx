@@ -57,7 +57,7 @@ export function CardItem({ card, onClick }: CardItemProps) {
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       {(card as any).coverUrl && (
         <div className="-mx-3 -mt-3 mb-1 h-24 overflow-hidden rounded-t-lg bg-muted">
-          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+          {/* eslint-disable-next-line @typescript-eslint/no-explicit-any, @next/next/no-img-element */}
           <img src={(card as any).coverUrl} alt="Cover" className="h-full w-full object-cover" />
         </div>
       )}
