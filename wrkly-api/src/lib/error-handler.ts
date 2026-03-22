@@ -39,9 +39,9 @@ export function errorHandler(error: FastifyError, request: FastifyRequest, reply
     if (error.code === 'P2025') {
       return reply.status(404).send({ error: 'Resource not found' });
     }
-    // Log unexpected database errors
+    // Return the actual database error to frontend so we can debug Railway connection
     request.server.log.error(error);
-    return reply.status(500).send({ error: 'Database error' });
+    return reply.status(500).send({ error: `DB Error: ${error.message}` });
   }
 
   // 4. JWT errors

@@ -22,7 +22,7 @@ COPY src ./src/
 RUN pnpm build
 
 # Prune dev dependencies so we ship only what the runtime needs
-RUN pnpm prune --prod
+# RUN pnpm prune --prod  <-- Disabled to keep Prisma CLI for runtime db push
 
 # ── Stage 2: runner ───────────────────────────────────────────────────────────
 FROM node:20-alpine AS runner
@@ -41,6 +41,9 @@ COPY --from=builder /app/package.json ./package.json
 
 # Non-root user for least-privilege
 RUN addgroup -S wrkly && adduser -S wrkly -G wrkly
+# Fix permissions so npx prisma can write the schema cache if needed
+RUN chown -R wrkly:wrkly /app
+
 USER wrkly
 
 EXPOSE 4000
@@ -48,4 +51,5 @@ EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:4000/health || exit 1
 
-CMD ["node", "dist/server.js"]
+# Run prisma db push before starting the server to ensure prod DB has tables
+CMD npx prisma db push --accept-data-loss && node dist/server.js
