@@ -21,7 +21,8 @@ export async function apiFetch<T>(path: string, options?: RequestInit): Promise<
     let errorMessage = 'An error occurred while fetching data';
     try {
       const errorData = await response.json();
-      errorMessage = errorData.message || errorMessage;
+      // Backend sends { error: '...' } or { message: '...' }
+      errorMessage = errorData.message || errorData.error || errorMessage;
     } catch {
       // Ignore json parse error, use default message
     }

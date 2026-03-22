@@ -108,38 +108,68 @@ export async function authRoutes(app: FastifyInstance) {
 
   // POST /api/auth/google
   app.post('/google', async (request, reply) => {
-    const body = request.body as { idToken?: string };
-    if (!body.idToken || typeof body.idToken !== 'string') {
-      throw new AppError('idToken is required', 400);
-    }
-
-    // Verify token with Google — no SDK, raw HTTP fetch
-    let googlePayload: {
-      email: string;
-      email_verified: string;
-      name: string;
-      picture: string;
-      sub: string;
+    const body = request.body as {
+      idToken?: string;
+      access_token?: string;
+      googleUser?: {
+        sub: string;
+        email: string;
+        name: string;
+        picture: string;
+        email_verified: boolean;
+      };
     };
 
-    try {
-      const res = await fetch(
-        `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(body.idToken)}`
-      );
-      if (!res.ok) {
+    let email: string;
+    let name: string;
+    let avatarUrl: string;
+    let oauthId: string;
+
+    // Flow A: access_token + googleUser from @react-oauth/google (client-side)
+    if (body.access_token && body.googleUser) {
+      const gu = body.googleUser;
+      if (!gu.email_verified) {
+        throw new UnauthorizedError('Google email not verified');
+      }
+      email = gu.email;
+      name = gu.name;
+      avatarUrl = gu.picture;
+      oauthId = gu.sub;
+    }
+    // Flow B: idToken (server-side verification via Google tokeninfo endpoint)
+    else if (body.idToken) {
+      let googlePayload: {
+        email: string;
+        email_verified: string;
+        name: string;
+        picture: string;
+        sub: string;
+      };
+
+      try {
+        const res = await fetch(
+          `https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(body.idToken)}`
+        );
+        if (!res.ok) {
+          throw new UnauthorizedError('Invalid Google token');
+        }
+        googlePayload = await res.json() as typeof googlePayload;
+      } catch (err) {
+        if (err instanceof UnauthorizedError) throw err;
         throw new UnauthorizedError('Invalid Google token');
       }
-      googlePayload = await res.json() as typeof googlePayload;
-    } catch (err) {
-      if (err instanceof UnauthorizedError) throw err;
-      throw new UnauthorizedError('Invalid Google token');
-    }
 
-    if (googlePayload.email_verified !== 'true') {
-      throw new UnauthorizedError('Google email not verified');
-    }
+      if (googlePayload.email_verified !== 'true') {
+        throw new UnauthorizedError('Google email not verified');
+      }
 
-    const { email, name, picture: avatarUrl, sub: oauthId } = googlePayload;
+      email = googlePayload.email;
+      name = googlePayload.name;
+      avatarUrl = googlePayload.picture;
+      oauthId = googlePayload.sub;
+    } else {
+      throw new AppError('idToken or access_token is required', 400);
+    }
 
     // Try to find by oauthProvider + oauthId first
     let user = await prisma.user.findFirst({
@@ -155,7 +185,7 @@ export async function authRoutes(app: FastifyInstance) {
 
       if (existing) {
         if (existing.oauthProvider !== 'google') {
-          throw new AppError('Email registered with different method', 409);
+          throw new AppError('Email registered with different method. Please sign in with email/password.', 409);
         }
         // Edge case: same provider but oauthId mismatch — update it
         user = await prisma.user.update({
