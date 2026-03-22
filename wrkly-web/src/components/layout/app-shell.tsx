@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { QueryClientProvider } from "@/lib/query-client";
 import { useAuthStore } from "@/stores/auth-store";
+import { apiFetch } from "@/lib/api";
+import type { User } from "@/types";
 import { Sidebar } from "@/components/layout/sidebar";
 import { TopBar } from "@/components/layout/top-bar";
 import { AiCommandBar } from "@/components/ai/ai-command-bar";
@@ -15,6 +17,9 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const token = useAuthStore((s) => s.token);
+  const user = useAuthStore((s) => s.user);
+  const setAuth = useAuthStore((s) => s.setAuth);
+  const logout = useAuthStore((s) => s.logout);
   const sidebarOpen = useUIStore((s) => s.sidebarOpen);
   const toggleSidebar = useUIStore((s) => s.toggleSidebar);
   const [mounted, setMounted] = useState(false);
@@ -23,6 +28,18 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Rehydrate user data after page refresh (token is in localStorage but user is lost)
+  useEffect(() => {
+    if (mounted && token && !user) {
+      apiFetch<{ user: User }>("/api/auth/me")
+        .then((resp) => setAuth(resp.user, token))
+        .catch(() => {
+          // Token is invalid/expired — force logout
+          logout();
+        });
+    }
+  }, [mounted, token, user, setAuth, logout]);
 
   // Responsive: watch screen size
   useEffect(() => {

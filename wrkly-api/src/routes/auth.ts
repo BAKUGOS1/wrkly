@@ -215,6 +215,59 @@ export async function authRoutes(app: FastifyInstance) {
 
     return reply.status(status).send({ user, token, isNewUser });
   });
+
+  // PATCH /api/auth/me — update profile (name, avatarUrl)
+  app.patch('/me', { preHandler: authenticate }, async (request, reply) => {
+    const body = request.body as { name?: string; avatarUrl?: string };
+
+    const updateData: Record<string, unknown> = {};
+    if (body.name !== undefined) updateData.name = body.name;
+    if (body.avatarUrl !== undefined) updateData.avatarUrl = body.avatarUrl;
+
+    if (Object.keys(updateData).length === 0) {
+      return reply.status(400).send({ error: 'No fields to update' });
+    }
+
+    const user = await prisma.user.update({
+      where: { id: request.userId },
+      data: updateData,
+      select: { id: true, email: true, name: true, avatarUrl: true },
+    });
+
+    return reply.send({ user });
+  });
+
+  // PATCH /api/auth/password — change password
+  app.patch('/password', { preHandler: authenticate }, async (request, reply) => {
+    const body = request.body as { currentPassword?: string; newPassword?: string };
+
+    if (!body.currentPassword || !body.newPassword) {
+      return reply.status(400).send({ error: 'currentPassword and newPassword are required' });
+    }
+    if (body.newPassword.length < 8) {
+      return reply.status(400).send({ error: 'New password must be at least 8 characters' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: request.userId },
+      select: { passwordHash: true },
+    });
+
+    if (!user || !user.passwordHash) {
+      throw new AppError('Cannot change password for OAuth accounts', 400);
+    }
+
+    const valid = await verifyPassword(body.currentPassword, user.passwordHash);
+    if (!valid) {
+      throw new UnauthorizedError('Current password is incorrect');
+    }
+
+    const newHash = await hashPassword(body.newPassword);
+    await prisma.user.update({
+      where: { id: request.userId },
+      data: { passwordHash: newHash },
+    });
+
+    return reply.send({ message: 'Password updated successfully' });
+  });
 }
-
-

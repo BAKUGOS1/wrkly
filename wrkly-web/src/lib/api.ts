@@ -4,7 +4,9 @@ export async function apiFetch<T>(path: string, options?: RequestInit): Promise<
   const token = typeof window !== 'undefined' ? localStorage.getItem('auth-token') : null;
   const headers = new Headers(options?.headers);
   
-  if (!headers.has('Content-Type')) {
+  // Only set Content-Type for non-FormData bodies (FormData needs browser to set multipart boundary)
+  const isFormData = typeof FormData !== 'undefined' && options?.body instanceof FormData;
+  if (!isFormData && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/json');
   }
   

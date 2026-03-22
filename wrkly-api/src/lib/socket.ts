@@ -1,18 +1,32 @@
 import { Server, type Socket } from 'socket.io';
-import { createAdapter } from '@socket.io/redis-adapter';
-import Redis from 'ioredis';
 import jwt from 'jsonwebtoken';
 import type { FastifyInstance } from 'fastify';
 import prisma from './prisma';
 
-// ── Redis clients for pub/sub ─────────────────────────────────────────────────
-const redisUrl = process.env.REDIS_URL ?? 'redis://localhost:6379';
+// ── Redis clients for pub/sub (optional — only if REDIS_URL is set) ───────────
+let redisAvailable = false;
 
-const pubClient = new Redis(redisUrl, { maxRetriesPerRequest: null, enableReadyCheck: false });
-const subClient = pubClient.duplicate();
-
-pubClient.on('error', (err) => console.error('[socket] Redis pub error:', err));
-subClient.on('error', (err) => console.error('[socket] Redis sub error:', err));
+function tryAttachRedisAdapter(io: Server): void {
+  const redisUrl = process.env.REDIS_URL;
+  if (!redisUrl) {
+    console.warn('[socket] REDIS_URL not set — running without Redis adapter (single-process only)');
+    return;
+  }
+  try {
+    // Dynamic imports to avoid crash when Redis is not available
+    const { createAdapter } = require('@socket.io/redis-adapter');
+    const Redis = require('ioredis');
+    const pubClient = new Redis(redisUrl, { maxRetriesPerRequest: null, enableReadyCheck: false });
+    const subClient = pubClient.duplicate();
+    pubClient.on('error', (err: Error) => console.error('[socket] Redis pub error:', err.message));
+    subClient.on('error', (err: Error) => console.error('[socket] Redis sub error:', err.message));
+    io.adapter(createAdapter(pubClient, subClient));
+    redisAvailable = true;
+    console.log('[socket] Redis adapter attached');
+  } catch (err) {
+    console.warn('[socket] Failed to attach Redis adapter:', err instanceof Error ? err.message : err);
+  }
+}
 
 // ── Socket.io instance (bound in initSocket) ──────────────────────────────────
 let io: Server;
@@ -95,18 +109,21 @@ function getBoardUsers(boardId: string): PresenceUser[] {
 // ── Initializer ───────────────────────────────────────────────────────────────
 
 export function initSocket(fastify: FastifyInstance): Server {
-  const frontendUrl = process.env.CORS_ORIGIN ?? 'http://localhost:3000';
+  const corsOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:3000')
+    .split(',')
+    .map((o) => o.trim())
+    .filter(Boolean);
 
   io = new Server(fastify.server, {
     cors: {
-      origin: frontendUrl,
+      origin: corsOrigins,
       credentials: true,
     },
     transports: ['websocket', 'polling'],
   });
 
-  // Attach Redis adapter for horizontal scaling
-  io.adapter(createAdapter(pubClient, subClient));
+  // Attach Redis adapter if REDIS_URL is available (optional for horizontal scaling)
+  tryAttachRedisAdapter(io);
 
   // ── JWT authentication middleware ─────────────────────────────────────────
   io.use((socket: Socket, next) => {
