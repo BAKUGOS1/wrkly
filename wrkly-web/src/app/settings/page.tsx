@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useState, useRef } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { User, Lock, Bell, Upload, Loader2, AlertTriangle } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useState, useRef } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { useAuthStore } from '@/stores/auth-store';
+import { useTheme } from 'next-themes';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Switch } from '@/components/ui/switch';
+import { Separator } from '@/components/ui/separator';
 import {
   Form,
   FormControl,
@@ -18,7 +18,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
+} from '@/components/ui/form';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,34 +29,32 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useToast } from "@/hooks/use-toast";
-import { useAuthStore } from "@/stores/auth-store";
-import { apiFetch } from "@/lib/api";
-import { cn } from "@/lib/utils";
+} from '@/components/ui/alert-dialog';
+import { UserCircle, Palette, Bell, Shield, Upload, Computer, Moon, Sun, AlertTriangle, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { apiFetch } from '@/lib/api';
+import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
-// ── Schemas ───────────────────────────────────────────────────────────────────
+// --- Schemas ---
 
 const profileSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, 'Name is required'),
 });
 
-const passwordSchema = z
-  .object({
-    currentPassword: z.string().min(1, "Current password is required"),
-    newPassword: z.string().min(8, "Password must be at least 8 characters"),
-    confirmPassword: z.string().min(1, "Please confirm your new password"),
-  })
-  .refine((d) => d.newPassword === d.confirmPassword, {
-    path: ["confirmPassword"],
-    message: "Passwords do not match",
-  });
+const passwordSchema = z.object({
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
+  confirmPassword: z.string().min(1, 'Please confirm your new password'),
+}).refine((d) => d.newPassword === d.confirmPassword, {
+  path: ['confirmPassword'],
+  message: 'Passwords do not match',
+});
 
 type ProfileValues = z.infer<typeof profileSchema>;
 type PasswordValues = z.infer<typeof passwordSchema>;
 
-// ── Notification toggle types ─────────────────────────────────────────────────
+// --- Notification Types ---
 
 interface NotifSettings {
   emailGlobal: boolean;
@@ -74,459 +72,500 @@ const DEFAULT_NOTIF: NotifSettings = {
   automations: false,
 };
 
-// ── Profile Tab ───────────────────────────────────────────────────────────────
-
-function ProfileTab() {
-  const { user, setAuth } = useAuthStore();
+export default function SettingsPage() {
+  const { user, setAuth, logout } = useAuthStore();
+  const { theme, setTheme } = useTheme();
   const { toast } = useToast();
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(
-    user?.avatarUrl ?? null,
-  );
+  const queryClient = useQueryClient();
+
+  const [activeTab, setActiveTab] = useState<'profile' | 'appearance' | 'notifications' | 'account'>('profile');
+  
+  // Profile State
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.avatarUrl ?? null);
   const [isUploading, setIsUploading] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const form = useForm<ProfileValues>({
+  const profileForm = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { name: user?.name ?? "" },
+    defaultValues: { name: user?.name ?? '' },
   });
 
-  const initials = (user?.name ?? "U")
-    .split(" ")
-    .map((n) => n[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
+  const passwordForm = useForm<PasswordValues>({
+    resolver: zodResolver(passwordSchema),
+    defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
+  });
 
+  // Notifications State
+  const [notifSettings, setNotifSettings] = useState<NotifSettings>(DEFAULT_NOTIF);
+  const [isSavingNotifs, setIsSavingNotifs] = useState(false);
+
+  const initials = (user?.name ?? 'U').split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
+
+  // Avatar Upload
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setIsUploading(true);
     try {
       const formData = new FormData();
-      formData.append("file", file);
-      const res = await apiFetch<{ url: string }>("/api/upload", {
-        method: "POST",
+      formData.append('file', file);
+      const res = await apiFetch<{ url: string }>('/api/upload', {
+        method: 'POST',
         body: formData,
       });
       setAvatarUrl(res.url);
-      toast({ title: "Avatar updated" });
+      toast({ title: 'Avatar updated' });
     } catch {
-      toast({ title: "Upload failed", variant: "destructive" });
+      toast({ title: 'Upload failed', variant: 'destructive' });
     } finally {
       setIsUploading(false);
     }
   };
 
-  const onSubmit = async (data: ProfileValues) => {
+  // Profile Submit
+  const onProfileSubmit = async (data: ProfileValues) => {
     try {
-      const res = await apiFetch<{ user: typeof user }>("/api/auth/me", {
-        method: "PATCH",
+      const res = await apiFetch<{ user: typeof user }>('/api/auth/me', {
+        method: 'PATCH',
         body: JSON.stringify({ name: data.name, avatarUrl }),
       });
       if (res.user && useAuthStore.getState().token) {
-        setAuth(
-          res.user as NonNullable<typeof user>,
-          useAuthStore.getState().token!,
-        );
+        setAuth(res.user as NonNullable<typeof user>, useAuthStore.getState().token!);
+        queryClient.invalidateQueries({ queryKey: ['workspaces'] });
       }
-      toast({ title: "Profile saved!" });
+      toast({ title: 'Profile saved!' });
     } catch (err) {
       toast({
-        title: "Failed to save profile",
+        title: 'Failed to save profile',
         description: err instanceof Error ? err.message : undefined,
-        variant: "destructive",
+        variant: 'destructive',
       });
     }
   };
 
-  return (
-    <div className="space-y-8 max-w-lg">
-      {/* Avatar */}
-      <div className="flex items-center gap-6">
-        <div className="relative">
-          <Avatar className="h-20 w-20 ring-2 ring-border">
-            <AvatarImage src={avatarUrl ?? undefined} />
-            <AvatarFallback className="text-xl font-semibold">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
-          {isUploading && (
-            <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
-              <Loader2 className="h-6 w-6 animate-spin text-white" />
-            </div>
-          )}
-        </div>
-        <div className="space-y-1">
-          <p className="text-sm font-medium">Profile picture</p>
-          <p className="text-xs text-muted-foreground">
-            JPG, PNG or GIF. Max 4 MB.
-          </p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-1 gap-1.5"
-            onClick={() => fileRef.current?.click()}
-            disabled={isUploading}
-          >
-            <Upload className="h-3.5 w-3.5" />
-            Change photo
-          </Button>
-          <input
-            ref={fileRef}
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={handleAvatarUpload}
-          />
-        </div>
-      </div>
-
-      <Separator />
-
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Display name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Your full name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="space-y-1.5">
-            <Label className="text-sm font-medium">Email address</Label>
-            <Input
-              value={user?.email ?? ""}
-              disabled
-              className="bg-muted text-muted-foreground cursor-not-allowed"
-            />
-            <p className="text-xs text-muted-foreground">
-              Email cannot be changed here. Contact support if needed.
-            </p>
-          </div>
-
-          <Button type="submit" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            Save changes
-          </Button>
-        </form>
-      </Form>
-    </div>
-  );
-}
-
-// ── Notifications Tab ─────────────────────────────────────────────────────────
-
-function NotificationsTab() {
-  const [settings, setSettings] = useState<NotifSettings>(DEFAULT_NOTIF);
-  const [isSaving, setIsSaving] = useState(false);
-  const { toast } = useToast();
-
-  const toggle = (key: keyof NotifSettings) =>
-    setSettings((s) => ({ ...s, [key]: !s[key] }));
-
-  const handleSave = async () => {
-    setIsSaving(true);
+  // Password Submit
+  const onPasswordSubmit = async (data: PasswordValues) => {
     try {
-      await apiFetch("/api/auth/me", {
-        method: "PATCH",
-        body: JSON.stringify({ notificationSettings: settings }),
-      });
-      toast({ title: "Notification preferences saved!" });
-    } catch (err) {
-      toast({
-        title: "Failed to save preferences",
-        description: err instanceof Error ? err.message : undefined,
-        variant: "destructive",
-      });
-    } finally {
-      setIsSaving(false);
-    }
-  };
-
-  const toggleRow = (
-    id: keyof NotifSettings,
-    label: string,
-    description: string,
-    disabled = false,
-  ) => (
-    <div
-      className={cn(
-        "flex items-center justify-between py-3",
-        disabled && "opacity-60",
-      )}
-    >
-      <div>
-        <p className="text-sm font-medium">{label}</p>
-        <p className="text-xs text-muted-foreground">{description}</p>
-      </div>
-      <Switch
-        id={id}
-        checked={settings[id]}
-        onCheckedChange={() => !disabled && toggle(id)}
-        disabled={disabled}
-      />
-    </div>
-  );
-
-  return (
-    <div className="space-y-6 max-w-lg">
-      <div>
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-          Email
-        </h3>
-        <div className="divide-y divide-border rounded-lg border bg-card px-4">
-          {toggleRow(
-            "emailGlobal",
-            "Email notifications",
-            "Receive all notifications via email",
-          )}
-        </div>
-      </div>
-
-      <div>
-        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3">
-          In-App
-        </h3>
-        <div className="divide-y divide-border rounded-lg border bg-card px-4">
-          {toggleRow(
-            "mentions",
-            "Mentions",
-            "When someone @mentions you in a comment",
-          )}
-          {toggleRow(
-            "dueReminders",
-            "Due date reminders",
-            "Before cards you own are due",
-          )}
-          {toggleRow(
-            "assignments",
-            "Assignments",
-            "When a card is assigned to you",
-          )}
-          {toggleRow(
-            "automations",
-            "Automation activity",
-            "When an automation runs on your cards",
-          )}
-          <div className="flex items-center justify-between py-3 opacity-50">
-            <div>
-              <p className="text-sm font-medium">All in-app notifications</p>
-              <p className="text-xs text-muted-foreground">
-                In-app notifications are always enabled
-              </p>
-            </div>
-            <Switch checked disabled />
-          </div>
-        </div>
-      </div>
-
-      <Button onClick={handleSave} disabled={isSaving}>
-        {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-        Save preferences
-      </Button>
-    </div>
-  );
-}
-
-// ── Account Tab ───────────────────────────────────────────────────────────────
-
-function AccountTab() {
-  const { toast } = useToast();
-  const { logout } = useAuthStore();
-
-  const form = useForm<PasswordValues>({
-    resolver: zodResolver(passwordSchema),
-    defaultValues: {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    },
-  });
-
-  const onSubmit = async (data: PasswordValues) => {
-    try {
-      await apiFetch("/api/auth/password", {
-        method: "PATCH",
+      await apiFetch('/api/auth/password', {
+        method: 'PATCH',
         body: JSON.stringify({
           currentPassword: data.currentPassword,
           newPassword: data.newPassword,
         }),
       });
-      toast({ title: "Password changed successfully!" });
-      form.reset();
+      toast({ title: 'Password changed successfully!' });
+      passwordForm.reset();
     } catch (err) {
       toast({
-        title: "Failed to change password",
-        description:
-          err instanceof Error ? err.message : "Check your current password",
-        variant: "destructive",
+        title: 'Failed to change password',
+        description: err instanceof Error ? err.message : 'Check your current password',
+        variant: 'destructive',
       });
     }
   };
 
+  // Notifications Submit
+  const handleSaveNotifs = async () => {
+    setIsSavingNotifs(true);
+    try {
+      await apiFetch('/api/auth/me', {
+        method: 'PATCH',
+        body: JSON.stringify({ notificationSettings: notifSettings }),
+      });
+      toast({ title: 'Notification preferences saved!' });
+    } catch (err) {
+      toast({
+        title: 'Failed to save preferences',
+        description: err instanceof Error ? err.message : undefined,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSavingNotifs(false);
+    }
+  };
+
+  const toggleNotif = (key: keyof NotifSettings) => setNotifSettings((s) => ({ ...s, [key]: !s[key] }));
+
   return (
-    <div className="space-y-10 max-w-lg">
-      {/* Change password */}
-      <div>
-        <h3 className="mb-4 text-sm font-semibold">Change password</h3>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="currentPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Current password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="newPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>New password</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Min. 8 characters"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirm new password</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button type="submit" disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting && (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Update password
-            </Button>
-          </form>
-        </Form>
+    <div className="flex h-[calc(100vh-64px)] bg-surface-container-low overflow-hidden">
+      
+      {/* Settings Navigation Sidebar */}
+      <div className="w-[280px] shrink-0 border-r border-border bg-surface px-[24px] py-[32px] overflow-y-auto">
+        <h2 className="text-[20px] font-bold text-foreground font-manrope mb-[24px]">User Settings</h2>
+        
+        <nav className="flex flex-col gap-[4px]">
+          <button
+            onClick={() => setActiveTab('profile')}
+            className={cn(
+              "flex items-center gap-[12px] h-[40px] px-[12px] rounded-[8px] text-[14px] font-medium transition-colors",
+              activeTab === 'profile' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-surface-container hover:text-foreground"
+            )}
+          >
+            <UserCircle className="h-[18px] w-[18px]" />
+            Profile
+          </button>
+          
+          <button
+            onClick={() => setActiveTab('appearance')}
+            className={cn(
+              "flex items-center gap-[12px] h-[40px] px-[12px] rounded-[8px] text-[14px] font-medium transition-colors",
+              activeTab === 'appearance' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-surface-container hover:text-foreground"
+            )}
+          >
+            <Palette className="h-[18px] w-[18px]" />
+            Appearance
+          </button>
+
+          <button
+            onClick={() => setActiveTab('notifications')}
+            className={cn(
+              "flex items-center gap-[12px] h-[40px] px-[12px] rounded-[8px] text-[14px] font-medium transition-colors",
+              activeTab === 'notifications' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-surface-container hover:text-foreground"
+            )}
+          >
+            <Bell className="h-[18px] w-[18px]" />
+            Notifications
+          </button>
+
+          <button
+            onClick={() => setActiveTab('account')}
+            className={cn(
+              "flex items-center gap-[12px] h-[40px] px-[12px] rounded-[8px] text-[14px] font-medium transition-colors",
+              activeTab === 'account' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-surface-container hover:text-foreground"
+            )}
+          >
+            <Shield className="h-[18px] w-[18px]" />
+            Security & Account
+          </button>
+        </nav>
       </div>
 
-      <Separator />
+      {/* Main Content Area */}
+      <div className="flex-[1] overflow-y-auto p-[40px]">
+        <div className="max-w-[720px]">
+          
+          {/* PROFILE TAB */}
+          {activeTab === 'profile' && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <h3 className="text-[24px] font-bold text-foreground font-manrope mb-[8px]">Profile details</h3>
+              <p className="text-[14px] text-muted-foreground mb-[32px]">Manage your personal information and avatar.</p>
+              
+              <div className="bg-surface-container-lowest rounded-[12px] p-[32px] ring-1 ring-border/30 shadow-sm flex flex-col gap-[32px]">
+                
+                {/* Avatar Section */}
+                <div className="flex items-center gap-[24px]">
+                  <div className="relative">
+                    <Avatar className="h-[80px] w-[80px] ring-1 ring-border shadow-sm">
+                      <AvatarImage src={avatarUrl ?? undefined} />
+                      <AvatarFallback className="text-[24px] font-semibold bg-primary/10 text-primary">
+                        {initials}
+                      </AvatarFallback>
+                    </Avatar>
+                    {isUploading && (
+                      <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50">
+                        <Loader2 className="h-6 w-6 animate-spin text-white" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex flex-col items-start gap-[8px]">
+                    <Button 
+                      variant="outline" 
+                      className="h-[36px] bg-surface-container-highest border-transparent hover:border-border text-[13px]"
+                      onClick={() => fileRef.current?.click()}
+                      disabled={isUploading}
+                    >
+                      <Upload className="mr-[8px] h-[14px] w-[14px]" />
+                      Upload new picture
+                    </Button>
+                    <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarUpload} />
+                    <p className="text-[12px] text-muted-foreground">JPG, PNG or GIF. Max 4MB.</p>
+                  </div>
+                </div>
 
-      {/* Danger zone */}
-      <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-5">
-        <div className="flex items-start gap-3">
-          <AlertTriangle className="h-5 w-5 shrink-0 text-destructive mt-0.5" />
-          <div className="flex-1">
-            <h3 className="text-sm font-semibold text-destructive">
-              Danger zone
-            </h3>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Permanently delete your account and all associated data. This
-              action is irreversible.
-            </p>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm" className="mt-4">
-                  Delete my account
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Delete your account?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    All your boards, cards, and data will be permanently
-                    deleted. This action cannot be undone.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                    onClick={async () => {
-                      try {
-                        await apiFetch("/api/auth/me", { method: "DELETE" });
-                        logout();
-                      } catch {
-                        // Silently swallow — show nothing if endpoint not found
-                      }
-                    }}
+                <Separator />
+
+                {/* Form Fields */}
+                <Form {...profileForm}>
+                  <form onSubmit={profileForm.handleSubmit(onProfileSubmit)} className="flex flex-col gap-[24px] max-w-[480px]">
+                    <FormField
+                      control={profileForm.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem className="space-y-[8px]">
+                          <FormLabel className="text-[11px] uppercase tracking-[0.05em] font-semibold text-muted-foreground pb-0">
+                            Full Name
+                          </FormLabel>
+                          <FormControl>
+                            <Input 
+                              placeholder="Your full name" 
+                              {...field} 
+                              className="bg-surface-container-highest border-transparent hover:border-border/50 focus:border-primary/50 text-[14px] h-[44px]"
+                            />
+                          </FormControl>
+                          <FormMessage className="text-[12px]" />
+                        </FormItem>
+                      )}
+                    />
+
+                    <div className="space-y-[8px]">
+                      <label className="text-[11px] uppercase tracking-[0.05em] font-semibold text-muted-foreground block w-full text-left">
+                        Email Address
+                      </label>
+                      <Input 
+                        value={user?.email || ''}
+                        disabled
+                        className="bg-surface-container border-transparent opacity-60 text-[14px] h-[44px] cursor-not-allowed"
+                      />
+                      <p className="text-[12px] text-muted-foreground mt-[4px]">Email cannot be changed at this time.</p>
+                    </div>
+
+                    <div className="pt-[8px]">
+                      <Button type="submit" disabled={profileForm.formState.isSubmitting}>
+                        {profileForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        Save changes
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+
+              </div>
+            </div>
+          )}
+
+          {/* APPEARANCE TAB */}
+          {activeTab === 'appearance' && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <h3 className="text-[24px] font-bold text-foreground font-manrope mb-[8px]">Appearance</h3>
+              <p className="text-[14px] text-muted-foreground mb-[32px]">Customize how Wrkly looks on your device.</p>
+              
+              <div className="bg-surface-container-lowest rounded-[12px] p-[32px] ring-1 ring-border/30 shadow-sm">
+                <label className="text-[11px] uppercase tracking-[0.05em] font-semibold text-muted-foreground mb-[16px] block">
+                  Theme Preference
+                </label>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-[16px]">
+                  <button
+                    onClick={() => setTheme('system')}
+                    className={cn(
+                      "flex flex-col items-center gap-[12px] p-[24px] rounded-[12px] border-2 transition-all",
+                      theme === 'system' ? "border-primary bg-primary/5" : "border-transparent bg-surface-container-high hover:border-border"
+                    )}
                   >
-                    Delete account
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </div>
+                    <Computer className="h-[32px] w-[32px] text-foreground" />
+                    <span className="text-[14px] font-semibold text-foreground">System</span>
+                  </button>
+
+                  <button
+                    onClick={() => setTheme('light')}
+                    className={cn(
+                      "flex flex-col items-center gap-[12px] p-[24px] rounded-[12px] border-2 transition-all",
+                      theme === 'light' ? "border-primary bg-primary/5" : "border-transparent bg-surface-container-high hover:border-border"
+                    )}
+                  >
+                    <Sun className="h-[32px] w-[32px] text-foreground" />
+                    <span className="text-[14px] font-semibold text-foreground">Light</span>
+                  </button>
+
+                  <button
+                    onClick={() => setTheme('dark')}
+                    className={cn(
+                      "flex flex-col items-center gap-[12px] p-[24px] rounded-[12px] border-2 transition-all",
+                      theme === 'dark' ? "border-primary bg-primary/5" : "border-transparent bg-surface-container-high hover:border-border"
+                    )}
+                  >
+                    <Moon className="h-[32px] w-[32px] text-foreground" />
+                    <span className="text-[14px] font-semibold text-foreground">Dark</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* NOTIFICATIONS TAB */}
+          {activeTab === 'notifications' && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <h3 className="text-[24px] font-bold text-foreground font-manrope mb-[8px]">Notifications</h3>
+              <p className="text-[14px] text-muted-foreground mb-[32px]">Choose what you want to be notified about.</p>
+              
+              <div className="bg-surface-container-lowest rounded-[12px] p-[32px] ring-1 ring-border/30 shadow-sm space-y-[24px]">
+                
+                <div>
+                  <h4 className="text-[11px] uppercase tracking-[0.05em] font-semibold text-muted-foreground mb-[12px]">Email Notifications</h4>
+                  <div className="rounded-[10px] bg-surface-container-high p-[16px]">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-[14px] font-medium text-foreground">Email digests</p>
+                        <p className="text-[12px] text-muted-foreground">Receive daily summaries of account activity.</p>
+                      </div>
+                      <Switch checked={notifSettings.emailGlobal} onCheckedChange={() => toggleNotif('emailGlobal')} />
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-[11px] uppercase tracking-[0.05em] font-semibold text-muted-foreground mb-[12px]">In-App Activity</h4>
+                  <div className="rounded-[10px] bg-surface-container-high divide-y divide-border/50">
+                    <div className="flex items-center justify-between p-[16px]">
+                      <div>
+                        <p className="text-[14px] font-medium text-foreground">Mentions</p>
+                        <p className="text-[12px] text-muted-foreground">When someone @mentions you.</p>
+                      </div>
+                      <Switch checked={notifSettings.mentions} onCheckedChange={() => toggleNotif('mentions')} />
+                    </div>
+                    <div className="flex items-center justify-between p-[16px]">
+                      <div>
+                        <p className="text-[14px] font-medium text-foreground">Assignments</p>
+                        <p className="text-[12px] text-muted-foreground">When a card is assigned to you.</p>
+                      </div>
+                      <Switch checked={notifSettings.assignments} onCheckedChange={() => toggleNotif('assignments')} />
+                    </div>
+                    <div className="flex items-center justify-between p-[16px]">
+                      <div>
+                        <p className="text-[14px] font-medium text-foreground">Due reminders</p>
+                        <p className="text-[12px] text-muted-foreground">Before cards you own are due.</p>
+                      </div>
+                      <Switch checked={notifSettings.dueReminders} onCheckedChange={() => toggleNotif('dueReminders')} />
+                    </div>
+                    <div className="flex items-center justify-between p-[16px]">
+                      <div>
+                        <p className="text-[14px] font-medium text-foreground">Automations</p>
+                        <p className="text-[12px] text-muted-foreground">When an automation runs on your boards.</p>
+                      </div>
+                      <Switch checked={notifSettings.automations} onCheckedChange={() => toggleNotif('automations')} />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-[8px]">
+                  <Button onClick={handleSaveNotifs} disabled={isSavingNotifs}>
+                    {isSavingNotifs && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save preferences
+                  </Button>
+                </div>
+
+              </div>
+            </div>
+          )}
+
+          {/* ACCOUNT & SECURITY TAB */}
+          {activeTab === 'account' && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <h3 className="text-[24px] font-bold text-foreground font-manrope mb-[8px]">Security & Account</h3>
+              <p className="text-[14px] text-muted-foreground mb-[32px]">Change your password or delete your account.</p>
+              
+              <div className="bg-surface-container-lowest rounded-[12px] p-[32px] ring-1 ring-border/30 shadow-sm flex flex-col gap-[32px]">
+                
+                {/* Change Password */}
+                <div>
+                  <h4 className="text-[16px] font-semibold text-foreground font-manrope mb-[16px]">Change Password</h4>
+                  <Form {...passwordForm}>
+                    <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="flex flex-col gap-[20px] max-w-[480px]">
+                      <FormField
+                        control={passwordForm.control}
+                        name="currentPassword"
+                        render={({ field }) => (
+                          <FormItem className="space-y-[8px]">
+                            <FormLabel className="text-[11px] uppercase tracking-[0.05em] font-semibold text-muted-foreground pb-0">
+                              Current Password
+                            </FormLabel>
+                            <FormControl>
+                              <Input type="password" placeholder="••••••••" {...field} className="bg-surface-container-highest border-transparent hover:border-border/50 focus:border-primary/50 text-[14px] h-[44px]" />
+                            </FormControl>
+                            <FormMessage className="text-[12px]" />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={passwordForm.control}
+                        name="newPassword"
+                        render={({ field }) => (
+                          <FormItem className="space-y-[8px]">
+                            <FormLabel className="text-[11px] uppercase tracking-[0.05em] font-semibold text-muted-foreground pb-0">
+                              New Password
+                            </FormLabel>
+                            <FormControl>
+                              <Input type="password" placeholder="Min. 8 characters" {...field} className="bg-surface-container-highest border-transparent hover:border-border/50 focus:border-primary/50 text-[14px] h-[44px]" />
+                            </FormControl>
+                            <FormMessage className="text-[12px]" />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={passwordForm.control}
+                        name="confirmPassword"
+                        render={({ field }) => (
+                          <FormItem className="space-y-[8px]">
+                            <FormLabel className="text-[11px] uppercase tracking-[0.05em] font-semibold text-muted-foreground pb-0">
+                              Confirm New Password
+                            </FormLabel>
+                            <FormControl>
+                              <Input type="password" placeholder="••••••••" {...field} className="bg-surface-container-highest border-transparent hover:border-border/50 focus:border-primary/50 text-[14px] h-[44px]" />
+                            </FormControl>
+                            <FormMessage className="text-[12px]" />
+                          </FormItem>
+                        )}
+                      />
+                      <div className="pt-[8px]">
+                        <Button type="submit" disabled={passwordForm.formState.isSubmitting}>
+                          {passwordForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          Update password
+                        </Button>
+                      </div>
+                    </form>
+                  </Form>
+                </div>
+
+                {/* Danger Zone */}
+                <div className="bg-error/5 rounded-[12px] p-[32px] ring-1 ring-error/20 mt-[16px]">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="text-[16px] font-semibold text-error-dim font-manrope">Danger Zone</h3>
+                      <p className="text-[13px] text-error-dim/80 mt-[4px] max-w-[500px]">
+                        Permanently delete your account and all associated data. This action is irreversible.
+                      </p>
+                    </div>
+                    
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="destructive" className="shrink-0 bg-error hover:bg-error-dim text-white">
+                          <AlertTriangle className="mr-[8px] h-[14px] w-[14px]" />
+                          Delete my account
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent className="bg-surface-container-lowest border-border">
+                        <AlertDialogHeader>
+                          <AlertDialogTitle className="font-manrope">Delete your account?</AlertDialogTitle>
+                          <AlertDialogDescription className="text-muted-foreground">
+                            All your boards, cards, and data will be permanently deleted. This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel className="bg-surface-container-high border-transparent text-foreground hover:bg-surface-container">Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            className="bg-error text-white hover:bg-error-dim shadow-none"
+                            onClick={async () => {
+                              try {
+                                await apiFetch("/api/auth/me", { method: "DELETE" });
+                                logout();
+                              } catch {
+                                // Silently swallow
+                              }
+                            }}
+                          >
+                            Delete account
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          )}
+
         </div>
       </div>
-    </div>
-  );
-}
-
-// ── Settings Page ─────────────────────────────────────────────────────────────
-
-export default function SettingsPage() {
-  return (
-    <div className="mx-auto max-w-3xl px-4 py-8">
-      {/* Page header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight">Settings</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Manage your profile, notifications, and account security.
-        </p>
-      </div>
-
-      <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 sm:w-auto sm:inline-grid">
-          <TabsTrigger value="profile" className="gap-2">
-            <User className="h-4 w-4" />
-            Profile
-          </TabsTrigger>
-          <TabsTrigger value="notifications" className="gap-2">
-            <Bell className="h-4 w-4" />
-            Notifications
-          </TabsTrigger>
-          <TabsTrigger value="account" className="gap-2">
-            <Lock className="h-4 w-4" />
-            Account
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="profile" className="mt-6">
-          <ProfileTab />
-        </TabsContent>
-
-        <TabsContent value="notifications" className="mt-6">
-          <NotificationsTab />
-        </TabsContent>
-
-        <TabsContent value="account" className="mt-6">
-          <AccountTab />
-        </TabsContent>
-      </Tabs>
     </div>
   );
 }

@@ -1,221 +1,70 @@
-# DESIGN.md — Wrkly Design System
-> ⚠️ **READ-ONLY REFERENCE** — Auto-generated from the Stitch "Wrkly Design System" project.
-> Do not edit manually. Re-generate via the Stitch MCP when the design system changes.
+# Wrkly Design System
 
----
+## 1. Spacing (8px Base Grid)
+- **Base Grid**: 4, 8, 12, 16, 20, 24, 32, 40, 48, 56, 64
+- **Tailwind Mapping**: `gap-1` (4px), `gap-2` (8px), `gap-3` (12px), `gap-4` (16px), `gap-5` (20px), `gap-6` (24px), `gap-8` (32px), `gap-10` (40px), `gap-12` (48px)
+- **Page-level horizontal padding**: `px-6` (24px) desktop, `px-4` (16px) mobile
+- **Section spacing**: `py-12` to `py-16` between major sections
+- **Card internal padding**: `p-4` (16px) or `p-5` (20px) — consistent use
 
-## Design Identity: "Lucid Curator"
+## 2. Border Radius
+| Element | Radius | Tailwind |
+| --- | --- | --- |
+| Buttons, inputs, badges | 10px | `rounded-[10px]` |
+| Cards, panels, modals, dropdowns | 12px | `rounded-xl` |
+| Avatars, icon containers | Full circle | `rounded-full` |
+| Tooltips, toasts | 8px | `rounded-lg` |
+| Page-level containers | 16px | `rounded-2xl` |
+*Rule: Never mix `rounded-md` and `rounded-xl` on same-level elements.*
 
-The Wrkly design language is called **Lumina Workspace**. It treats every UI element as deliberate content — editorial scale, breathing room, and tonal depth over hard borders.
+## 3. Typography (Inter)
+| Role | Size | Weight | Tailwind |
+| --- | --- | --- | --- |
+| Page title (H1) | 28px | 600 | `text-[28px] font-semibold leading-tight` |
+| Section heading (H2) | 22px | 600 | `text-[22px] font-semibold` |
+| Card title (H3) | 16px | 600 | `text-base font-semibold` |
+| Subtitle / description | 14px | 400 | `text-sm font-normal` |
+| Body text | 14px | 400 | `text-sm` |
+| Small / caption | 12px | 500 | `text-xs font-medium` |
+| Tiny label | 11px | 500 | `text-[11px] font-medium` |
+| Button text | 14px | 500 | `text-sm font-medium` |
+| Input text | 14px | 400 | `text-sm` |
+| Code / mono | 13px | 400 | `text-[13px] font-mono` |
+*Rules: No font-bold (max 600). Max size 28px inside app. All caps ONLY for tiny labels (uppercase tracking-wider).*
 
-**Creative North Star:**
-- **Depth over Dividers** — use tonal surface shifts and glassmorphism, not 1px borders
-- **Editorial Scale** — large display headings contrast with small metadata labels
-- **Organic Rigor** — rounded corners (8–24px) that feel approachable but precise
+## 4. Iconography
+- **Library**: `lucide-react` ONLY
+- **Sizes**: 16px inline, 20px standalone, 48px empty states.
+- **Color**: Inherits text color.
 
----
+## 5. Dual Theme Color System (globals.css mappings)
+- **Primary**: indigo-blue (`#4F6AF6` area) for active states, focus rings.
+- **Accent**: violet for AI features, premium indicators.
 
-## Color Tokens
+| Role | Light Mode Vibe | Dark Mode Vibe |
+| --- | --- | --- |
+| Backgrounds | Warm-white | Deep navy/slate (NOT pure black) |
+| Cards | White (shadows for depth) | Lighter than page (no shadows, borders for depth) |
+| Text | Slate tones | Off-white |
+| Borders | Light barely-visible | Visible subtle borders |
 
-All colors are defined as CSS custom properties in `globals.css` and referenced in `tailwind.config.ts`.
+## 6. Layout Architecture
+- **Sidebar**: 256px fixed, collapsible to 64px, slide-out drawer on mobile (<768px)
+- **Top bar**: 56px, breadcrumb left, search/bell/avatar right
+- **Main content**: full remaining width, `max-w-7xl` for settings, full width for board view
 
-### Stitch Named Colors → CSS Variables
+## Component Rules
+- **Buttons**:
+  - Primary: `bg-primary text-primary-foreground` + hover darken + 10px radius
+  - Secondary: `bg-muted text-foreground` + hover darken + 10px radius
+  - Ghost: Transparent + `text-foreground-secondary` + hover bg
+  - Height Default: 36px, `px-4`.
+- **Inputs**: 40px height, `border-input`, 10px radius, focus `ring-2 ring-ring ring-offset-2 ring-offset-background`
+- **Cards**: `bg-card border border-border`, 12px radius. Hover: `bg-card-hover border-border-hover`
+- **Badges/Pills**: 22px height, 6px radius, `px-2`, 11px font-medium uppercase
+- **Loading**: Skeleton `bg-muted animate-pulse`. Spinner `border-primary` 20px.
 
-| Token | CSS Variable | Hex Value | Usage |
-|---|---|---|---|
-| `primary` | `--wrkly-primary` | `#4a40e0` | CTAs, active states, links |
-| `primary-container` | `--wrkly-primary-container` | `#9795ff` | Gradient end, highlighted bg |
-| `primary-dim` | `--wrkly-primary-dim` | `#3d30d4` | Hover on primary |
-| `secondary` | `--wrkly-secondary` | `#00628c` | Accent, links, info states |
-| `secondary-container` | `--wrkly-secondary-container` | `#a4d8ff` | Info badge bg |
-| `tertiary` | `--wrkly-tertiary` | `#6a37d4` | Decorative accents, tags |
-| `tertiary-container` | `--wrkly-tertiary-container` | `#bda2ff` | Tertiary badge bg |
-| `surface` | `--wrkly-surface` | `#faf4ff` | Page/app background |
-| `surface-container-low` | `--wrkly-surface-low` | `#f5eeff` | Sidebar, secondary panels |
-| `surface-container` | `--wrkly-surface-container` | `#ede4ff` | Section backgrounds |
-| `surface-container-high` | `--wrkly-surface-high` | `#e8deff` | Input fields, hover bg |
-| `surface-container-highest` | `--wrkly-surface-highest` | `#e2d7ff` | Interactive cards, badges |
-| `surface-container-lowest` | `--wrkly-surface-lowest` | `#ffffff` | Floating modals, popovers |
-| `surface-dim` | `--wrkly-surface-dim` | `#dacdff` | Dividers, subtle separators |
-| `on-surface` | `--wrkly-on-surface` | `#32294f` | Primary text (never pure black) |
-| `on-surface-variant` | `--wrkly-on-surface-variant` | `#5f557f` | Secondary/muted text |
-| `on-primary` | `--wrkly-on-primary` | `#f4f1ff` | Text on primary buttons |
-| `on-secondary` | `--wrkly-on-secondary` | `#e9f4ff` | Text on secondary elements |
-| `outline` | `--wrkly-outline` | `#7b719c` | Visible borders (e.g. inputs) |
-| `outline-variant` | `--wrkly-outline-variant` | `#b2a6d5` | Ghost/subtle borders |
-| `error` | `--wrkly-error` | `#b41340` | Error states |
-| `inverse-surface` | `--wrkly-inverse-surface` | `#10062d` | Tooltips, dark toasts |
-| `inverse-on-surface` | `--wrkly-inverse-on-surface` | `#a296c4` | Text on dark toasts |
-
-### Overridden Brand Colors (applied on top of Stitch defaults)
-
-| Purpose | Hex |
-|---|---|
-| Primary action | `#4F46E5` (Stitch override) |
-| Secondary accent | `#0EA5E9` (Stitch override) |
-| Tertiary accent | `#8B5CF6` (Stitch override) |
-
----
-
-## Typography
-
-### Font Families
-
-| Role | Font | CSS |
-|---|---|---|
-| Headlines | **Manrope** | `font-family: 'Manrope', sans-serif` |
-| Body / Interface | **Inter** | `font-family: 'Inter', sans-serif` |
-| Labels / Metadata | **Inter** | `font-family: 'Inter', sans-serif` |
-
-### Scale
-
-| Token | Size | Weight | Usage |
-|---|---|---|---|
-| `display-lg` | `3.5rem` (56px) | 800 | Empty states, welcome screens |
-| `title-lg` | `1.375rem` (22px) | 700 | Page headers |
-| `title-md` | `1rem` (16px) | 600 | Section headers, card titles |
-| `body-md` | `0.875rem` (14px) | 400 | Body text |
-| `body-sm` | `0.75rem` (12px) | 400 | Small descriptions |
-| `label-sm` | `0.6875rem` (11px) | 500 | Metadata, UPPERCASE + 0.05em tracking |
-
----
-
-## Surface Hierarchy (The Layering Principle)
-
-Treat UI as a physical stack of paper/frosted glass. Never use raw borders to define sections.
-
-```
-Page Base:          --wrkly-surface         (#faf4ff)
-Sidebar / Panels:   --wrkly-surface-low     (#f5eeff)
-Sections:           --wrkly-surface-container (#ede4ff)
-Input Fields:       --wrkly-surface-high    (#e8deff)
-Cards:              --wrkly-surface-highest (#e2d7ff) + bg-white for floating cards
-Modals:             --wrkly-surface-lowest  (#ffffff) + backdrop-blur-xl
-```
-
----
-
-## Component Patterns
-
-### Buttons
-
-| Variant | Background | Text Color | Border |
-|---|---|---|---|
-| Primary | `linear-gradient(135deg, #4a40e0, #9795ff)` | `--wrkly-on-primary` | None |
-| Secondary | `--wrkly-surface-highest` | `--wrkly-primary` | None |
-| Tertiary | Transparent | `--wrkly-on-surface-variant` | None |
-| Destructive | `--wrkly-error` | white | None |
-
-**Radius:** `rounded-xl` (1rem) for all buttons.
-
-### Cards
-
-- Background: `--wrkly-surface-lowest` (#ffffff)
-- Border radius: `rounded-2xl` (1.5rem)
-- Shadow: `0px 4px 40px rgba(50, 41, 79, 0.06)` — tinted with `--wrkly-on-surface` at 6% opacity
-- No hard borders. Use `--wrkly-outline-variant` at 15% opacity if needed for accessibility.
-
-### Input Fields
-
-- Default background: `--wrkly-surface-high`
-- Focus background: `--wrkly-surface-lowest`
-- Focus ring: `--wrkly-primary` ghost border at 1px
-- Radius: `rounded-xl` (0.75rem)
-- Label: `label-sm` style (see Typography)
-
-### Labels / Badges
-
-- Background: `--wrkly-surface-highest`
-- Text: `--wrkly-on-surface-variant`
-- Radius: `rounded-full`
-- Priority colors:
-  - High: `#ef4444` (red)
-  - Medium: `#f59e0b` (amber)
-  - Low: `#10b981` (green)
-
-### Navigation Sidebar
-
-- Background: `--wrkly-surface-low`
-- Active item: `--wrkly-primary` accent left border + `--wrkly-surface-container` bg
-- No border between sidebar and content — tonal shift defines the edge
-
-### Top Bar / App Header
-
-- Background: `--wrkly-surface-lowest` at 70% opacity + `backdrop-blur-xl`
-- Height: `56px`
-- Glassmorphism effect for floating feel
-
----
-
-## Gradient Definitions
-
-```css
-/* Primary CTA gradient */
---gradient-primary: linear-gradient(135deg, #4a40e0, #9795ff);
-
-/* Secondary accent */
---gradient-secondary: linear-gradient(135deg, #00628c, #a4d8ff);
-
-/* Tertiary / decorative */
---gradient-tertiary: linear-gradient(135deg, #6a37d4, #bda2ff);
-
-/* Hero left panel (auth screen) */
---gradient-hero: linear-gradient(135deg, #10062d, #4a40e0 60%, #9795ff);
-```
-
----
-
-## Spacing Scale
-
-Uses Tailwind's default spacing scale with `spacing-scale: 2` from Stitch.
-
-| Use | Tailwind Class | px |
-|---|---|---|
-| Tight (metadata gap) | `gap-1` | 4px |
-| Component padding | `p-4` | 16px |
-| Section spacing | `p-6` | 24px |
-| Top-level section margin | `my-24` | 96px |
-
----
-
-## Animation & Transitions
-
-- **Default transition:** `transition-all duration-200 ease-in-out`
-- **Button hover:** `scale-[1.01]` + lighten background
-- **Card hover:** `translateY(-2px)` + expand shadow
-- **Sidebar collapse:** `w-transition duration-300`
-- **Modal open:** `opacity-0 → opacity-100` + `scale-95 → scale-100` at `ease-out 150ms`
-
----
-
-## The "No-Line" Rule
-
-> Designers are **prohibited** from using 1px solid borders to section off major UI areas.
-
-Instead:
-- Use background shifts (e.g. `wrkly-surface-low` for sidebar vs `wrkly-surface` for content)
-- For subtle edges: `wrkly-outline-variant` at **15% opacity** max — "a suggestion, not a wall"
-- For floating elements: `box-shadow` tinted with `--wrkly-on-surface` at 6% opacity
-
----
-
-## Dark Mode
-
-> 🚧 **Not yet designed in Stitch.** When designed, extend this file with dark mode tokens.
-
-Current fallback: `globals.css` dark mode uses existing shadcn/ui slate palette. Update to Wrkly tokens once Stitch includes dark mode variants.
-
----
-
-## Stitch Project Reference
-
-| Field | Value |
-|---|---|
-| Project Name | Wrkly Design System |
-| Project ID | `2496191551689222532` |
-| Design System Name | Lumina Workspace |
-| Primary Stitch Color | `#4F46E5` |
-| Font (Headline) | Manrope |
-| Font (Body) | Inter |
-| Roundness | 8px base |
-| Color Mode | Light |
+## DO NOT
+- Use hardcoded colors (`bg-white`, `bg-black`, `bg-slate-900`)
+- Use glowing, neon, blur, glassmorphism.
+- Break the 8px spacing grid.

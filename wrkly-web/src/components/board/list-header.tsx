@@ -115,12 +115,12 @@ export function ListHeader({
         />
       ) : (
         <button
-          className="flex-1 cursor-pointer rounded px-2 py-1 text-left text-sm font-semibold transition-colors hover:bg-muted/50"
+          className="flex-1 cursor-pointer rounded-[8px] px-[8px] py-[4px] text-left text-[14px] font-semibold transition-colors hover:bg-surface-container-high"
           onClick={() => setIsEditing(true)}
           title="Click to rename"
         >
-          {name}
-          <span className="ml-2 text-xs font-normal text-muted-foreground">
+          <span className="text-foreground">{name}</span>
+          <span className="ml-[8px] px-[8px] py-[2px] rounded-full bg-surface-container-highest text-[11px] font-bold text-muted-foreground">
             {cardCount}
           </span>
         </button>

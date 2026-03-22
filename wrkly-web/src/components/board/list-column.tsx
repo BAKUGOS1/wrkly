@@ -365,8 +365,8 @@ export function ListColumn({ boardId, list, filters, isDragOver }: {
   return (
     <div
       className={cn(
-        'flex h-full max-h-full w-[280px] shrink-0 flex-col rounded-xl pb-2 transition-colors',
-        isDragOver ? 'bg-primary/10 ring-2 ring-primary/30' : 'bg-muted/40'
+        'flex h-full max-h-[calc(100vh-140px)] w-[280px] shrink-0 flex-col rounded-[12px] pb-[8px] transition-colors',
+        isDragOver ? 'bg-primary/5 ring-1 ring-primary/20' : 'bg-transparent'
       )}
     >
       {/* Header */}
@@ -420,13 +420,13 @@ export function ListColumn({ boardId, list, filters, isDragOver }: {
 
       {/* Footer: "Add a card" button — hidden when form is open */}
       {!isAddingCard && (
-        <div className="px-2 pt-1">
+        <div className="px-[8px] pt-[4px]">
           <Button
             variant="ghost"
-            className="w-full justify-start text-muted-foreground hover:bg-muted/80 hover:text-foreground"
+            className="w-full justify-start text-[13px] font-medium text-muted-foreground hover:bg-surface-container-high hover:text-foreground rounded-[8px] h-[36px]"
             onClick={openAddCard}
           >
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-[8px] h-[16px] w-[16px]" />
             Add a card
           </Button>
           <CreateFromTemplateButton boardId={boardId} listId={list.id} nextPosition={nextPosition} />

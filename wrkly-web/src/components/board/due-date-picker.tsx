@@ -31,8 +31,8 @@ export function DueDatePicker({ boardId, card }: { boardId: string; card: any })
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="secondary" className="w-full justify-start text-muted-foreground w-full">
-          <Clock className="mr-2 h-4 w-4" />
+        <Button variant="secondary" className="w-full justify-start text-[13px] font-medium text-muted-foreground h-[32px] px-[12px] hover:bg-surface-container-high bg-surface-container/50">
+          <Clock className="mr-[8px] h-[14px] w-[14px]" />
           Due Date
         </Button>
       </PopoverTrigger>

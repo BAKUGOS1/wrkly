@@ -8,6 +8,8 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { TopBar } from "@/components/layout/top-bar";
 import { AiCommandBar } from "@/components/ai/ai-command-bar";
 
+import { CommandPalette } from "@/components/shared/command-palette";
+
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const token = useAuthStore((s) => s.token);
@@ -46,6 +48,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         </div>
       </div>
       <AiCommandBar />
+      <CommandPalette />
     </QueryClientProvider>
   );
 }

@@ -1,37 +1,25 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import {
   Menu,
   Search,
-  LogOut,
-  Settings,
-  User as UserIcon,
+  HelpCircle,
+  ChevronRight,
+  UserPlus
 } from 'lucide-react';
-import { NotificationCenter } from '@/components/notifications/notification-center';
+import { NotificationDropdown } from '@/components/shared/notification-dropdown';
 import { useUIStore } from '@/stores/ui-store';
-import { useAuthStore } from '@/stores/auth-store';
-import { apiFetch } from '@/lib/api';
-import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 
 // ── Top Bar ──────────────────────────────────────────────────────────────────
 
 export function TopBar() {
-  const router = useRouter();
+  const pathname = usePathname();
   const { toggleSidebar, toggleCommandBar } = useUIStore();
-  const { user, logout, token } = useAuthStore();
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -53,58 +41,52 @@ export function TopBar() {
     return () => window.removeEventListener('keydown', handler);
   }, [toggleCommandBar]);
 
-
-
-  // Fetch user data if not in store
-  useQuery({
-    queryKey: ['me'],
-    queryFn: () => apiFetch<{ user: { id: string; name: string; email: string; avatarUrl?: string; createdAt: string; updatedAt: string; oauthProvider?: string; oauthId?: string } }>('/api/auth/me'),
-    enabled: !!token && !user,
-    select: (data: { user: { id: string; name: string; email: string; avatarUrl?: string; createdAt: string; updatedAt: string; oauthProvider?: string; oauthId?: string } }) => {
-      if (data?.user && token) {
-        useAuthStore.getState().setAuth(data.user, token);
-      }
-      return data;
-    },
-  });
-
-  const initials = user?.name
-    ?.split(' ')
-    .map((n) => n[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase() ?? '?';
-
-  const handleLogout = () => {
-    logout();
-    router.replace('/login');
+  // Mock breadcrumbs based on pathname for now
+  // In a real app, this would be computed by a router or context
+  const getBreadcrumbs = () => {
+    if (pathname.includes('/board/')) {
+      return ['Engineering Workspace', 'Q3 Roadmap'];
+    }
+    return ['Engineering Workspace', 'Dashboard'];
   };
 
+  const breadcrumbs = getBreadcrumbs();
+
   return (
-    <header className="flex h-14 items-center gap-4 border-b border-border bg-background px-4">
+    <header className="flex h-[64px] items-center gap-[16px] border-b border-border bg-background px-[24px]">
       {/* Mobile hamburger */}
       {isMobile && (
         <Button variant="ghost" size="icon" onClick={toggleSidebar}>
-          <Menu className="h-5 w-5" />
+          <Menu className="h-[20px] w-[20px]" />
         </Button>
       )}
+
+      {/* Left: Breadcrumbs */}
+      <div className="hidden md:flex items-center text-[14px] text-muted-foreground font-medium">
+        {breadcrumbs.map((crumb, idx) => (
+          <div key={idx} className="flex items-center">
+            {idx > 0 && <ChevronRight className="mx-[8px] h-[14px] w-[14px] opacity-50" />}
+            <span className={idx === breadcrumbs.length - 1 ? "text-foreground" : "hover:text-foreground cursor-pointer transition-colors"}>
+              {crumb}
+            </span>
+          </div>
+        ))}
+      </div>
 
       {/* Spacer */}
       <div className="flex-1" />
 
-      {/* Search trigger */}
-      <Button
-        variant="outline"
-        size="sm"
-        className="hidden sm:flex items-center gap-2 text-muted-foreground px-3 h-9"
+      {/* Middle: Global Search Pill */}
+      <div
+        className="hidden max-w-[320px] flex-1 sm:flex items-center h-[36px] bg-surface-container-high hover:bg-surface-variant transition-colors rounded-full px-[16px] border border-transparent hover:border-border cursor-pointer text-muted-foreground"
         onClick={toggleCommandBar}
       >
-        <Search className="h-4 w-4" />
-        <span className="text-sm">Search…</span>
-        <kbd className="pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground ml-4">
+        <Search className="h-[16px] w-[16px] mr-[12px] opacity-70" />
+        <span className="text-[14px] flex-1">Search anything...</span>
+        <kbd className="pointer-events-none inline-flex h-[20px] select-none items-center gap-[4px] rounded-[4px] bg-background/50 px-[6px] font-mono text-[11px] font-medium text-muted-foreground">
           ⌘K
         </kbd>
-      </Button>
+      </div>
 
       <Button
         variant="ghost"
@@ -112,54 +94,31 @@ export function TopBar() {
         className="sm:hidden"
         onClick={toggleCommandBar}
       >
-        <Search className="h-5 w-5" />
+        <Search className="h-[20px] w-[20px]" />
       </Button>
 
-      {/* Theme toggle */}
-      <ThemeToggle />
+      {/* Spacer */}
+      <div className="flex-1" />
 
-      {/* Notification bell */}
-      <NotificationCenter />
+      {/* Right: Actions */}
+      <div className="flex items-center gap-[12px]">
+        <Button variant="outline" size="sm" className="hidden lg:flex h-[32px] px-[16px] rounded-[8px] border-border text-[13px] font-medium">
+          <UserPlus className="mr-[8px] h-[14px] w-[14px]" />
+          Invite
+        </Button>
 
-      {/* User avatar dropdown */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="relative h-9 w-9 rounded-full">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={user?.avatarUrl ?? undefined} alt={user?.name ?? 'User'} />
-              <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56">
-          <div className="flex items-center gap-2 p-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={user?.avatarUrl ?? undefined} />
-              <AvatarFallback className="text-xs">{initials}</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-              <span className="text-sm font-medium">{user?.name ?? 'User'}</span>
-              <span className="text-xs text-muted-foreground">{user?.email ?? ''}</span>
-            </div>
-          </div>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <UserIcon className="mr-2 h-4 w-4" />
-            Profile
-          </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Settings className="mr-2 h-4 w-4" />
-            Settings
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogout} className="text-destructive">
-            <LogOut className="mr-2 h-4 w-4" />
-            Logout
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+        <ThemeToggle />
+
+        {/* Notification Bell */}
+        <div className="relative">
+          <NotificationDropdown />
+        </div>
+
+        {/* Help */}
+        <Button variant="ghost" size="icon" className="h-[36px] w-[36px] rounded-full text-muted-foreground hover:text-foreground hover:bg-surface-container-high">
+          <HelpCircle className="h-[20px] w-[20px]" />
+        </Button>
+      </div>
     </header>
   );
 }

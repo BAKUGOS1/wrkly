@@ -51,75 +51,77 @@ export function CardItem({ card, onClick }: CardItemProps) {
   return (
     <div
       onClick={() => onClick?.(card.id)}
-      className="group flex cursor-pointer flex-col gap-2 rounded-lg border border-border bg-card p-3 shadow-sm transition-all hover:border-primary/30 hover:shadow-md"
+      className="group flex cursor-pointer flex-col gap-[8px] rounded-[8px] bg-surface-container-lowest p-[14px] shadow-[0_2px_8px_rgba(0,0,0,0.04)] ring-1 ring-border/5 transition-all hover:shadow-md hover:ring-border/20"
     >
       {/* Cover Image Placeholder */}
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       {(card as any).coverUrl && (
-        <div className="-mx-3 -mt-3 mb-1 h-24 overflow-hidden rounded-t-lg bg-muted">
+        <div className="-mx-[14px] -mt-[14px] mb-[4px] h-[96px] overflow-hidden rounded-t-[8px] bg-muted">
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any, @next/next/no-img-element */}
-          <img src={(card as any).coverUrl} alt="Cover" className="h-full w-full object-cover" />
+          <img src={(card as any).coverUrl} alt="Cover" className="h-[full] w-[full] object-cover" />
         </div>
       )}
 
       {/* Labels */}
       {displayLabels.length > 0 && (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-[6px] mb-[2px]">
           {displayLabels.map((label) => (
             <span
               key={label.id}
-              className="h-2 w-8 rounded-full"
+              className="px-[6px] py-[2px] rounded-[4px] text-[10px] font-bold uppercase tracking-wider text-white"
               style={{ backgroundColor: label.color }}
               title={label.name}
-            />
+            >
+              {label.name || "LABEL"}
+            </span>
           ))}
         </div>
       )}
 
       {/* Title */}
-      <h4 className="text-[14px] font-medium leading-snug text-card-foreground line-clamp-2">
+      <h4 className="text-[14px] font-medium leading-snug text-foreground line-clamp-2">
         {card.title}
       </h4>
 
       {/* Footer Details */}
       {(dueStatus !== 'none' || (card._count?.blocks ?? 0) > 0 || (card._count?.comments ?? 0) > 0 || assignees.length > 0) && (
-        <div className="mt-1 flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="mt-[4px] flex items-center justify-between">
+          <div className="flex items-center gap-[12px]">
             {/* Due Date */}
             {dueStatus !== 'none' && (
-              <div className={cn("flex items-center gap-1 rounded px-1.5 py-0.5 text-[11px]", getDueBadgeClass())}>
-                <Clock className="h-3 w-3" />
-                <span>{format(new Date(card.dueDate!), 'MMM d')}</span>
+              <div className={cn("flex items-center gap-[4px] rounded-[4px] px-[6px] py-[2px] text-[11px]", getDueBadgeClass())}>
+                <Clock className="h-[12px] w-[12px]" />
+                <span className="font-semibold">{format(new Date(card.dueDate!), 'MMM d')}</span>
               </div>
             )}
 
             {/* Indicators */}
             {(card._count?.blocks ?? 0) > 0 && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <AlignLeft className="h-3.5 w-3.5" />
+              <div className="flex items-center gap-[4px] text-[12px] text-muted-foreground">
+                <AlignLeft className="h-[14px] w-[14px]" />
               </div>
             )}
             {(card._count?.comments ?? 0) > 0 && (
-              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <MessageSquare className="h-3.5 w-3.5" />
-                <span>{card._count!.comments}</span>
+              <div className="flex items-center gap-[4px] text-[12px] text-muted-foreground">
+                <MessageSquare className="h-[14px] w-[14px]" />
+                <span className="font-medium">{card._count!.comments}</span>
               </div>
             )}
           </div>
 
           {/* Avatars */}
           {assignees.length > 0 && (
-            <div className="flex -space-x-1.5">
+            <div className="flex -space-x-[6px]">
               {assignees.slice(0, maxStack).map((a) => (
-                <Avatar key={a.user.id} className="h-6 w-6 border-2 border-card">
+                <Avatar key={a.user.id} className="h-[24px] w-[24px] border-2 border-surface-container-lowest">
                   <AvatarImage src={a.user.avatarUrl || ''} />
-                  <AvatarFallback className="text-[10px] uppercase">
+                  <AvatarFallback className="text-[9px] font-bold bg-surface-container-high uppercase">
                     {a.user.name.substring(0, 2)}
                   </AvatarFallback>
                 </Avatar>
               ))}
               {assignees.length > maxStack && (
-                <div className="flex h-6 w-6 items-center justify-center rounded-full border-2 border-card bg-muted text-[10px] font-medium text-muted-foreground">
+                <div className="flex h-[24px] w-[24px] items-center justify-center rounded-full border-2 border-surface-container-lowest bg-surface-container-high text-[9px] font-bold text-muted-foreground">
                   +{assignees.length - maxStack}
                 </div>
               )}

@@ -32,8 +32,8 @@ export function MemberPicker({ workspaceId, boardId, card }: { workspaceId: stri
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="secondary" className="w-full justify-start text-muted-foreground w-full">
-          <UserPlus className="mr-2 h-4 w-4" />
+        <Button variant="secondary" className="w-full justify-start text-[13px] font-medium text-muted-foreground h-[32px] px-[12px] hover:bg-surface-container-high bg-surface-container/50">
+          <UserPlus className="mr-[8px] h-[14px] w-[14px]" />
           Members
         </Button>
       </PopoverTrigger>

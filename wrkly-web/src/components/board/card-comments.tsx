@@ -219,12 +219,12 @@ export function CardComments({ cardId }: CardCommentsProps) {
   return (
     <div className="flex flex-col gap-4">
       {/* Section header */}
-      <div className="flex items-center gap-2">
-        <MessageSquare className="h-5 w-5 text-muted-foreground" />
+      <div className="flex items-center gap-[12px]">
+        <MessageSquare className="h-[20px] w-[20px] text-muted-foreground" />
         <h3 className="font-semibold text-foreground">
           Comments
           {comments.length > 0 && (
-            <span className="ml-1.5 text-xs font-normal text-muted-foreground">
+            <span className="ml-[6px] text-[12px] font-normal text-muted-foreground">
               ({comments.length})
             </span>
           )}
@@ -232,8 +232,8 @@ export function CardComments({ cardId }: CardCommentsProps) {
       </div>
 
       {/* New comment input */}
-      <div className="flex gap-3">
-        <Avatar className="h-8 w-8 shrink-0 mt-0.5">
+      <div className="flex gap-[12px]">
+        <Avatar className="h-[32px] w-[32px] shrink-0 mt-[4px]">
           <AvatarImage
             src={currentUser?.avatarUrl ?? undefined}
             alt={currentUser?.name ?? 'You'}
@@ -247,9 +247,9 @@ export function CardComments({ cardId }: CardCommentsProps) {
             <textarea
               ref={textareaRef}
               className={cn(
-                'w-full resize-none rounded-md border border-border bg-muted/30 p-3 pr-12 text-sm',
-                'placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:bg-background',
-                'transition-colors hover:bg-muted/50'
+                'w-full resize-none rounded-[8px] border border-transparent bg-surface-container p-[12px] pr-[48px] text-[14px]',
+                'placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 hover:border-border/30 focus:border-border/50',
+                'transition-colors hover:bg-surface-container-high'
               )}
               rows={1}
               placeholder="Write a comment…"
@@ -260,7 +260,7 @@ export function CardComments({ cardId }: CardCommentsProps) {
             <Button
               size="icon"
               variant="ghost"
-              className="absolute right-1.5 bottom-1.5 h-7 w-7 text-muted-foreground hover:text-primary disabled:opacity-30"
+              className="absolute right-[6px] bottom-[6px] h-[28px] w-[28px] text-muted-foreground hover:text-primary disabled:opacity-30"
               disabled={!newComment.trim() || createComment.isPending}
               onClick={handleSubmit}
             >
