@@ -22,8 +22,21 @@ if (!JWT_SECRET && process.env.NODE_ENV === 'production') {
 const app = Fastify({ logger: true });
 
 // ── Plugins ────────────────────────────────────────────────────────────────
+// ── CORS ───────────────────────────────────────────────────────────────────
+// CORS_ORIGIN can be a single URL or comma-separated list of URLs
+// e.g. "https://app.wrkly.in,https://wrkly-web.vercel.app,http://localhost:3000"
+const corsOrigins = (process.env.CORS_ORIGIN ?? 'http://localhost:3000')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
+
 app.register(fastifyCors, {
-  origin: process.env.CORS_ORIGIN ?? 'http://localhost:3000',
+  origin: (origin, cb) => {
+    // Allow requests with no origin (server-to-server, curl, Postman)
+    if (!origin) return cb(null, true);
+    if (corsOrigins.includes(origin)) return cb(null, true);
+    cb(new Error(`CORS: origin '${origin}' not allowed`), false);
+  },
   credentials: true,
 });
 
