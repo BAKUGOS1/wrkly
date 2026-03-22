@@ -26,7 +26,7 @@ function AuthRedirect() {
   const token = useAuthStore((s) => s.token);
   const router = useRouter();
   useEffect(() => {
-    if (token) router.replace("/app");
+    if (token) router.replace("/workspaces");
   }, [token, router]);
   return null;
 }

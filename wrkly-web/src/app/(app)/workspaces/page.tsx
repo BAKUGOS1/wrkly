@@ -22,7 +22,7 @@ interface WorkspaceCard {
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 
-export default function DashboardPage() {
+export default function WorkspacesPage() {
   const router = useRouter();
   const token = useAuthStore((s) => s.token);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -48,7 +48,6 @@ export default function DashboardPage() {
       {/* Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {isLoading ? (
-          // Skeleton loading state
           <>
             {[1, 2, 3].map((i) => (
               <div
@@ -69,26 +68,21 @@ export default function DashboardPage() {
             {workspaces.map((ws) => (
               <button
                 key={ws.id}
-                onClick={() => router.push(`/app/workspace/${ws.id}`)}
+                onClick={() => router.push(`/workspace/${ws.slug}`)}
                 className={cn(
                   "group relative rounded-xl border border-border bg-card p-6 text-left transition-all",
                   "hover:border-primary/30 hover:shadow-md hover:shadow-primary/5",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                 )}
               >
-                {/* Name */}
                 <h3 className="text-lg font-semibold group-hover:text-primary transition-colors">
                   {ws.name}
                 </h3>
-
-                {/* Description */}
                 {ws.description && (
                   <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
                     {ws.description}
                   </p>
                 )}
-
-                {/* Stats row */}
                 <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
                   <span className="inline-flex items-center gap-1.5">
                     <Users className="h-3.5 w-3.5" />
@@ -99,13 +93,10 @@ export default function DashboardPage() {
                     {ws._count?.boards ?? 0} boards
                   </span>
                 </div>
-
-                {/* Subtle gradient accent at the bottom on hover */}
                 <div className="absolute inset-x-0 bottom-0 h-0.5 rounded-b-xl bg-gradient-to-r from-primary/0 via-primary/40 to-primary/0 opacity-0 transition-opacity group-hover:opacity-100" />
               </button>
             ))}
 
-            {/* New Workspace card */}
             <button
               onClick={() => setIsCreateModalOpen(true)}
               className={cn(

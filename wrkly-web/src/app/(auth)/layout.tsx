@@ -20,7 +20,7 @@ export default function AuthLayout({
 
   useEffect(() => {
     if (mounted && token) {
-      router.replace("/app");
+      router.replace("/workspaces");
     }
   }, [mounted, token, router]);
 

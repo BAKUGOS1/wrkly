@@ -70,7 +70,7 @@ export default function RegisterPage() {
         },
       );
       setAuth(resp.user, resp.token);
-      router.push("/app");
+      router.push("/workspaces");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setErrorMsg(err.message || "Failed to register");
