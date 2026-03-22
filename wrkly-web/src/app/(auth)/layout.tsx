@@ -31,13 +31,9 @@ export default function AuthLayout({
   return (
     <div className="auth-bg relative flex min-h-screen flex-col items-center justify-center px-4 py-12">
       {/* Brand */}
-      <div className="mb-8 flex items-center gap-2.5">
-        <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary/10 ring-1 ring-primary/20">
-          <Kanban className="h-4.5 w-4.5 text-primary" />
-        </div>
-        <span className="text-lg font-semibold tracking-tight text-foreground">
-          wrkly
-        </span>
+      <div className="mb-8 flex justify-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/wrkly-primary-lockup-dark.svg" alt="wrkly" className="h-[45px] w-auto" />
       </div>
 
       {/* Auth card */}

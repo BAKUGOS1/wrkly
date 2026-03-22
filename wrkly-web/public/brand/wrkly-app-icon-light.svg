@@ -1,0 +1,27 @@
+<!-- wrkly-app-icon-light.svg -->\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  
+    <defs>
+      <linearGradient id="f4_gBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#4F7DF7" />
+        <stop offset="100%" stop-color="#6366F1" />
+      </linearGradient>
+      <linearGradient id="f4_gMid" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#5E6EF5" />
+        <stop offset="100%" stop-color="#7C5BF0" />
+      </linearGradient>
+      <linearGradient id="f4_gViolet" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#7C5BF0" />
+        <stop offset="100%" stop-color="#8B5CF6" />
+      </linearGradient>
+    </defs>
+    
+  <rect x="0" y="0" width="120" height="120" rx="28" fill="#FFFFFF" stroke="#E2E5EE" stroke-width="1" />
+  <g transform="translate(18, 28)">
+    <rect x="0" y="0" width="22" height="22" rx="5.5" fill="url(#f4_gBlue)" />
+    <rect x="30" y="0" width="22" height="22" rx="5.5" fill="url(#f4_gMid)" />
+    <rect x="60" y="0" width="22" height="22" rx="5.5" fill="url(#f4_gViolet)" />
+    
+    <rect x="15" y="30" width="22" height="22" rx="5.5" fill="url(#f4_gBlue)" opacity="0.6" />
+    <rect x="45" y="30" width="22" height="22" rx="5.5" fill="url(#f4_gViolet)" opacity="0.6" />
+  </g>
+</svg>

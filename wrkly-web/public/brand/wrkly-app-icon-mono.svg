@@ -1,0 +1,11 @@
+<!-- wrkly-app-icon-mono.svg -->\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <rect x="0" y="0" width="120" height="120" rx="28" fill="#0E1221" />
+  <g transform="translate(18, 28)">
+    <rect x="0" y="0" width="22" height="22" rx="5.5" fill="#EEF1F8" opacity="1.0" />
+    <rect x="30" y="0" width="22" height="22" rx="5.5" fill="#EEF1F8" opacity="0.8" />
+    <rect x="60" y="0" width="22" height="22" rx="5.5" fill="#EEF1F8" opacity="0.6" />
+    
+    <rect x="15" y="30" width="22" height="22" rx="5.5" fill="#EEF1F8" opacity="0.45" />
+    <rect x="45" y="30" width="22" height="22" rx="5.5" fill="#EEF1F8" opacity="0.3" />
+  </g>
+</svg>

@@ -1,0 +1,11 @@
+<!-- wrkly-favicon-light-32.svg -->\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect x="0" y="0" width="32" height="32" rx="6" fill="#FFFFFF" stroke="#E2E5EE" stroke-width="0.5" />
+  <g transform="translate(4, 7)">
+    <rect x="0" y="0" width="6" height="6" rx="1.5" fill="#4F7DF7" />
+    <rect x="9" y="0" width="6" height="6" rx="1.5" fill="#6366F1" />
+    <rect x="18" y="0" width="6" height="6" rx="1.5" fill="#8B5CF6" />
+    
+    <rect x="4.5" y="8" width="6" height="6" rx="1.5" fill="#4F7DF7" opacity="0.6" />
+    <rect x="13.5" y="8" width="6" height="6" rx="1.5" fill="#8B5CF6" opacity="0.6" />
+  </g>
+</svg>

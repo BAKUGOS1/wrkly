@@ -1,0 +1,38 @@
+<!-- wrkly-app-icon-gradient.svg -->\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="f5_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0E1221" />
+      <stop offset="100%" stop-color="#1A1F3A" />
+    </linearGradient>
+    <radialGradient id="f5_glow" cx="50%" cy="30%" r="60%">
+      <stop offset="0%" stop-color="#4F7DF7" stop-opacity="0.12" />
+      <stop offset="100%" stop-color="#4F7DF7" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  
+    
+      <linearGradient id="f5_gBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#4F7DF7" />
+        <stop offset="100%" stop-color="#6366F1" />
+      </linearGradient>
+      <linearGradient id="f5_gMid" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#5E6EF5" />
+        <stop offset="100%" stop-color="#7C5BF0" />
+      </linearGradient>
+      <linearGradient id="f5_gViolet" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#7C5BF0" />
+        <stop offset="100%" stop-color="#8B5CF6" />
+      </linearGradient>
+    
+    
+  <rect x="0" y="0" width="120" height="120" rx="28" fill="url(#f5_bg)" />
+  <rect x="0" y="0" width="120" height="120" rx="28" fill="url(#f5_glow)" />
+  <g transform="translate(18, 28)">
+    <rect x="0" y="0" width="22" height="22" rx="5.5" fill="url(#f5_gBlue)" />
+    <rect x="30" y="0" width="22" height="22" rx="5.5" fill="url(#f5_gMid)" />
+    <rect x="60" y="0" width="22" height="22" rx="5.5" fill="url(#f5_gViolet)" />
+    
+    <rect x="15" y="30" width="22" height="22" rx="5.5" fill="url(#f5_gBlue)" opacity="0.65" />
+    <rect x="45" y="30" width="22" height="22" rx="5.5" fill="url(#f5_gViolet)" opacity="0.65" />
+  </g>
+</svg>

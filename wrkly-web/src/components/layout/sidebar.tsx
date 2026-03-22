@@ -141,6 +141,12 @@ function SidebarContent({ collapsed }: { collapsed: boolean }) {
 
   return (
     <div className="flex h-full flex-col">
+      {/* Brand Logo */}
+      <div className="flex h-14 shrink-0 items-center px-4">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src="/brand/wrkly-primary-lockup-dark.svg" alt="wrkly" className="h-[24px] w-auto" />
+      </div>
+
       {/* Workspace selector */}
       <div className="p-3">
         <WorkspaceSwitcher />

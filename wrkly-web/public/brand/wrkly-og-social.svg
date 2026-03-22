@@ -1,0 +1,43 @@
+<!-- wrkly-og-social.svg -->\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="f12_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080B14" />
+      <stop offset="100%" stop-color="#111631" />
+    </linearGradient>
+    <radialGradient id="f12_glow" cx="30%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#4F7DF7" stop-opacity="0.08" />
+      <stop offset="100%" stop-color="#4F7DF7" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  
+    
+      <linearGradient id="f12_gBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#4F7DF7" />
+        <stop offset="100%" stop-color="#6366F1" />
+      </linearGradient>
+      <linearGradient id="f12_gMid" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#5E6EF5" />
+        <stop offset="100%" stop-color="#7C5BF0" />
+      </linearGradient>
+      <linearGradient id="f12_gViolet" x1="0%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#7C5BF0" />
+        <stop offset="100%" stop-color="#8B5CF6" />
+      </linearGradient>
+    
+    
+  
+  <rect x="0" y="0" width="1200" height="630" fill="url(#f12_bg)" />
+  <rect x="0" y="0" width="1200" height="630" fill="url(#f12_glow)" />
+  
+  <g transform="translate(168, 216)">
+    <rect x="0" y="0" width="54" height="54" rx="14" fill="url(#f12_gBlue)" />
+    <rect x="78" y="0" width="54" height="54" rx="14" fill="url(#f12_gMid)" />
+    <rect x="156" y="0" width="54" height="54" rx="14" fill="url(#f12_gViolet)" />
+    
+    <rect x="39" y="72" width="54" height="54" rx="14" fill="url(#f12_gBlue)" opacity="0.65" />
+    <rect x="117" y="72" width="54" height="54" rx="14" fill="url(#f12_gViolet)" opacity="0.65" />
+  </g>
+  
+  <text x="420" y="280" font-family="'Outfit', sans-serif" font-weight="500" font-size="120" letter-spacing="3" fill="#EEF1F8">wrkly</text>
+  <text x="424" y="340" font-family="'DM Sans', sans-serif" font-weight="500" font-size="32" letter-spacing="12" fill="#4D5578">WORKFLOW ENGINE</text>
+</svg>
