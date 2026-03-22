@@ -22,6 +22,7 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 import type { Workspace } from '@/types';
+import { Logo } from '@/components/ui/logo';
 
 import { WorkspaceSwitcher } from '@/components/workspaces/workspace-switcher';
 
@@ -90,8 +91,7 @@ export function Sidebar() {
       <div className="flex h-full w-[64px] flex-col items-center border-r border-border bg-background py-[16px] gap-[8px] transition-all">
         {/* Brand Logo (Collapsed) */}
         <div className="mb-[16px] mt-[8px]">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/wrkly-app-icon-gradient.svg" alt="Wrkly" className="h-[28px] w-[28px]" />
+          <Logo variant="icon" width={28} height={28} />
         </div>
 
         {navItems.map((item) => (
@@ -159,10 +159,7 @@ export function Sidebar() {
     <div className="flex h-full w-[256px] flex-col border-r border-border bg-background transition-all">
       {/* Brand Logo */}
       <div className="flex h-[64px] shrink-0 items-center px-[24px]">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/wrkly-primary-lockup-dark.svg" alt="Wrkly" className="hidden h-[24px] w-auto dark:block" />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/wrkly-primary-lockup-light.svg" alt="Wrkly" className="block h-[24px] w-auto dark:hidden" />
+        <Logo variant="full" width={100} height={28} />
       </div>
 
       {/* Workspace selector */}

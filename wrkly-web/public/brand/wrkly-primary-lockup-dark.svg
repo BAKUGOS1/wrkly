@@ -1,33 +1,29 @@
-<!-- wrkly-primary-lockup-dark.svg -->\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 90">
-  
-    <defs>
-      <linearGradient id="f1_gBlue" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#4F7DF7" />
-        <stop offset="100%" stop-color="#6366F1" />
-      </linearGradient>
-      <linearGradient id="f1_gMid" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#5E6EF5" />
-        <stop offset="100%" stop-color="#7C5BF0" />
-      </linearGradient>
-      <linearGradient id="f1_gViolet" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#7C5BF0" />
-        <stop offset="100%" stop-color="#8B5CF6" />
-      </linearGradient>
-    </defs>
-    
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 90">
+  <defs>
+    <linearGradient id="f1_gBlue" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#4F7DF7" />
+      <stop offset="100%" stop-color="#6366F1" />
+    </linearGradient>
+    <linearGradient id="f1_gMid" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#5E6EF5" />
+      <stop offset="100%" stop-color="#7C5BF0" />
+    </linearGradient>
+    <linearGradient id="f1_gViolet" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#7C5BF0" />
+      <stop offset="100%" stop-color="#8B5CF6" />
+    </linearGradient>
+  </defs>
   <g transform="translate(0, 14)">
     <line x1="14" y1="10" x2="18" y2="25" stroke="#4F7DF7" stroke-width="1" opacity="0.15" />
     <line x1="32" y1="25" x2="36" y2="10" stroke="#5E6EF5" stroke-width="1" opacity="0.15" />
     <line x1="50" y1="10" x2="54" y2="25" stroke="#7C5BF0" stroke-width="1" opacity="0.15" />
     <line x1="68" y1="25" x2="72" y2="10" stroke="#8B5CF6" stroke-width="1" opacity="0.15" />
-
     <rect x="0" y="0" width="14" height="14" rx="3.5" fill="url(#f1_gBlue)" />
     <rect x="36" y="0" width="14" height="14" rx="3.5" fill="url(#f1_gMid)" />
     <rect x="72" y="0" width="14" height="14" rx="3.5" fill="url(#f1_gViolet)" />
-    
     <rect x="18" y="18" width="14" height="14" rx="3.5" fill="url(#f1_gBlue)" opacity="0.7" />
     <rect x="54" y="18" width="14" height="14" rx="3.5" fill="url(#f1_gViolet)" opacity="0.7" />
   </g>
-  <text x="118" y="52" font-family="'Outfit', sans-serif" font-weight="500" font-size="40" letter-spacing="3" fill="#EEF1F8">wrkly</text>
-  <text x="120" y="72" font-family="'DM Sans', sans-serif" font-weight="500" font-size="10.5" letter-spacing="4" fill="#4D5578">WORKFLOW ENGINE</text>
+  <text x="118" y="52" font-family="'Outfit', 'Inter', sans-serif" font-weight="500" font-size="40" letter-spacing="3" fill="#EEF1F8">wrkly</text>
+  <text x="120" y="72" font-family="'DM Sans', 'Inter', sans-serif" font-weight="500" font-size="10.5" letter-spacing="4" fill="#4D5578">WORKFLOW ENGINE</text>
 </svg>
