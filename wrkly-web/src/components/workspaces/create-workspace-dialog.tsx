@@ -67,7 +67,7 @@ export function CreateWorkspaceDialog({ open, onOpenChange }: CreateWorkspaceDia
         });
         form.reset();
         onOpenChange(false);
-        router.push(`/app/workspace/${response.workspace.id}`);
+        router.push(`/workspace/${response.workspace.id}`);
       }
     } catch (error) {
        // Error is already handled by the hook's onError, but we can catch to prevent closure

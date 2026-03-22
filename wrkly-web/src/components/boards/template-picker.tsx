@@ -152,7 +152,7 @@ export function TemplatePicker({ workspaceId, onSuccess, onCancel }: TemplatePic
       if (onSuccess) {
         onSuccess(res.board.id);
       } else {
-        router.push(`/app/board/${res.board.id}`);
+        router.push(`/board/${res.board.id}`);
       }
     } catch {
       // Handled by hook toast

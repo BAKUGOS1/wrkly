@@ -78,7 +78,7 @@ export function CreateBoardDialog({ workspaceId, open, onOpenChange }: CreateBoa
     try {
       const resp = await createBoard(data);
       handleOpenChange(false);
-      router.push(`/app/board/${resp.board.id}`);
+      router.push(`/board/${resp.board.id}`);
     } catch {
       // Error handled by mutation hook via toast
     }
@@ -169,7 +169,7 @@ export function CreateBoardDialog({ workspaceId, open, onOpenChange }: CreateBoa
               workspaceId={workspaceId}
               onSuccess={(boardId) => {
                 handleOpenChange(false);
-                router.push(`/app/board/${boardId}`);
+                router.push(`/board/${boardId}`);
               }}
               onCancel={() => handleOpenChange(false)}
             />

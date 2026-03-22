@@ -398,7 +398,7 @@ export function ListColumn({ boardId, list, filters, isDragOver }: {
                 key={card.id}
                 card={card}
                 onClick={(id: string) =>
-                  router.push(`/app/board/${boardId}/card/${id}`)
+                  router.push(`/board/${boardId}/card/${id}`)
                 }
               />
             ))}

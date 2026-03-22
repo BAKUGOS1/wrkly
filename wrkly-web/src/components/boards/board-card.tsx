@@ -29,7 +29,7 @@ export function BoardCard({ board }: BoardCardProps) {
         className="flex-[0.6] p-4 transition-colors relative"
         style={{ backgroundColor: bgColor }}
       >
-        <Link href={`/app/board/${board.id}`} className="absolute inset-0 z-0 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset" />
+        <Link href={`/board/${board.id}`} className="absolute inset-0 z-0 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-inset" />
         <div className="relative z-10 flex items-start justify-between">
           <h3 className="font-semibold text-white truncate max-w-[85%] drop-shadow-sm">
             {board.name}

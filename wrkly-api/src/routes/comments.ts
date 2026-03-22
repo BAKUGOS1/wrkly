@@ -135,7 +135,7 @@ export async function commentRoutes(app: FastifyInstance) {
               type: 'mention',
               title: `${commenterName} mentioned you in "${safeCardTitle}"`,
               body: content.slice(0, 100),
-              link: `/app/board/${boardId}?card=${cardId}`,
+              link: `/board/${boardId}?card=${cardId}`,
             })),
             skipDuplicates: true,
           })

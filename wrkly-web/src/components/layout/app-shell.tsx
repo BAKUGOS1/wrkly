@@ -8,7 +8,7 @@ import { Sidebar } from "@/components/layout/sidebar";
 import { TopBar } from "@/components/layout/top-bar";
 import { AiCommandBar } from "@/components/ai/ai-command-bar";
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const token = useAuthStore((s) => s.token);
   const [mounted, setMounted] = useState(false);

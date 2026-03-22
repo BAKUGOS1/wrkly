@@ -42,7 +42,7 @@ export function WorkspaceSwitcher() {
 
   const handleWorkspaceSelect = (id: string) => {
     setIsDropdownOpen(false);
-    router.push(`/app/workspace/${id}`);
+    router.push(`/workspace/${id}`);
   };
 
   return (

@@ -360,7 +360,7 @@ class AutomationEngine {
             type:  'automation',
             title,
             body,
-            link:  card ? `/app/board/${boardId}?card=${card.id}` : `/app/board/${boardId}`,
+            link:  card ? `/board/${boardId}?card=${card.id}` : `/board/${boardId}`,
           });
         }
         break;

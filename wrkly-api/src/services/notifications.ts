@@ -140,6 +140,6 @@ export async function createReminderNotification(
     type:   'reminder',
     title:  `Reminder: "${params.cardTitle}" is due ${formatted}`,
     body:   `The card "${params.cardTitle}" is due on ${formatted}.`,
-    link:   `/app/board/${params.boardId}?card=${params.cardId}`,
+    link:   `/board/${params.boardId}?card=${params.cardId}`,
   });
 }

@@ -79,7 +79,7 @@ export function SearchDialog() {
   const handleSelect = useCallback(
     (boardId: string, cardId: string) => {
       toggleCommandBar();
-      router.push(`/app/board/${boardId}?card=${cardId}`);
+      router.push(`/board/${boardId}?card=${cardId}`);
     },
     [router, toggleCommandBar]
   );

@@ -194,7 +194,7 @@ export function AiCommandBar() {
   const handleSelect = useCallback(
     (boardId: string, cardId: string) => {
       handleOpenChange(false);
-      router.push(`/app/board/${boardId}?card=${cardId}`);
+      router.push(`/board/${boardId}?card=${cardId}`);
     },
     [router, handleOpenChange]
   );

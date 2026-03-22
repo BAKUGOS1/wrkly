@@ -117,11 +117,11 @@ function SidebarContent({ collapsed }: { collapsed: boolean }) {
               size="icon"
               className={cn(
                 'h-10 w-10',
-                pathname === `/app/board/${board.id}` && 'bg-primary/10'
+                pathname === `/board/${board.id}` && 'bg-primary/10'
               )}
               asChild
             >
-              <Link href={`/app/board/${board.id}`}>
+              <Link href={`/board/${board.id}`}>
                 <div
                   className="h-3 w-3 rounded-full"
                   style={{ backgroundColor: board.background ?? '#94a3b8' }}
@@ -210,11 +210,11 @@ function SidebarContent({ collapsed }: { collapsed: boolean }) {
         ) : (
           <div className="space-y-0.5">
             {boards.map((board) => {
-              const isActive = pathname === `/app/board/${board.id}`;
+              const isActive = pathname === `/board/${board.id}`;
               return (
                 <Link
                   key={board.id}
-                  href={`/app/board/${board.id}`}
+                  href={`/board/${board.id}`}
                   className={cn(
                     'flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors',
                     'hover:bg-accent',
