@@ -84,6 +84,7 @@ export function useSocket(boardId?: string) {
         currentBoardRef.current = undefined;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [boardId]);
 
   return { isConnected };

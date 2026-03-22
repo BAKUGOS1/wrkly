@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import {
-  X, ChevronRight, Pencil, AlignLeft, LayoutList, Code2, MessageSquare,
-  Send, Tag, Users, Calendar, Bell, ArrowRightLeft, Copy, Archive, Trash2,
+  X, ChevronRight, AlignLeft, LayoutList, Code2, MessageSquare,
+  Send, Calendar, Bell, ArrowRightLeft, Copy, Archive, Trash2,
   Plus, Check
 } from "lucide-react";
 

@@ -57,7 +57,7 @@ export default function BoardPage({ params }: { params: { id: string } }) {
   // Derive filter options from board data
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const labelOptions: FilterOption[] =
-    (board as any).labels?.map((l: any) => ({
+    ((board as unknown) as { labels?: { id: string; name?: string; color: string }[] }).labels?.map((l) => ({
       id: l.id,
       label: l.name ?? l.color,
       color: l.color,
@@ -65,14 +65,15 @@ export default function BoardPage({ params }: { params: { id: string } }) {
 
   // Collect unique assignees across all cards
   const memberMap = new Map<string, FilterOption>();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (board as any).lists?.forEach((list: any) => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    list.cards?.forEach((card: any) => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      card.assignees?.forEach((a: any) => {
+  
+  type CardAssignee = { id: string; name?: string; email?: string };
+  type BoardList = { cards?: { assignees?: CardAssignee[] }[] };
+  
+  (((board as unknown) as { lists?: BoardList[] }).lists ?? []).forEach((list) => {
+    (list.cards ?? []).forEach((card) => {
+      (card.assignees ?? []).forEach((a) => {
         if (!memberMap.has(a.id)) {
-          memberMap.set(a.id, { id: a.id, label: a.name ?? a.email });
+          memberMap.set(a.id, { id: a.id, label: a.name ?? (a.email || 'Unknown') });
         }
       });
     });
@@ -80,13 +81,11 @@ export default function BoardPage({ params }: { params: { id: string } }) {
   const memberOptions = Array.from(memberMap.values());
 
   // Count cards
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const allCards =
-    (board as any).lists?.flatMap((l: any) => l.cards ?? []) ?? [];
+    (((board as unknown) as { lists?: BoardList[] }).lists ?? []).flatMap((l) => l.cards ?? []) ?? [];
   const totalCards = allCards.length;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const visibleCards = allCards.filter((c: any) =>
-    cardMatchesFilters(c, filters),
+  const visibleCards = allCards.filter((c) =>
+    cardMatchesFilters((c as unknown) as { id: string; labels?: { id: string }[]; assignees?: { id: string }[]; dueDate?: string | null }, filters),
   ).length;
 
   const closeCardModal = () => {

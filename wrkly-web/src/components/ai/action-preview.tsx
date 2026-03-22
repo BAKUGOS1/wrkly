@@ -1,6 +1,6 @@
 'use client';
 
-import { Check, X, MoveRight, Loader2, Sparkles, Plus, Tag, Calendar, Archive } from 'lucide-react';
+import { Check, MoveRight, Loader2, Sparkles, Plus, Tag, Calendar, Archive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
@@ -103,7 +103,7 @@ export function ActionPreview({
       </div>
 
       <p className="text-sm text-foreground bg-muted p-2 rounded-md">
-        "{interpretation}"
+        &quot;{interpretation}&quot;
       </p>
 
       <div className="flex flex-col gap-2 mt-2">

@@ -9,7 +9,6 @@ import {
   Plus,
   ChevronLeft,
   ChevronRight,
-  ChevronsUpDown,
   Loader2,
 } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
@@ -19,12 +18,6 @@ import { useQuery } from '@tanstack/react-query';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { Sheet, SheetContent } from '@/components/ui/sheet';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
@@ -69,7 +62,8 @@ function SidebarContent({ collapsed }: { collapsed: boolean }) {
     } else if (workspaces.length > 0 && !activeWorkspaceId) {
       setActiveWorkspaceId(workspaces[0].id);
     }
-  }, [pathname, workspaces, activeWorkspaceId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname, activeWorkspaceId]);
 
   // Fetch boards for active workspace
   const { data: boardsData, isLoading: boardsLoading } = useQuery({

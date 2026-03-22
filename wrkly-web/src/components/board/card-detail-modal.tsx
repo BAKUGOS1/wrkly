@@ -13,8 +13,6 @@ import { MemberPicker } from './member-picker';
 import { DueDatePicker } from './due-date-picker';
 import { CardComments } from './card-comments';
 import { BlockEditor } from '@/components/blocks/block-editor';
-import { SaveAsTemplateButton } from './card-template-menu';
-import { ActivityFeed } from '@/components/activity/activity-feed';
 import { AiContentAssist } from '@/components/blocks/ai-content-assist';
 
 export function CardDetailModal({ 

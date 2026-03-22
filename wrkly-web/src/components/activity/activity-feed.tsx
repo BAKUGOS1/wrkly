@@ -82,7 +82,7 @@ const ACTION_MAP: Record<string, ActionConfig> = {
     color: 'text-orange-500 dark:text-orange-400',
     bgColor: 'bg-orange-100 dark:bg-orange-900/40',
     icon: <Zap className="h-3 w-3" />,
-    format: (m, _u) =>
+    format: (m) =>
       `Automation "${m.name ?? ''}": ${m.description ?? 'ran'}`,
   },
 };

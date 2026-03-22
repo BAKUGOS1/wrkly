@@ -12,7 +12,6 @@ import { useCreateCard, useUpdateCard } from '@/hooks/use-cards';
 import { useRouter } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { CreateFromTemplateButton } from './card-template-menu';
-import { SelectableCardWrapper } from './multi-select-toolbar';
 import {
   Popover,
   PopoverContent,

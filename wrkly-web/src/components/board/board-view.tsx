@@ -73,7 +73,7 @@ export function BoardView({
   filters?: BoardFilters;
 }) {
   const activeFilters = filters ?? EMPTY_FILTERS;
-  const { clearSelection } = useUIStore();
+  useUIStore(); // Store subscription if necessary
 
   // Real-time: connect socket + join board room, then sync cache
   useSocket(board.id);

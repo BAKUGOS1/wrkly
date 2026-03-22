@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Zap, Plus, ChevronRight, Play, Power, Trash2, Clock, BarChart2 } from 'lucide-react';
+import { Zap, Plus, ChevronRight, Play, Trash2, Clock, BarChart2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import {

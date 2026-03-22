@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
@@ -9,10 +9,9 @@ import {
   Plus,
   Check,
   X,
-  Zap,
+  Archive,
   Users,
   ExternalLink,
-  Archive,
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -636,7 +635,7 @@ export default function BoardSettingsPage({
         <TabsContent value="automations">
           <AutomationsTab
             boardId={params.id}
-            lists={(board as any).lists ?? []}
+            lists={((board as unknown) as { lists: unknown[] }).lists ?? []}
             labels={labels}
             workspaceId={board.workspaceId}
           />

@@ -64,7 +64,7 @@ export default function WorkspaceDashboard() {
 <section className="mb-12 flex justify-between items-end">
 <div>
 <h1 className="text-5xl font-extrabold font-headline tracking-tighter text-on-surface mb-2">Good morning, Alex</h1>
-<p className="text-on-surface-variant text-lg">Here's what's happening across your workspace today.</p>
+<p className="text-on-surface-variant text-lg">Here&apos;s what&apos;s happening across your workspace today.</p>
 </div>
 <div className="flex gap-4">
 <button className="px-6 py-3 rounded-xl border border-outline-variant text-primary font-bold hover:bg-surface-container-high transition-all active:scale-95 flex items-center gap-2">
@@ -168,7 +168,7 @@ export default function WorkspaceDashboard() {
 <p className="text-sm text-on-surface leading-snug">
 <span className="font-bold">Sarah</span> commented on <span className="font-semibold text-primary">Design Audit</span>
 </p>
-<p className="text-[11px] text-on-surface-variant mt-1 italic">"The contrast in the header needs adjustment..."</p>
+<p className="text-[11px] text-on-surface-variant mt-1 italic">&quot;The contrast in the header needs adjustment...&quot;</p>
 <p className="text-[10px] text-outline mt-1 font-semibold uppercase tracking-tight">12 MIN AGO</p>
 </div>
 </div>

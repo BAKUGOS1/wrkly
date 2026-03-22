@@ -2,9 +2,8 @@
 
 import * as React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { ChevronsUpDown, Check, Plus, Loader2 } from 'lucide-react';
+import { ChevronsUpDown, Check, Plus } from 'lucide-react';
 import { useWorkspaces } from '@/hooks/use-workspaces';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -36,7 +35,8 @@ export function WorkspaceSwitcher() {
     // Check if on a board page, but without board details here we can't easily resolve workspace.
     // So fallback to the first workspace if available and no specific workspace route is matched.
     return workspaces.length > 0 ? workspaces[0].id : null;
-  }, [pathname, workspaces]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   const activeWorkspace = workspaces.find((w) => w.id === activeWorkspaceId);
 

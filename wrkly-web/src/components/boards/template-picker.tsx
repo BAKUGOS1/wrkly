@@ -95,7 +95,7 @@ function TemplateCard({
         {/* List name pills */}
         {template.lists?.length > 0 && (
           <div className="flex flex-wrap gap-1 pt-1">
-            {template.lists.slice(0, 5).map((l: any, i: number) => (
+            {template.lists.slice(0, 5).map((l: { name: string }, i: number) => (
               <span
                 key={i}
                 className="rounded-full border border-border bg-muted/60 px-2 py-0.5 text-[10px] text-muted-foreground"
@@ -128,7 +128,7 @@ export function TemplatePicker({ workspaceId, onSuccess, onCancel }: TemplatePic
   const { data, isLoading } = useBoardTemplates();
   const { mutateAsync: createFromTemplate, isPending } = useCreateBoardFromTemplate(workspaceId);
 
-  const templates: any[] = data?.templates ?? [];
+  const templates: { id: string; name: string; icon?: string; description?: string; lists: { name: string }[] }[] = data?.templates ?? [];
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [selected, setSelected] = useState<any>(null);
