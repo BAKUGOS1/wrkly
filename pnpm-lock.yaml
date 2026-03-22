@@ -26,6 +26,9 @@ importers:
       '@fastify/multipart':
         specifier: ^9.4.0
         version: 9.4.0
+      '@fastify/rate-limit':
+        specifier: ^10.3.0
+        version: 10.3.0
       '@fastify/static':
         specifier: ^9.0.0
         version: 9.0.0
@@ -66,9 +69,6 @@ importers:
         specifier: ^4.3.6
         version: 4.3.6
     devDependencies:
-      '@fastify/rate-limit':
-        specifier: ^10.3.0
-        version: 10.3.0
       '@types/bcryptjs':
         specifier: ^3.0.0
         version: 3.0.0
