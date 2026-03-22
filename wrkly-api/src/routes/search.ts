@@ -94,12 +94,12 @@ export async function searchRoutes(app: FastifyInstance) {
       LIMIT $3
     `;
 
-    const rawResults = await prisma.$queryRawUnsafe<RawCardResult[]>(
+    const rawResults = (await prisma.$queryRawUnsafe(
       queryString,
       q,
       '%' + escapedQ + '%',
       Number(limit)
-    );
+    )) as RawCardResult[];
 
     const totalCount = rawResults.length;
 
