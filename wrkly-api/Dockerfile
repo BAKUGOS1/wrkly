@@ -21,27 +21,27 @@ COPY tsconfig.json ./
 COPY src ./src/
 RUN pnpm build
 
-# Prune dev dependencies so we ship only what the runtime needs
-# RUN pnpm prune --prod  <-- Disabled to keep Prisma CLI for runtime db push
-
 # ── Stage 2: runner ───────────────────────────────────────────────────────────
 FROM node:20-alpine AS runner
 
-RUN apk add --no-cache curl   # needed for healthcheck.sh
+RUN apk add --no-cache curl
 
 WORKDIR /app
 
 ENV NODE_ENV=production
 
-# Copy only the production artifacts
+# Copy production artifacts + full node_modules (prisma CLI needed)
 COPY --from=builder /app/dist         ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma       ./prisma
 COPY --from=builder /app/package.json ./package.json
 
-# Non-root user for least-privilege
+# Copy startup script
+COPY start.sh ./start.sh
+RUN chmod +x ./start.sh
+
+# Non-root user
 RUN addgroup -S wrkly && adduser -S wrkly -G wrkly
-# Fix permissions so npx prisma can write the schema cache if needed
 RUN chown -R wrkly:wrkly /app
 
 USER wrkly
@@ -51,5 +51,4 @@ EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD curl -f http://localhost:4000/health || exit 1
 
-# Run prisma db push before starting the server to ensure prod DB has tables
-CMD npx prisma db push --accept-data-loss && node dist/server.js
+CMD ["./start.sh"]
