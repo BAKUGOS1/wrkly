@@ -32,6 +32,10 @@ model User {
   oauthProvider  String?
   oauthId        String?
 
+  notificationSettings Json?
+  passwordResetToken   String?
+  passwordResetExpiry  DateTime?
+
   workspaceMembers  WorkspaceMember[]
   ownedWorkspaces   Workspace[]        @relation("WorkspaceOwner")
   createdBoards     Board[]            @relation("BoardCreator")

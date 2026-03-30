@@ -5,6 +5,13 @@ export interface User {
   avatarUrl?: string | null;
   oauthProvider?: string | null;
   oauthId?: string | null;
+  notificationSettings?: {
+    emailGlobal?: boolean;
+    mentions?: boolean;
+    dueReminders?: boolean;
+    assignments?: boolean;
+    automations?: boolean;
+  } | null;
   createdAt: string | Date;
   updatedAt: string | Date;
 }

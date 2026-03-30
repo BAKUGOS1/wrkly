@@ -41,13 +41,31 @@ export function TopBar() {
     return () => window.removeEventListener('keydown', handler);
   }, [toggleCommandBar]);
 
-  // Mock breadcrumbs based on pathname for now
-  // In a real app, this would be computed by a router or context
-  const getBreadcrumbs = () => {
-    if (pathname.includes('/board/')) {
-      return ['Engineering Workspace', 'Q3 Roadmap'];
+  // Dynamic breadcrumbs based on pathname
+  const getBreadcrumbs = (): string[] => {
+    const parts = pathname.split('/').filter(Boolean);
+    const crumbs: string[] = [];
+
+    if (parts[0] === 'workspaces') {
+      crumbs.push('Workspaces');
+    } else if (parts[0] === 'workspace' && parts[1]) {
+      // Capitalize workspace slug for display
+      const wsName = parts[1].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+      crumbs.push(wsName);
+      crumbs.push('Dashboard');
+    } else if (parts[0] === 'board' && parts[1]) {
+      crumbs.push('Board');
+    } else if (parts[0] === 'settings') {
+      crumbs.push('Settings');
+    } else if (parts[0] === 'forgot-password') {
+      crumbs.push('Forgot Password');
+    } else if (parts[0] === 'reset-password') {
+      crumbs.push('Reset Password');
+    } else {
+      crumbs.push('Home');
     }
-    return ['Engineering Workspace', 'Dashboard'];
+
+    return crumbs;
   };
 
   const breadcrumbs = getBreadcrumbs();

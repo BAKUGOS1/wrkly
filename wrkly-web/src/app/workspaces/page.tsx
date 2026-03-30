@@ -17,6 +17,8 @@ interface WorkspaceCard {
   name: string;
   slug: string;
   description?: string | null;
+  memberCount?: number;
+  myRole?: string;
   _count?: { boards: number; members: number };
 }
 
@@ -86,7 +88,7 @@ export default function WorkspacesPage() {
                 <div className="mt-4 flex items-center gap-4 text-sm text-muted-foreground">
                   <span className="inline-flex items-center gap-1.5">
                     <Users className="h-3.5 w-3.5" />
-                    {ws._count?.members ?? 0} members
+                    {ws.memberCount ?? ws._count?.members ?? 0} members
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <LayoutGrid className="h-3.5 w-3.5" />

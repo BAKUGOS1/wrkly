@@ -14,6 +14,7 @@ import { templateRoutes } from './templates';
 import { cardTemplateRoutes } from './card-templates';
 import { uploadRoutes } from './upload';
 import { automationRoutes } from './automations';
+import { workspaceStatsRoutes } from './workspace-stats';
 
 import { createRateLimit } from '../middleware/rate-limit';
 
@@ -27,6 +28,7 @@ export async function registerRoutes(app: FastifyInstance) {
 
   app.register(authRoutes, { prefix: '/api/auth' });
   app.register(workspaceRoutes, { prefix: '/api/workspaces' });
+  app.register(workspaceStatsRoutes, { prefix: '/api' });
   app.register(boardRoutes, { prefix: '/api' });
   app.register(listRoutes, { prefix: '/api' });
   app.register(cardRoutes, { prefix: '/api' });

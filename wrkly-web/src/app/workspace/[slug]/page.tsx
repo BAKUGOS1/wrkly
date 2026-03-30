@@ -1,14 +1,16 @@
 "use client";
 
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import { apiFetch } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
-import { Layers, CheckCircle2, AlertCircle, Plus, LayoutGrid, Clock } from 'lucide-react';
+import { Layers, CheckCircle2, AlertCircle, Plus, LayoutGrid, Clock, Users } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { CreateBoardDialog } from '@/components/boards/create-board-dialog';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -18,34 +20,92 @@ interface BoardSummary {
   background?: string | null;
   description?: string | null;
   _count?: { lists: number; cards: number; members: number };
-  members?: { user: { id: string; name: string; avatarUrl?: string } }[];
+  members?: { user: { id: string; name: string; avatarUrl?: string | null } }[];
+}
+
+interface WorkspaceStats {
+  totalBoards: number;
+  totalCards: number;
+  activeTasks: number;
+  overdueTasks: number;
+  memberCount: number;
+}
+
+interface ActivityItem {
+  id: string;
+  action: string;
+  metadata: Record<string, unknown> | null;
+  createdAt: string;
+  user: { id: string; name: string; avatarUrl?: string | null } | null;
+  board: { id: string; name: string } | null;
+  card: { id: string; title: string } | null;
 }
 
 export default function WorkspaceDashboard({ params }: { params: { slug: string } }) {
   const token = useAuthStore((s) => s.token);
+  const [showCreateBoard, setShowCreateBoard] = useState(false);
   
-  const { data, isLoading } = useQuery({
+  // Boards query
+  const { data: boardsData, isLoading: boardsLoading } = useQuery({
     queryKey: ['boards', params.slug],
     queryFn: () =>
       apiFetch<{ boards: BoardSummary[] }>(`/api/workspaces/${params.slug}/boards`),
     enabled: !!token && !!params.slug,
   });
 
-  const boards = data?.boards ?? [];
-  
-  // Placeholder stats - in a real app these would come from an API endpoint
+  // Stats query — real data
+  const { data: statsData } = useQuery({
+    queryKey: ['workspace-stats', params.slug],
+    queryFn: () =>
+      apiFetch<WorkspaceStats>(`/api/workspaces/${params.slug}/stats`),
+    enabled: !!token && !!params.slug,
+  });
+
+  // Activity query — real data
+  const { data: activityData } = useQuery({
+    queryKey: ['workspace-activity', params.slug],
+    queryFn: () =>
+      apiFetch<{ activities: ActivityItem[] }>(`/api/workspaces/${params.slug}/activity?limit=10`),
+    enabled: !!token && !!params.slug,
+  });
+
+  const boards = boardsData?.boards ?? [];
+  const activities = activityData?.activities ?? [];
+
   const stats = [
-    { label: 'Total Boards', value: boards.length, icon: Layers, color: 'text-primary' },
-    { label: 'Active Tasks', value: 24, icon: CheckCircle2, color: 'text-emerald-500' },
-    { label: 'Overdue', value: 3, icon: AlertCircle, color: 'text-destructive' },
+    { label: 'Total Boards', value: statsData?.totalBoards ?? boards.length, icon: Layers, color: 'text-primary' },
+    { label: 'Active Tasks', value: statsData?.activeTasks ?? 0, icon: CheckCircle2, color: 'text-emerald-500' },
+    { label: 'Overdue', value: statsData?.overdueTasks ?? 0, icon: AlertCircle, color: 'text-destructive' },
   ];
 
-  // Placeholder activities
-  const recentActivity = [
-    { id: 1, user: 'Sarah', action: 'moved task', target: 'Create Landing Page', to: 'Done', time: '2 hours ago' },
-    { id: 2, user: 'John', action: 'added a comment to', target: 'Fix Navigation Bug', time: '4 hours ago' },
-    { id: 3, user: 'Alex', action: 'created new board', target: 'Q4 Roadmap', time: '1 day ago' },
-  ];
+  // Format activity description
+  const formatAction = (activity: ActivityItem): string => {
+    const meta = activity.metadata as Record<string, string> | null;
+    switch (activity.action) {
+      case 'card.created': return `created card`;
+      case 'card.moved': return `moved card to ${meta?.toList ?? 'another list'}`;
+      case 'card.updated': return `updated card`;
+      case 'card.archived': return `archived card`;
+      case 'board.created': return `created board`;
+      case 'board.updated': return `updated board`;
+      case 'comment.created': return `commented on`;
+      case 'list.created': return `created list ${meta?.listName ?? ''}`;
+      case 'member.added': return `added a member`;
+      default: return activity.action.replace(/\./g, ' ');
+    }
+  };
+
+  const getTimeAgo = (dateStr: string): string => {
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 1) return 'just now';
+    if (minutes < 60) return `${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `${hours}h ago`;
+    const days = Math.floor(hours / 24);
+    if (days < 7) return `${days}d ago`;
+    return new Date(dateStr).toLocaleDateString();
+  };
 
   return (
     <div className="mx-auto max-w-[1200px] pt-6 sm:pt-[48px] px-0">
@@ -58,7 +118,10 @@ export default function WorkspaceDashboard({ params }: { params: { slug: string 
             Overview of your active boards and recent activity.
           </p>
         </div>
-        <Button className="h-[40px] px-[16px] rounded-[10px] w-full sm:w-auto">
+        <Button
+          className="h-[40px] px-[16px] rounded-[10px] w-full sm:w-auto"
+          onClick={() => setShowCreateBoard(true)}
+        >
           <Plus className="mr-[8px] h-[16px] w-[16px]" />
           New Board
         </Button>
@@ -88,7 +151,7 @@ export default function WorkspaceDashboard({ params }: { params: { slug: string 
           </div>
           
           <div className="grid grid-cols-1 gap-[20px] sm:grid-cols-2">
-            {isLoading ? (
+            {boardsLoading ? (
               <>
                 {[1, 2, 3, 4].map((i) => (
                   <div
@@ -112,7 +175,7 @@ export default function WorkspaceDashboard({ params }: { params: { slug: string 
                 </div>
                 <h3 className="text-[16px] font-medium mb-[4px]">No boards yet</h3>
                 <p className="text-[14px] text-muted-foreground mb-[20px]">Get started by creating your first board for this workspace.</p>
-                <Button variant="outline">Create Board</Button>
+                <Button variant="outline" onClick={() => setShowCreateBoard(true)}>Create Board</Button>
               </div>
             ) : (
               boards.map((board) => (
@@ -147,13 +210,27 @@ export default function WorkspaceDashboard({ params }: { params: { slug: string 
                       </span>
                     </div>
 
-                    {/* Avatar Stack */}
+                    {/* Real Avatar Stack */}
                     <div className="flex -space-x-[8px]">
-                      {[1, 2, 3].map((_, i) => (
-                         <Avatar key={i} className="h-[28px] w-[28px] border-2 border-surface-container-lowest">
-                           <AvatarFallback className="text-[10px] bg-surface-container-high">{(i + 1).toString()}</AvatarFallback>
+                      {(board.members ?? []).slice(0, 3).map((m) => (
+                         <Avatar key={m.user.id} className="h-[28px] w-[28px] border-2 border-surface-container-lowest">
+                           <AvatarImage src={m.user.avatarUrl ?? undefined} />
+                           <AvatarFallback className="text-[10px] bg-surface-container-high">
+                             {m.user.name?.charAt(0)?.toUpperCase() ?? '?'}
+                           </AvatarFallback>
                          </Avatar>
                       ))}
+                      {(board.members?.length ?? 0) > 3 && (
+                        <div className="flex h-[28px] w-[28px] items-center justify-center rounded-full border-2 border-surface-container-lowest bg-surface-container-high text-[10px] font-medium text-muted-foreground">
+                          +{(board.members?.length ?? 0) - 3}
+                        </div>
+                      )}
+                      {(!board.members || board.members.length === 0) && (
+                        <div className="flex h-[28px] items-center text-[11px] text-muted-foreground">
+                          <Users className="h-[14px] w-[14px] mr-1" />
+                          {board._count?.members ?? 0}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </Link>
@@ -162,46 +239,69 @@ export default function WorkspaceDashboard({ params }: { params: { slug: string 
           </div>
         </div>
 
-        {/* Right Section: Recent Activity (if desktop, otherwise flows to bottom) */}
+        {/* Right Section: Recent Activity */}
         <div>
           <div className="mb-[20px] flex items-center justify-between">
             <h2 className="text-[18px] font-semibold tracking-tight">Recent Activity</h2>
           </div>
           <div className="rounded-[12px] bg-surface-container-lowest p-[20px] ring-1 ring-border/10">
-            <ul className="space-y-[24px]">
-              {recentActivity.map((activity, idx) => (
-                <li key={activity.id} className="relative flex gap-[16px]">
-                  {/* Vertical Line for timeline effect */}
-                  {idx !== recentActivity.length - 1 && (
-                    <div className="absolute left-[16px] top-[32px] bottom-[-24px] w-[1px] bg-border" />
-                  )}
-                  <Avatar className="h-[32px] w-[32px] relative z-10 ring-4 ring-surface-container-lowest">
-                    <AvatarFallback className="text-[10px] bg-primary/10 text-primary">{activity.user[0]}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1 pt-[4px]">
-                    <p className="text-[13px] leading-snug">
-                      <span className="font-semibold text-foreground">{activity.user}</span>{' '}
-                      <span className="text-muted-foreground">{activity.action}</span>{' '}
-                      <span className="font-medium text-foreground">{activity.target}</span>
-                      {activity.to && (
-                        <>
-                          <span className="text-muted-foreground"> to </span>
-                          <span className="font-medium text-foreground">{activity.to}</span>
-                        </>
-                      )}
-                    </p>
-                    <div className="mt-[4px] flex items-center text-[11px] text-muted-foreground">
-                      <Clock className="mr-[4px] h-[12px] w-[12px]" />
-                      {activity.time}
+            {activities.length === 0 ? (
+              <div className="py-[24px] text-center">
+                <Clock className="mx-auto h-[24px] w-[24px] text-muted-foreground mb-[8px]" />
+                <p className="text-[13px] text-muted-foreground">No activity yet</p>
+                <p className="text-[12px] text-muted-foreground mt-[4px]">Actions on boards and cards will appear here.</p>
+              </div>
+            ) : (
+              <ul className="space-y-[24px]">
+                {activities.map((activity, idx) => (
+                  <li key={activity.id} className="relative flex gap-[16px]">
+                    {/* Vertical Line for timeline effect */}
+                    {idx !== activities.length - 1 && (
+                      <div className="absolute left-[16px] top-[32px] bottom-[-24px] w-[1px] bg-border" />
+                    )}
+                    <Avatar className="h-[32px] w-[32px] relative z-10 ring-4 ring-surface-container-lowest">
+                      <AvatarImage src={activity.user?.avatarUrl ?? undefined} />
+                      <AvatarFallback className="text-[10px] bg-primary/10 text-primary">
+                        {activity.user?.name?.charAt(0)?.toUpperCase() ?? '?'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 pt-[4px]">
+                      <p className="text-[13px] leading-snug">
+                        <span className="font-semibold text-foreground">{activity.user?.name ?? 'Unknown'}</span>{' '}
+                        <span className="text-muted-foreground">{formatAction(activity)}</span>
+                        {activity.card && (
+                          <>
+                            {' '}
+                            <span className="font-medium text-foreground">{activity.card.title}</span>
+                          </>
+                        )}
+                        {!activity.card && activity.board && (
+                          <>
+                            {' '}
+                            <span className="font-medium text-foreground">{activity.board.name}</span>
+                          </>
+                        )}
+                      </p>
+                      <div className="mt-[4px] flex items-center text-[11px] text-muted-foreground">
+                        <Clock className="mr-[4px] h-[12px] w-[12px]" />
+                        {getTimeAgo(activity.createdAt)}
+                      </div>
                     </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
 
       </div>
+
+      {/* Create Board Dialog */}
+      <CreateBoardDialog
+        open={showCreateBoard}
+        onOpenChange={setShowCreateBoard}
+        workspaceId={params.slug}
+      />
     </div>
   );
 }

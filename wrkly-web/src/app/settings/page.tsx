@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -83,6 +83,7 @@ export default function SettingsPage() {
   // Profile State
   const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.avatarUrl ?? null);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const profileForm = useForm<ProfileValues>({
@@ -95,11 +96,33 @@ export default function SettingsPage() {
     defaultValues: { currentPassword: '', newPassword: '', confirmPassword: '' },
   });
 
-  // Notifications State
-  const [notifSettings, setNotifSettings] = useState<NotifSettings>(DEFAULT_NOTIF);
+  // Notifications State — load from user's saved preferences
+  const [notifSettings, setNotifSettings] = useState<NotifSettings>(() => {
+    const saved = user?.notificationSettings;
+    if (saved && typeof saved === 'object') {
+      return { ...DEFAULT_NOTIF, ...saved };
+    }
+    return DEFAULT_NOTIF;
+  });
   const [isSavingNotifs, setIsSavingNotifs] = useState(false);
 
+  // Sync form when user data changes
+  useEffect(() => {
+    if (user) {
+      profileForm.reset({ name: user.name ?? '' });
+      setAvatarUrl(user.avatarUrl ?? null);
+      const saved = user?.notificationSettings;
+      if (saved && typeof saved === 'object') {
+        setNotifSettings({ ...DEFAULT_NOTIF, ...saved });
+      }
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+
   const initials = (user?.name ?? 'U').split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
+
+  // Check if user uses OAuth (no password change allowed)
+  const isOAuthUser = !!user?.oauthProvider;
 
   // Avatar Upload
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -168,10 +191,13 @@ export default function SettingsPage() {
   const handleSaveNotifs = async () => {
     setIsSavingNotifs(true);
     try {
-      await apiFetch('/api/auth/me', {
+      const res = await apiFetch<{ user: typeof user }>('/api/auth/me', {
         method: 'PATCH',
         body: JSON.stringify({ notificationSettings: notifSettings }),
       });
+      if (res.user && useAuthStore.getState().token) {
+        setAuth(res.user as NonNullable<typeof user>, useAuthStore.getState().token!);
+      }
       toast({ title: 'Notification preferences saved!' });
     } catch (err) {
       toast({
@@ -181,6 +207,23 @@ export default function SettingsPage() {
       });
     } finally {
       setIsSavingNotifs(false);
+    }
+  };
+
+  // Account Delete
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      await apiFetch("/api/auth/me", { method: "DELETE" });
+      toast({ title: 'Account deleted. Goodbye!' });
+      logout();
+    } catch (err) {
+      setIsDeleting(false);
+      toast({
+        title: 'Failed to delete account',
+        description: err instanceof Error ? err.message : 'Something went wrong',
+        variant: 'destructive',
+      });
     }
   };
 
@@ -483,66 +526,74 @@ export default function SettingsPage() {
                 {/* Change Password */}
                 <div>
                   <h4 className="text-[16px] font-semibold text-foreground font-manrope mb-[16px]">Change Password</h4>
-                  <Form {...passwordForm}>
-                    <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="flex flex-col gap-[20px] max-w-[480px]">
-                      <FormField
-                        control={passwordForm.control}
-                        name="currentPassword"
-                        render={({ field }) => (
-                          <FormItem className="space-y-[8px]">
-                            <FormLabel className="text-[11px] uppercase tracking-[0.05em] font-semibold text-muted-foreground pb-0">
-                              Current Password
-                            </FormLabel>
-                            <FormControl>
-                              <Input type="password" placeholder="••••••••" {...field} className="bg-surface-container-highest border-transparent hover:border-border/50 focus:border-primary/50 text-[14px] h-[44px]" />
-                            </FormControl>
-                            <FormMessage className="text-[12px]" />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={passwordForm.control}
-                        name="newPassword"
-                        render={({ field }) => (
-                          <FormItem className="space-y-[8px]">
-                            <FormLabel className="text-[11px] uppercase tracking-[0.05em] font-semibold text-muted-foreground pb-0">
-                              New Password
-                            </FormLabel>
-                            <FormControl>
-                              <Input type="password" placeholder="Min. 8 characters" {...field} className="bg-surface-container-highest border-transparent hover:border-border/50 focus:border-primary/50 text-[14px] h-[44px]" />
-                            </FormControl>
-                            <FormMessage className="text-[12px]" />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={passwordForm.control}
-                        name="confirmPassword"
-                        render={({ field }) => (
-                          <FormItem className="space-y-[8px]">
-                            <FormLabel className="text-[11px] uppercase tracking-[0.05em] font-semibold text-muted-foreground pb-0">
-                              Confirm New Password
-                            </FormLabel>
-                            <FormControl>
-                              <Input type="password" placeholder="••••••••" {...field} className="bg-surface-container-highest border-transparent hover:border-border/50 focus:border-primary/50 text-[14px] h-[44px]" />
-                            </FormControl>
-                            <FormMessage className="text-[12px]" />
-                          </FormItem>
-                        )}
-                      />
-                      <div className="pt-[8px]">
-                        <Button type="submit" disabled={passwordForm.formState.isSubmitting}>
-                          {passwordForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                          Update password
-                        </Button>
-                      </div>
-                    </form>
-                  </Form>
+                  {isOAuthUser ? (
+                    <div className="rounded-[10px] bg-surface-container-high p-[20px]">
+                      <p className="text-[14px] text-muted-foreground">
+                        You signed in with Google. Password management is handled by your Google account.
+                      </p>
+                    </div>
+                  ) : (
+                    <Form {...passwordForm}>
+                      <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="flex flex-col gap-[20px] max-w-[480px]">
+                        <FormField
+                          control={passwordForm.control}
+                          name="currentPassword"
+                          render={({ field }) => (
+                            <FormItem className="space-y-[8px]">
+                              <FormLabel className="text-[11px] uppercase tracking-[0.05em] font-semibold text-muted-foreground pb-0">
+                                Current Password
+                              </FormLabel>
+                              <FormControl>
+                                <Input type="password" placeholder="••••••••" {...field} className="bg-surface-container-highest border-transparent hover:border-border/50 focus:border-primary/50 text-[14px] h-[44px]" />
+                              </FormControl>
+                              <FormMessage className="text-[12px]" />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={passwordForm.control}
+                          name="newPassword"
+                          render={({ field }) => (
+                            <FormItem className="space-y-[8px]">
+                              <FormLabel className="text-[11px] uppercase tracking-[0.05em] font-semibold text-muted-foreground pb-0">
+                                New Password
+                              </FormLabel>
+                              <FormControl>
+                                <Input type="password" placeholder="Min. 8 characters" {...field} className="bg-surface-container-highest border-transparent hover:border-border/50 focus:border-primary/50 text-[14px] h-[44px]" />
+                              </FormControl>
+                              <FormMessage className="text-[12px]" />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={passwordForm.control}
+                          name="confirmPassword"
+                          render={({ field }) => (
+                            <FormItem className="space-y-[8px]">
+                              <FormLabel className="text-[11px] uppercase tracking-[0.05em] font-semibold text-muted-foreground pb-0">
+                                Confirm New Password
+                              </FormLabel>
+                              <FormControl>
+                                <Input type="password" placeholder="••••••••" {...field} className="bg-surface-container-highest border-transparent hover:border-border/50 focus:border-primary/50 text-[14px] h-[44px]" />
+                              </FormControl>
+                              <FormMessage className="text-[12px]" />
+                            </FormItem>
+                          )}
+                        />
+                        <div className="pt-[8px]">
+                          <Button type="submit" disabled={passwordForm.formState.isSubmitting}>
+                            {passwordForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Update password
+                          </Button>
+                        </div>
+                      </form>
+                    </Form>
+                  )}
                 </div>
 
                 {/* Danger Zone */}
                 <div className="bg-error/5 rounded-[12px] p-[32px] ring-1 ring-error/20 mt-[16px]">
-                  <div className="flex items-start justify-between">
+                  <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
                     <div>
                       <h3 className="text-[16px] font-semibold text-error-dim font-manrope">Danger Zone</h3>
                       <p className="text-[13px] text-error-dim/80 mt-[4px] max-w-[500px]">
@@ -568,15 +619,10 @@ export default function SettingsPage() {
                           <AlertDialogCancel className="bg-surface-container-high border-transparent text-foreground hover:bg-surface-container">Cancel</AlertDialogCancel>
                           <AlertDialogAction
                             className="bg-error text-white hover:bg-error-dim shadow-none"
-                            onClick={async () => {
-                              try {
-                                await apiFetch("/api/auth/me", { method: "DELETE" });
-                                logout();
-                              } catch {
-                                // Silently swallow
-                              }
-                            }}
+                            disabled={isDeleting}
+                            onClick={handleDeleteAccount}
                           >
+                            {isDeleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Delete account
                           </AlertDialogAction>
                         </AlertDialogFooter>
