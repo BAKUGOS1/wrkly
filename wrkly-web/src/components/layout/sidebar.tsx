@@ -10,7 +10,9 @@ import {
   ChevronRight,
   Loader2,
   FileText,
-  CheckSquare
+  CheckSquare,
+  Settings,
+  LogOut
 } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
@@ -20,6 +22,14 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
 import type { Workspace } from '@/types';
 import { Logo } from '@/components/ui/logo';
@@ -255,20 +265,43 @@ export function Sidebar() {
       {/* Bottom Profile Mini-Card & Toggle */}
       <div className="mt-auto border-t border-border p-[16px]">
         {user && (
-          <div className="mb-[16px] flex items-center gap-[12px] rounded-[12px] bg-transparent hover:bg-surface-container-high p-[8px] cursor-pointer transition-colors">
-            <div className="h-[36px] w-[36px] shrink-0 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
-              {user.avatarUrl ? (
-                 // eslint-disable-next-line @next/next/no-img-element
-                 <img src={user.avatarUrl} alt={user.name} className="h-full w-full object-cover" />
-              ) : (
-                <span className="text-[13px] font-semibold text-primary">{initials}</span>
-              )}
-            </div>
-            <div className="flex flex-col overflow-hidden">
-              <span className="truncate text-[13px] font-semibold text-foreground">{user.name}</span>
-              <span className="truncate text-[11px] text-muted-foreground">{user.email}</span>
-            </div>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <div className="mb-[16px] flex items-center gap-[12px] rounded-[12px] bg-transparent hover:bg-surface-container-high p-[8px] cursor-pointer transition-colors">
+                <div className="h-[36px] w-[36px] shrink-0 rounded-full overflow-hidden bg-primary/10 flex items-center justify-center">
+                  {user.avatarUrl ? (
+                     // eslint-disable-next-line @next/next/no-img-element
+                     <img src={user.avatarUrl} alt={user.name} className="h-full w-full object-cover" />
+                  ) : (
+                    <span className="text-[13px] font-semibold text-primary">{initials}</span>
+                  )}
+                </div>
+                <div className="flex flex-col overflow-hidden text-left">
+                  <span className="truncate text-[13px] font-semibold text-foreground">{user.name}</span>
+                  <span className="truncate text-[11px] text-muted-foreground">{user.email}</span>
+                </div>
+              </div>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-[200px]">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => window.location.href = '/settings'} className="cursor-pointer">
+                <Settings className="mr-2 h-4 w-4" />
+                <span>Settings</span>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem 
+                onClick={() => {
+                  useAuthStore.getState().logout();
+                  window.location.href = '/login';
+                }} 
+                className="text-destructive focus:text-destructive cursor-pointer"
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                <span>Log out</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         )}
         <Button
           variant="ghost"
