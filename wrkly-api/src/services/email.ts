@@ -16,7 +16,7 @@ function getResend(): Resend {
 }
 
 // Use Resend's default sender for unverified domains; swap to your verified domain
-const FROM_EMAIL = process.env.EMAIL_FROM || 'Wrkly <onboarding@resend.dev>';
+const FROM_EMAIL = process.env.EMAIL_FROM || 'Wrkly <noreply@wrkly.in>';
 
 // Frontend URL for links in emails
 const APP_URL = process.env.CORS_ORIGIN?.split(',')[0]?.trim() || 'http://localhost:3000';
