@@ -1,27 +1,34 @@
-<!-- wrkly-avatar-dark.svg -->\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-  
-    <defs>
-      <linearGradient id="f10_gBlue" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#4F7DF7" />
-        <stop offset="100%" stop-color="#6366F1" />
-      </linearGradient>
-      <linearGradient id="f10_gMid" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#5E6EF5" />
-        <stop offset="100%" stop-color="#7C5BF0" />
-      </linearGradient>
-      <linearGradient id="f10_gViolet" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#7C5BF0" />
-        <stop offset="100%" stop-color="#8B5CF6" />
-      </linearGradient>
-    </defs>
-    
-  <circle cx="60" cy="60" r="60" fill="#0E1221" />
-  <g transform="translate(22, 32)">
-    <rect x="0" y="0" width="20" height="20" rx="5" fill="url(#f10_gBlue)" />
-    <rect x="28" y="0" width="20" height="20" rx="5" fill="url(#f10_gMid)" />
-    <rect x="56" y="0" width="20" height="20" rx="5" fill="url(#f10_gViolet)" />
-    
-    <rect x="14" y="26" width="20" height="20" rx="5" fill="url(#f10_gBlue)" opacity="0.65" />
-    <rect x="42" y="26" width="20" height="20" rx="5" fill="url(#f10_gViolet)" opacity="0.65" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="ad_blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F8BF7"/>
+      <stop offset="100%" stop-color="#4F6AF7"/>
+    </linearGradient>
+    <linearGradient id="ad_mid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#7C5BF0"/>
+    </linearGradient>
+    <linearGradient id="ad_violet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#A855F7"/>
+    </linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="60" fill="#0B0F1A"/>
+  <g transform="translate(20, 28)">
+    <!-- Row 1 -->
+    <rect x="0"  y="0" width="22" height="22" rx="5.5" fill="url(#ad_blue)"/>
+    <rect x="0"  y="0" width="22" height="11" rx="5.5" fill="white" opacity="0.08"/>
+    <rect x="29" y="0" width="22" height="22" rx="5.5" fill="url(#ad_mid)"/>
+    <rect x="29" y="0" width="22" height="11" rx="5.5" fill="white" opacity="0.08"/>
+    <rect x="58" y="0" width="22" height="22" rx="5.5" fill="url(#ad_violet)"/>
+    <rect x="58" y="0" width="22" height="11" rx="5.5" fill="white" opacity="0.08"/>
+    <!-- Row 2 -->
+    <rect x="14" y="29" width="22" height="22" rx="5.5" fill="url(#ad_blue)" opacity="0.6"/>
+    <rect x="43" y="29" width="22" height="22" rx="5.5" fill="url(#ad_violet)" opacity="0.6"/>
+    <!-- Connectors -->
+    <line x1="11" y1="22" x2="25" y2="29" stroke="#4F7DF7" stroke-width="0.8" opacity="0.18"/>
+    <line x1="40" y1="22" x2="25" y2="29" stroke="#6366F1" stroke-width="0.8" opacity="0.12"/>
+    <line x1="40" y1="22" x2="54" y2="29" stroke="#7C5BF0" stroke-width="0.8" opacity="0.12"/>
+    <line x1="69" y1="22" x2="54" y2="29" stroke="#8B5CF6" stroke-width="0.8" opacity="0.18"/>
   </g>
 </svg>

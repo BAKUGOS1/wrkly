@@ -1,12 +1,25 @@
-<!-- wrkly-avatar-light.svg -->\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-  <circle cx="60" cy="60" r="60" fill="#FFFFFF" />
-  <circle cx="60" cy="60" r="59.5" fill="none" stroke="#E2E5EE" stroke-width="1" />
-  <g transform="translate(22, 32)">
-    <rect x="0" y="0" width="20" height="20" rx="5" fill="#4F7DF7" />
-    <rect x="28" y="0" width="20" height="20" rx="5" fill="#6366F1" />
-    <rect x="56" y="0" width="20" height="20" rx="5" fill="#8B5CF6" />
-    
-    <rect x="14" y="26" width="20" height="20" rx="5" fill="#4F7DF7" opacity="0.6" />
-    <rect x="42" y="26" width="20" height="20" rx="5" fill="#8B5CF6" opacity="0.6" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="al_blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F8BF7"/>
+      <stop offset="100%" stop-color="#4F6AF7"/>
+    </linearGradient>
+    <linearGradient id="al_mid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#7C5BF0"/>
+    </linearGradient>
+    <linearGradient id="al_violet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#A855F7"/>
+    </linearGradient>
+  </defs>
+  <circle cx="60" cy="60" r="60" fill="#FFFFFF"/>
+  <circle cx="60" cy="60" r="59.5" fill="none" stroke="#E2E5EE" stroke-width="1"/>
+  <g transform="translate(20, 28)">
+    <rect x="0"  y="0" width="22" height="22" rx="5.5" fill="url(#al_blue)"/>
+    <rect x="29" y="0" width="22" height="22" rx="5.5" fill="url(#al_mid)"/>
+    <rect x="58" y="0" width="22" height="22" rx="5.5" fill="url(#al_violet)"/>
+    <rect x="14" y="29" width="22" height="22" rx="5.5" fill="url(#al_blue)" opacity="0.55"/>
+    <rect x="43" y="29" width="22" height="22" rx="5.5" fill="url(#al_violet)" opacity="0.55"/>
   </g>
 </svg>

@@ -1,27 +1,36 @@
-<!-- wrkly-app-icon-light.svg -->\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
-  
-    <defs>
-      <linearGradient id="f4_gBlue" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#4F7DF7" />
-        <stop offset="100%" stop-color="#6366F1" />
-      </linearGradient>
-      <linearGradient id="f4_gMid" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#5E6EF5" />
-        <stop offset="100%" stop-color="#7C5BF0" />
-      </linearGradient>
-      <linearGradient id="f4_gViolet" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#7C5BF0" />
-        <stop offset="100%" stop-color="#8B5CF6" />
-      </linearGradient>
-    </defs>
-    
-  <rect x="0" y="0" width="120" height="120" rx="28" fill="#FFFFFF" stroke="#E2E5EE" stroke-width="1" />
-  <g transform="translate(18, 28)">
-    <rect x="0" y="0" width="22" height="22" rx="5.5" fill="url(#f4_gBlue)" />
-    <rect x="30" y="0" width="22" height="22" rx="5.5" fill="url(#f4_gMid)" />
-    <rect x="60" y="0" width="22" height="22" rx="5.5" fill="url(#f4_gViolet)" />
-    
-    <rect x="15" y="30" width="22" height="22" rx="5.5" fill="url(#f4_gBlue)" opacity="0.6" />
-    <rect x="45" y="30" width="22" height="22" rx="5.5" fill="url(#f4_gViolet)" opacity="0.6" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <defs>
+    <linearGradient id="l_blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F8BF7"/>
+      <stop offset="100%" stop-color="#4F6AF7"/>
+    </linearGradient>
+    <linearGradient id="l_mid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#7C5BF0"/>
+    </linearGradient>
+    <linearGradient id="l_violet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#A855F7"/>
+    </linearGradient>
+  </defs>
+  <rect width="120" height="120" rx="26" fill="#FFFFFF" stroke="#E2E5EE" stroke-width="1"/>
+  <g transform="translate(16, 26)">
+    <!-- Row 1 -->
+    <rect x="0"  y="0" width="24" height="24" rx="6" fill="url(#l_blue)"/>
+    <rect x="0"  y="0" width="24" height="12" rx="6" fill="white" opacity="0.15"/>
+    <rect x="32" y="0" width="24" height="24" rx="6" fill="url(#l_mid)"/>
+    <rect x="32" y="0" width="24" height="12" rx="6" fill="white" opacity="0.15"/>
+    <rect x="64" y="0" width="24" height="24" rx="6" fill="url(#l_violet)"/>
+    <rect x="64" y="0" width="24" height="12" rx="6" fill="white" opacity="0.15"/>
+    <!-- Row 2 -->
+    <rect x="16" y="32" width="24" height="24" rx="6" fill="url(#l_blue)" opacity="0.55"/>
+    <rect x="16" y="32" width="24" height="12" rx="6" fill="white" opacity="0.1"/>
+    <rect x="48" y="32" width="24" height="24" rx="6" fill="url(#l_violet)" opacity="0.55"/>
+    <rect x="48" y="32" width="24" height="12" rx="6" fill="white" opacity="0.1"/>
+    <!-- Connectors -->
+    <line x1="12" y1="24" x2="28" y2="32" stroke="#4F7DF7" stroke-width="1" opacity="0.12"/>
+    <line x1="44" y1="24" x2="28" y2="32" stroke="#6366F1" stroke-width="1" opacity="0.1"/>
+    <line x1="44" y1="24" x2="60" y2="32" stroke="#7C5BF0" stroke-width="1" opacity="0.1"/>
+    <line x1="76" y1="24" x2="60" y2="32" stroke="#8B5CF6" stroke-width="1" opacity="0.12"/>
   </g>
 </svg>

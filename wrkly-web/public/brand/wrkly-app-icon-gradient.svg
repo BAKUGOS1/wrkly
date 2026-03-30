@@ -1,38 +1,50 @@
-<!-- wrkly-app-icon-gradient.svg -->\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
   <defs>
-    <linearGradient id="f5_bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#0E1221" />
-      <stop offset="100%" stop-color="#1A1F3A" />
+    <linearGradient id="g_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0B0F1A"/>
+      <stop offset="100%" stop-color="#151C30"/>
     </linearGradient>
-    <radialGradient id="f5_glow" cx="50%" cy="30%" r="60%">
-      <stop offset="0%" stop-color="#4F7DF7" stop-opacity="0.12" />
-      <stop offset="100%" stop-color="#4F7DF7" stop-opacity="0" />
+    <radialGradient id="g_glow" cx="50%" cy="40%" r="55%">
+      <stop offset="0%" stop-color="#6366F1" stop-opacity="0.1"/>
+      <stop offset="100%" stop-color="#6366F1" stop-opacity="0"/>
     </radialGradient>
+    <linearGradient id="g_blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F8BF7"/>
+      <stop offset="100%" stop-color="#4F6AF7"/>
+    </linearGradient>
+    <linearGradient id="g_mid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#7C5BF0"/>
+    </linearGradient>
+    <linearGradient id="g_violet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#A855F7"/>
+    </linearGradient>
+    <filter id="g_shadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#4F7DF7" flood-opacity="0.25"/>
+    </filter>
   </defs>
-  
-    
-      <linearGradient id="f5_gBlue" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#4F7DF7" />
-        <stop offset="100%" stop-color="#6366F1" />
-      </linearGradient>
-      <linearGradient id="f5_gMid" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#5E6EF5" />
-        <stop offset="100%" stop-color="#7C5BF0" />
-      </linearGradient>
-      <linearGradient id="f5_gViolet" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#7C5BF0" />
-        <stop offset="100%" stop-color="#8B5CF6" />
-      </linearGradient>
-    
-    
-  <rect x="0" y="0" width="120" height="120" rx="28" fill="url(#f5_bg)" />
-  <rect x="0" y="0" width="120" height="120" rx="28" fill="url(#f5_glow)" />
-  <g transform="translate(18, 28)">
-    <rect x="0" y="0" width="22" height="22" rx="5.5" fill="url(#f5_gBlue)" />
-    <rect x="30" y="0" width="22" height="22" rx="5.5" fill="url(#f5_gMid)" />
-    <rect x="60" y="0" width="22" height="22" rx="5.5" fill="url(#f5_gViolet)" />
-    
-    <rect x="15" y="30" width="22" height="22" rx="5.5" fill="url(#f5_gBlue)" opacity="0.65" />
-    <rect x="45" y="30" width="22" height="22" rx="5.5" fill="url(#f5_gViolet)" opacity="0.65" />
+  <!-- Background -->
+  <rect width="120" height="120" rx="26" fill="url(#g_bg)"/>
+  <rect width="120" height="120" rx="26" fill="url(#g_glow)"/>
+  <!-- Grid Squares -->
+  <g transform="translate(16, 26)" filter="url(#g_shadow)">
+    <!-- Row 1: 3 squares -->
+    <rect x="0"  y="0" width="24" height="24" rx="6" fill="url(#g_blue)"/>
+    <rect x="0"  y="0" width="24" height="12" rx="6" fill="white" opacity="0.08"/>
+    <rect x="32" y="0" width="24" height="24" rx="6" fill="url(#g_mid)"/>
+    <rect x="32" y="0" width="24" height="12" rx="6" fill="white" opacity="0.08"/>
+    <rect x="64" y="0" width="24" height="24" rx="6" fill="url(#g_violet)"/>
+    <rect x="64" y="0" width="24" height="12" rx="6" fill="white" opacity="0.08"/>
+    <!-- Row 2: 2 squares offset -->
+    <rect x="16" y="32" width="24" height="24" rx="6" fill="url(#g_blue)" opacity="0.6"/>
+    <rect x="16" y="32" width="24" height="12" rx="6" fill="white" opacity="0.05"/>
+    <rect x="48" y="32" width="24" height="24" rx="6" fill="url(#g_violet)" opacity="0.6"/>
+    <rect x="48" y="32" width="24" height="12" rx="6" fill="white" opacity="0.05"/>
+    <!-- Connector lines -->
+    <line x1="12" y1="24" x2="28" y2="32" stroke="#4F7DF7" stroke-width="1" opacity="0.2"/>
+    <line x1="44" y1="24" x2="28" y2="32" stroke="#6366F1" stroke-width="1" opacity="0.15"/>
+    <line x1="44" y1="24" x2="60" y2="32" stroke="#7C5BF0" stroke-width="1" opacity="0.15"/>
+    <line x1="76" y1="24" x2="60" y2="32" stroke="#8B5CF6" stroke-width="1" opacity="0.2"/>
   </g>
 </svg>

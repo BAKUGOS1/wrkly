@@ -1,29 +1,37 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 380 90">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 80">
   <defs>
-    <linearGradient id="f2_gBlue" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#4F7DF7" />
-      <stop offset="100%" stop-color="#6366F1" />
+    <linearGradient id="ll_blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F8BF7"/>
+      <stop offset="100%" stop-color="#4F6AF7"/>
     </linearGradient>
-    <linearGradient id="f2_gMid" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#5E6EF5" />
-      <stop offset="100%" stop-color="#7C5BF0" />
+    <linearGradient id="ll_mid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#7C5BF0"/>
     </linearGradient>
-    <linearGradient id="f2_gViolet" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#7C5BF0" />
-      <stop offset="100%" stop-color="#8B5CF6" />
+    <linearGradient id="ll_violet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#A855F7"/>
     </linearGradient>
   </defs>
-  <g transform="translate(0, 14)">
-    <line x1="14" y1="10" x2="18" y2="25" stroke="#4F7DF7" stroke-width="1" opacity="0.12" />
-    <line x1="32" y1="25" x2="36" y2="10" stroke="#5E6EF5" stroke-width="1" opacity="0.12" />
-    <line x1="50" y1="10" x2="54" y2="25" stroke="#7C5BF0" stroke-width="1" opacity="0.12" />
-    <line x1="68" y1="25" x2="72" y2="10" stroke="#8B5CF6" stroke-width="1" opacity="0.12" />
-    <rect x="0" y="0" width="14" height="14" rx="3.5" fill="url(#f2_gBlue)" />
-    <rect x="36" y="0" width="14" height="14" rx="3.5" fill="url(#f2_gMid)" />
-    <rect x="72" y="0" width="14" height="14" rx="3.5" fill="url(#f2_gViolet)" />
-    <rect x="18" y="18" width="14" height="14" rx="3.5" fill="url(#f2_gBlue)" opacity="0.6" />
-    <rect x="54" y="18" width="14" height="14" rx="3.5" fill="url(#f2_gViolet)" opacity="0.6" />
+  <!-- Grid Icon -->
+  <g transform="translate(0, 12)">
+    <!-- Row 1 -->
+    <rect x="0"  y="0" width="16" height="16" rx="4" fill="url(#ll_blue)"/>
+    <rect x="0"  y="0" width="16" height="8"  rx="4" fill="white" opacity="0.15"/>
+    <rect x="22" y="0" width="16" height="16" rx="4" fill="url(#ll_mid)"/>
+    <rect x="22" y="0" width="16" height="8"  rx="4" fill="white" opacity="0.15"/>
+    <rect x="44" y="0" width="16" height="16" rx="4" fill="url(#ll_violet)"/>
+    <rect x="44" y="0" width="16" height="8"  rx="4" fill="white" opacity="0.15"/>
+    <!-- Row 2 -->
+    <rect x="11" y="22" width="16" height="16" rx="4" fill="url(#ll_blue)" opacity="0.55"/>
+    <rect x="33" y="22" width="16" height="16" rx="4" fill="url(#ll_violet)" opacity="0.55"/>
+    <!-- Connectors -->
+    <line x1="8"  y1="16" x2="19" y2="22" stroke="#4F7DF7" stroke-width="0.8" opacity="0.12"/>
+    <line x1="30" y1="16" x2="19" y2="22" stroke="#6366F1" stroke-width="0.8" opacity="0.1"/>
+    <line x1="30" y1="16" x2="41" y2="22" stroke="#7C5BF0" stroke-width="0.8" opacity="0.1"/>
+    <line x1="52" y1="16" x2="41" y2="22" stroke="#8B5CF6" stroke-width="0.8" opacity="0.12"/>
   </g>
-  <text x="118" y="52" font-family="'Outfit', 'Inter', sans-serif" font-weight="500" font-size="40" letter-spacing="3" fill="#0F172A">wrkly</text>
-  <text x="120" y="72" font-family="'DM Sans', 'Inter', sans-serif" font-weight="500" font-size="10.5" letter-spacing="4" fill="#8B90A8">WORKFLOW ENGINE</text>
+  <!-- Wordmark -->
+  <text x="82" y="44" font-family="'Outfit', 'Inter', system-ui, sans-serif" font-weight="600" font-size="36" letter-spacing="2.5" fill="#0F172A">wrkly</text>
+  <text x="84" y="64" font-family="'DM Sans', 'Inter', system-ui, sans-serif" font-weight="500" font-size="9.5" letter-spacing="4.5" fill="#8B90A8">WORKFLOW ENGINE</text>
 </svg>

@@ -1,43 +1,64 @@
-<!-- wrkly-og-social.svg -->\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
   <defs>
-    <linearGradient id="f12_bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#080B14" />
-      <stop offset="100%" stop-color="#111631" />
+    <linearGradient id="og_bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#080B14"/>
+      <stop offset="100%" stop-color="#111631"/>
     </linearGradient>
-    <radialGradient id="f12_glow" cx="30%" cy="40%" r="50%">
-      <stop offset="0%" stop-color="#4F7DF7" stop-opacity="0.08" />
-      <stop offset="100%" stop-color="#4F7DF7" stop-opacity="0" />
+    <radialGradient id="og_glow" cx="30%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#6366F1" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#6366F1" stop-opacity="0"/>
     </radialGradient>
+    <linearGradient id="og_blue" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F8BF7"/>
+      <stop offset="100%" stop-color="#4F6AF7"/>
+    </linearGradient>
+    <linearGradient id="og_mid" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#7C5BF0"/>
+    </linearGradient>
+    <linearGradient id="og_violet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#A855F7"/>
+    </linearGradient>
+    <filter id="og_shadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#4F7DF7" flood-opacity="0.2"/>
+    </filter>
   </defs>
-  
-    
-      <linearGradient id="f12_gBlue" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#4F7DF7" />
-        <stop offset="100%" stop-color="#6366F1" />
-      </linearGradient>
-      <linearGradient id="f12_gMid" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#5E6EF5" />
-        <stop offset="100%" stop-color="#7C5BF0" />
-      </linearGradient>
-      <linearGradient id="f12_gViolet" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" stop-color="#7C5BF0" />
-        <stop offset="100%" stop-color="#8B5CF6" />
-      </linearGradient>
-    
-    
-  
-  <rect x="0" y="0" width="1200" height="630" fill="url(#f12_bg)" />
-  <rect x="0" y="0" width="1200" height="630" fill="url(#f12_glow)" />
-  
-  <g transform="translate(168, 216)">
-    <rect x="0" y="0" width="54" height="54" rx="14" fill="url(#f12_gBlue)" />
-    <rect x="78" y="0" width="54" height="54" rx="14" fill="url(#f12_gMid)" />
-    <rect x="156" y="0" width="54" height="54" rx="14" fill="url(#f12_gViolet)" />
-    
-    <rect x="39" y="72" width="54" height="54" rx="14" fill="url(#f12_gBlue)" opacity="0.65" />
-    <rect x="117" y="72" width="54" height="54" rx="14" fill="url(#f12_gViolet)" opacity="0.65" />
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#og_bg)"/>
+  <rect width="1200" height="630" fill="url(#og_glow)"/>
+  <!-- Grid Pattern (decorative background dots) -->
+  <g opacity="0.03">
+    <circle cx="100" cy="100" r="2" fill="#EEF1F8"/>
+    <circle cx="140" cy="100" r="2" fill="#EEF1F8"/>
+    <circle cx="100" cy="140" r="2" fill="#EEF1F8"/>
+    <circle cx="140" cy="140" r="2" fill="#EEF1F8"/>
+    <circle cx="1060" cy="490" r="2" fill="#EEF1F8"/>
+    <circle cx="1100" cy="490" r="2" fill="#EEF1F8"/>
+    <circle cx="1060" cy="530" r="2" fill="#EEF1F8"/>
+    <circle cx="1100" cy="530" r="2" fill="#EEF1F8"/>
   </g>
-  
-  <text x="420" y="280" font-family="'Outfit', sans-serif" font-weight="500" font-size="120" letter-spacing="3" fill="#EEF1F8">wrkly</text>
-  <text x="424" y="340" font-family="'DM Sans', sans-serif" font-weight="500" font-size="32" letter-spacing="12" fill="#4D5578">WORKFLOW ENGINE</text>
+  <!-- Main Grid Icon -->
+  <g transform="translate(168, 200)" filter="url(#og_shadow)">
+    <!-- Row 1 -->
+    <rect x="0"   y="0" width="58" height="58" rx="14" fill="url(#og_blue)"/>
+    <rect x="0"   y="0" width="58" height="29" rx="14" fill="white" opacity="0.08"/>
+    <rect x="78"  y="0" width="58" height="58" rx="14" fill="url(#og_mid)"/>
+    <rect x="78"  y="0" width="58" height="29" rx="14" fill="white" opacity="0.08"/>
+    <rect x="156" y="0" width="58" height="58" rx="14" fill="url(#og_violet)"/>
+    <rect x="156" y="0" width="58" height="29" rx="14" fill="white" opacity="0.08"/>
+    <!-- Row 2 -->
+    <rect x="39"  y="78" width="58" height="58" rx="14" fill="url(#og_blue)" opacity="0.6"/>
+    <rect x="39"  y="78" width="58" height="29" rx="14" fill="white" opacity="0.05"/>
+    <rect x="117" y="78" width="58" height="58" rx="14" fill="url(#og_violet)" opacity="0.6"/>
+    <rect x="117" y="78" width="58" height="29" rx="14" fill="white" opacity="0.05"/>
+    <!-- Connectors -->
+    <line x1="29"  y1="58" x2="68"  y2="78" stroke="#4F7DF7" stroke-width="1.5" opacity="0.18"/>
+    <line x1="107" y1="58" x2="68"  y2="78" stroke="#6366F1" stroke-width="1.5" opacity="0.12"/>
+    <line x1="107" y1="58" x2="146" y2="78" stroke="#7C5BF0" stroke-width="1.5" opacity="0.12"/>
+    <line x1="185" y1="58" x2="146" y2="78" stroke="#8B5CF6" stroke-width="1.5" opacity="0.18"/>
+  </g>
+  <!-- Wordmark -->
+  <text x="430" y="280" font-family="'Outfit', sans-serif" font-weight="600" font-size="120" letter-spacing="3" fill="#EEF1F8">wrkly</text>
+  <text x="434" y="340" font-family="'DM Sans', sans-serif" font-weight="500" font-size="32" letter-spacing="12" fill="#4D5578">WORKFLOW ENGINE</text>
 </svg>

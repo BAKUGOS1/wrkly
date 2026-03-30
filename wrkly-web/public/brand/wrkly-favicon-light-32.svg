@@ -1,11 +1,24 @@
-<!-- wrkly-favicon-light-32.svg -->\n<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect x="0" y="0" width="32" height="32" rx="6" fill="#FFFFFF" stroke="#E2E5EE" stroke-width="0.5" />
-  <g transform="translate(4, 7)">
-    <rect x="0" y="0" width="6" height="6" rx="1.5" fill="#4F7DF7" />
-    <rect x="9" y="0" width="6" height="6" rx="1.5" fill="#6366F1" />
-    <rect x="18" y="0" width="6" height="6" rx="1.5" fill="#8B5CF6" />
-    
-    <rect x="4.5" y="8" width="6" height="6" rx="1.5" fill="#4F7DF7" opacity="0.6" />
-    <rect x="13.5" y="8" width="6" height="6" rx="1.5" fill="#8B5CF6" opacity="0.6" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="fl_b" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4F8BF7"/>
+      <stop offset="100%" stop-color="#4F6AF7"/>
+    </linearGradient>
+    <linearGradient id="fl_m" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#7C5BF0"/>
+    </linearGradient>
+    <linearGradient id="fl_v" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#A855F7"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="#FFFFFF" stroke="#E2E5EE" stroke-width="0.8"/>
+  <g transform="translate(3.5, 6)">
+    <rect x="0"  y="0" width="7" height="7" rx="1.8" fill="url(#fl_b)"/>
+    <rect x="9"  y="0" width="7" height="7" rx="1.8" fill="url(#fl_m)"/>
+    <rect x="18" y="0" width="7" height="7" rx="1.8" fill="url(#fl_v)"/>
+    <rect x="4.5"  y="9.5" width="7" height="7" rx="1.8" fill="url(#fl_b)" opacity="0.55"/>
+    <rect x="13.5" y="9.5" width="7" height="7" rx="1.8" fill="url(#fl_v)" opacity="0.55"/>
   </g>
 </svg>
