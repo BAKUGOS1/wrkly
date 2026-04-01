@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
@@ -24,7 +24,6 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Separator } from '@/components/ui/separator';
@@ -131,10 +130,14 @@ export default function WorkspaceSettingsPage({ params }: { params: { slug: stri
     queryKey: ['workspace', params.slug],
     queryFn: () => apiFetch<{ workspace: Workspace }>(`/api/workspaces/${params.slug}`),
     enabled: !!token,
-    onSuccess: (d: { workspace: Workspace }) => {
-      wsForm.reset({ name: d.workspace.name, description: d.workspace.description ?? '' });
-    },
   });
+
+  // Populate form once workspace loads
+  useEffect(() => {
+    if (wsData?.workspace) {
+      wsForm.reset({ name: wsData.workspace.name, description: wsData.workspace.description ?? '' });
+    }
+  }, [wsData, wsForm]);
 
   // Fetch members
   const { data: membersData, isLoading: membersLoading } = useQuery({

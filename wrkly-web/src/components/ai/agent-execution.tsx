@@ -114,7 +114,7 @@ export function AgentExecution({ boardId, toolCalls, summary, onClose }: AgentEx
     },
   });
 
-  const succeeded = results?.filter((r) => r.success).length ?? 0;
+  const _succeeded = results?.filter((r) => r.success).length ?? 0;
   const failed = results?.filter((r) => !r.success).length ?? 0;
 
   return (

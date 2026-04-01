@@ -15,9 +15,7 @@ import {
   ExternalLink,
   Inbox,
   Loader2,
-  Filter,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -35,13 +33,6 @@ interface MyCard {
   list: { name: string; board: { id: string; name: string } };
   labels: { label: { name: string; color: string } }[];
   priority?: string | null;
-}
-
-interface TaskGroup {
-  label: string;
-  cards: MyCard[];
-  color: string;
-  icon: React.ReactNode;
 }
 
 type FilterType = 'all' | 'today' | 'overdue' | 'upcoming';

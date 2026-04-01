@@ -8,7 +8,6 @@ import {
   HelpCircle,
   ChevronRight,
   UserPlus,
-  X,
   Mail,
   ExternalLink,
 } from 'lucide-react';

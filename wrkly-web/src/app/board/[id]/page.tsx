@@ -9,7 +9,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ShareBoardDialog } from '@/components/board/share-board-dialog';
-import { Filter, Zap, Share2, Settings, ChevronDown } from 'lucide-react';
+import { Filter, Zap, Share2, Settings } from 'lucide-react';
 import { BoardFilterBar, EMPTY_FILTERS, type BoardFilters } from '@/components/board/board-filter-bar';
 import {
   Tooltip,
