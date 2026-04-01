@@ -1,0 +1,60 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm dev)",
+      "Bash(pnpm build)",
+      "Bash(pnpm lint)",
+      "Bash(pnpm test *)",
+      "Bash(pnpm test:watch)",
+      "Bash(pnpm test:coverage)",
+      "Bash(pnpm install *)",
+      "Bash(npx prisma *)",
+      "Bash(npx tsc *)",
+      "Bash(npx next *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git status *)",
+      "Bash(git branch *)",
+      "Bash(gh issue *)",
+      "Bash(gh pr *)",
+      "Bash(docker compose *)"
+    ],
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(**/.*secret*)",
+      "Bash(rm -rf *)",
+      "Bash(DROP TABLE *)",
+      "Bash(DROP DATABASE *)",
+      "Bash(prisma db push --force-reset *)",
+      "Bash(git push --force *)",
+      "Bash(npx prisma migrate reset *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/pre-commit.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/lint-on-save.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "model": "claude-sonnet-4-6",
+  "autoMemoryEnabled": true
+}
