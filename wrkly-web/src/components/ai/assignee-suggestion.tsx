@@ -4,7 +4,6 @@ import { useMutation } from '@tanstack/react-query';
 import { Sparkles, Loader2, UserPlus, X } from 'lucide-react';
 import { useState } from 'react';
 import { apiFetch } from '@/lib/api';
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { AI_CONFIG } from '@/lib/ai-config';
 

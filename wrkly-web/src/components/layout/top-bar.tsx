@@ -115,7 +115,7 @@ function HelpPopover() {
 
 // ── Invite Button ─────────────────────────────────────────────────────────────
 
-function InviteButton({ workspaceId }: { workspaceId?: string }) {
+function InviteButton() {
   const [open, setOpen] = useState(false);
 
   return (

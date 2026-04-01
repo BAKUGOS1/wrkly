@@ -10,7 +10,6 @@ import {
   Flag,
   User,
   Calendar,
-  Tag,
   ChevronRight,
   CheckCircle2,
   Trash2,
