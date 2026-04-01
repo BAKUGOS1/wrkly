@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Menu,
   Search,
@@ -10,11 +10,17 @@ import {
   UserPlus,
   Mail,
   ExternalLink,
+  Settings,
+  LogOut,
+  KeyRound,
+  User,
 } from 'lucide-react';
 import { NotificationDropdown } from '@/components/shared/notification-dropdown';
 import { useUIStore } from '@/stores/ui-store';
+import { useAuthStore } from '@/stores/auth-store';
 import { Button } from '@/components/ui/button';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   Dialog,
   DialogContent,
@@ -27,6 +33,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import Link from 'next/link';
 
 // ── Help Panel ────────────────────────────────────────────────────────────────
 
@@ -63,7 +78,7 @@ function HelpPopover() {
           </Button>
         </PopoverTrigger>
         <PopoverContent align="end" className="w-[240px] p-2">
-          <p className="text-xs font-semibold text-muted-foreground px-2 py-1 uppercase tracking-wide">Help & Resources</p>
+          <p className="text-xs font-semibold text-muted-foreground px-2 py-1 uppercase tracking-wide">Help &amp; Resources</p>
           {HELP_ITEMS.map((item, i) => (
             item.shortcut ? (
               <button
@@ -168,6 +183,85 @@ function InviteButton() {
         </DialogContent>
       </Dialog>
     </>
+  );
+}
+
+// ── User Avatar Menu ──────────────────────────────────────────────────────────
+
+function UserMenu() {
+  const router = useRouter();
+  const user = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
+
+  if (!user) return null;
+
+  const initials = (user.name ?? 'U').split(' ').map((n) => n[0]).join('').slice(0, 2).toUpperCase();
+
+  const handleLogout = () => {
+    logout();
+    router.push('/login');
+  };
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <button
+          className="flex items-center gap-2 rounded-full p-0.5 ring-2 ring-transparent hover:ring-border transition-all focus:outline-none"
+          id="user-avatar-button"
+          title="Account menu"
+        >
+          <Avatar className="h-[34px] w-[34px]">
+            <AvatarImage src={user.avatarUrl ?? undefined} />
+            <AvatarFallback className="text-[12px] font-semibold bg-primary/10 text-primary">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+        </button>
+      </DropdownMenuTrigger>
+
+      <DropdownMenuContent align="end" className="w-[220px]">
+        {/* User info header */}
+        <div className="flex items-center gap-3 px-3 py-2.5">
+          <Avatar className="h-9 w-9 shrink-0">
+            <AvatarImage src={user.avatarUrl ?? undefined} />
+            <AvatarFallback className="text-[11px] font-semibold bg-primary/10 text-primary">{initials}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold truncate">{user.name}</p>
+            <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+          </div>
+        </div>
+
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel className="text-xs text-muted-foreground font-normal uppercase tracking-wide pb-1">
+          Account
+        </DropdownMenuLabel>
+
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href="/settings" className="flex items-center gap-2">
+            <User className="h-4 w-4" />
+            <span>Profile Settings</span>
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem asChild className="cursor-pointer">
+          <Link href="/settings?tab=account" className="flex items-center gap-2">
+            <KeyRound className="h-4 w-4" />
+            <span>Change Password</span>
+          </Link>
+        </DropdownMenuItem>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem
+          onClick={handleLogout}
+          className="text-destructive focus:text-destructive cursor-pointer"
+        >
+          <LogOut className="h-4 w-4 mr-2" />
+          <span>Log out</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
@@ -281,7 +375,7 @@ export function TopBar() {
       <div className="flex-1" />
 
       {/* Right: Actions */}
-      <div className="flex items-center gap-[12px]">
+      <div className="flex items-center gap-[8px]">
         <InviteButton />
         <ThemeToggle />
 
@@ -290,8 +384,24 @@ export function TopBar() {
           <NotificationDropdown />
         </div>
 
+        {/* Settings Icon */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-[36px] w-[36px] rounded-full text-muted-foreground hover:text-foreground hover:bg-surface-container-high"
+          asChild
+          title="Settings"
+        >
+          <Link href="/settings">
+            <Settings className="h-[20px] w-[20px]" />
+          </Link>
+        </Button>
+
         {/* Help */}
         <HelpPopover />
+
+        {/* User Avatar */}
+        <UserMenu />
       </div>
     </header>
   );

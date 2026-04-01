@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -77,13 +78,23 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
 
   const [activeTab, setActiveTab] = useState<'profile' | 'appearance' | 'notifications' | 'account' | 'ai'>('profile');
-  
+
+  // Read ?tab= from URL on mount (e.g. /settings?tab=account for change password)
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab === 'account' || tab === 'profile' || tab === 'appearance' || tab === 'notifications' || tab === 'ai') {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
+
   // Profile State
   const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.avatarUrl ?? null);
   const [isUploading, setIsUploading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const profileForm = useForm<ProfileValues>({
@@ -147,6 +158,7 @@ export default function SettingsPage() {
 
   // Profile Submit
   const onProfileSubmit = async (data: ProfileValues) => {
+    setIsSavingProfile(true);
     try {
       const res = await apiFetch<{ user: typeof user }>('/api/auth/me', {
         method: 'PATCH',
@@ -156,13 +168,15 @@ export default function SettingsPage() {
         setAuth(res.user as NonNullable<typeof user>, useAuthStore.getState().token!);
         queryClient.invalidateQueries({ queryKey: ['workspaces'] });
       }
-      toast({ title: 'Profile saved!' });
+      toast({ title: '✅ Profile saved!' });
     } catch (err) {
       toast({
         title: 'Failed to save profile',
         description: err instanceof Error ? err.message : undefined,
         variant: 'destructive',
       });
+    } finally {
+      setIsSavingProfile(false);
     }
   };
 
@@ -400,8 +414,8 @@ export default function SettingsPage() {
                     </div>
 
                     <div className="pt-[8px]">
-                      <Button type="submit" disabled={profileForm.formState.isSubmitting}>
-                        {profileForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                      <Button type="submit" disabled={isSavingProfile}>
+                        {isSavingProfile && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Save changes
                       </Button>
                     </div>
