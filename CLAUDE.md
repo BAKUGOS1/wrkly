@@ -5,6 +5,133 @@
 
 ---
 
+## How to Use .claude/ When Generating Code
+
+> **This section is mandatory reading for every AI session.** Before writing any code for this project, follow these instructions to activate the right context, skills, and agents.
+
+### 1. Automatic Rule Loading (Always Active)
+
+Rules in `.claude/rules/` are **auto-loaded based on which files you are editing**. You do not need to manually invoke them — they apply automatically:
+
+| If you are editing files in... | Rule auto-loaded |
+| --- | --- |
+| `wrkly-api/**/*` | `.claude/rules/backend.md` — full backend reference |
+| `wrkly-api/src/routes/**` | `.claude/rules/api.md` — route patterns |
+| `wrkly-api/src/services/**` | `.claude/rules/api.md` + `.claude/rules/backend.md` |
+| `wrkly-api/prisma/**` | `.claude/rules/database.md` — Prisma patterns |
+| `wrkly-web/src/components/**` | `.claude/rules/frontend.md` — component rules |
+| `wrkly-web/src/app/**` | `.claude/rules/frontend.md` — page rules |
+| `wrkly-web/src/stores/**` | `.claude/rules/frontend.md` — Zustand rules |
+
+**Action:** Read the matched rule file before generating any code in that area.
+
+---
+
+### 2. When to Activate Skills
+
+Invoke a skill from `.claude/skills/` when you recognize one of these situations:
+
+| Situation | Skill to Use |
+| --- | --- |
+| Building or editing **any UI component, page, or layout** | `@wrkly-design-system` — use the exact color tokens, component patterns, and brand guidelines |
+| Implementing **any new feature or bug fix** | `@test-driven-development` — write the Vitest test first, watch it fail, then implement |
+| **Something is broken** and you need to trace the cause | `@debugging-strategies` — follow the systematic reproduce→isolate→fix→verify loop |
+| Finishing **any coding task** before marking it done | `@lint-and-validate` — run `tsc --noEmit` + `pnpm test` + `pnpm build` |
+
+**How to invoke manually:**
+```
+Use @wrkly-design-system to build this component.
+Use @test-driven-development to implement this feature.
+Use @debugging-strategies to track down this bug.
+```
+
+---
+
+### 3. When to Delegate to an Agent
+
+Delegate complex or specialized tasks from `.claude/agents/` instead of doing everything inline:
+
+| Task | Agent |
+| --- | --- |
+| Reviewing code before merge | `code-reviewer` — runs full security, convention, and quality check |
+| Diagnosing a hard-to-find bug | `debugger` — systematic trace from route → service → database |
+| Writing Vitest tests for a route or service | `test-writer` — generates comprehensive test suites |
+| Cleaning up messy, duplicated, or long code | `refactorer` — applies DRY, extracts helpers, fixes types |
+| Writing or updating docs, READMEs, or JSDoc | `doc-writer` — generates docs that match current code |
+| Running a full security audit | `security-auditor` — checks auth, validation, rate limiting, data exposure |
+
+---
+
+### 4. Slash Commands for Common Workflows
+
+Use these slash commands from `.claude/commands/` to run full multi-step workflows:
+
+| Command | When to use |
+| --- | --- |
+| `/fix-issue 42` | When asked to fix a GitHub issue — reads issue, finds code, fixes, tests, commits |
+| `/deploy production` | When deploying — runs pre-deploy checks, verifies env, pushes both services |
+| `/pr-review 12` | When reviewing a PR — reads diff, checks conventions, runs tests, posts review |
+
+---
+
+### 5. Code Generation Checklist
+
+Before writing any code for this project, mentally run through this checklist:
+
+**Understand context**
+- [ ] Which package am I working in? (`wrkly-api/` or `wrkly-web/`)
+- [ ] Which rule file applies? (backend, frontend, database, api)
+- [ ] Am I building UI? → Load `@wrkly-design-system`
+- [ ] Am I implementing a feature? → Use `@test-driven-development`
+
+**Generate code correctly**
+- [ ] Backend routes: follow the plugin pattern in `.claude/rules/backend.md §2`
+- [ ] Zod validation: every request body, query param, and URL param
+- [ ] `authenticate` middleware: on every protected route
+- [ ] Prisma queries: always use `select:` + `isArchived: false`
+- [ ] After mutations: emit realtime event (`cardEvents.created(...)`)
+- [ ] Frontend: CSS tokens (`hsl(var(--primary))`), not hardcoded colors
+- [ ] Frontend: `cn()` for conditional classes, `next/image` for images
+- [ ] No `any` types — use `unknown` + type guards
+
+**Validate before finishing**
+- [ ] `cd wrkly-api && npx tsc --noEmit` — no type errors
+- [ ] `cd wrkly-api && pnpm test` — all tests pass
+- [ ] `cd wrkly-web && pnpm build` — build succeeds
+- [ ] Commit: `feat:` / `fix:` / `chore:` conventional format
+
+---
+
+### 6. Quick Reference
+
+```
+# Which rule do I need?
+wrkly-api/src/routes/**   → .claude/rules/api.md + backend.md
+wrkly-api/prisma/**       → .claude/rules/database.md
+wrkly-web/src/**          → .claude/rules/frontend.md
+
+# Which skill do I activate?
+Building UI               → @wrkly-design-system
+New feature / bug fix     → @test-driven-development
+Debugging                 → @debugging-strategies
+Before marking done       → @lint-and-validate
+
+# Which agent do I use?
+Review code               → code-reviewer
+Hard debug                → debugger
+Write tests               → test-writer
+Clean up code             → refactorer
+Write docs                → doc-writer
+Security audit            → security-auditor
+
+# Which command do I run?
+Fix a GitHub issue        → /fix-issue {number}
+Deploy the app            → /deploy {staging|production}
+Review a PR               → /pr-review {number}
+```
+
+---
+
 ## Stack
 
 | Layer          | Technology                                                  |
