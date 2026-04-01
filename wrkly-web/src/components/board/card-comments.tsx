@@ -9,6 +9,7 @@ import { useComments, useCreateComment, useDeleteComment } from '@/hooks/use-com
 import { useAuthStore } from '@/stores/auth-store';
 import { cn } from '@/lib/utils';
 import type { Comment, User } from '@/types';
+import { CommentSuggestions } from '@/components/ai/comment-suggestions';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -178,6 +179,7 @@ export function CardComments({ cardId }: CardCommentsProps) {
   const deleteComment = useDeleteComment(cardId);
 
   const [newComment, setNewComment] = useState('');
+  const [hasCommented, setHasCommented] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -196,6 +198,7 @@ export function CardComments({ cardId }: CardCommentsProps) {
     const trimmed = newComment.trim();
     if (!trimmed) return;
     setNewComment('');
+    setHasCommented(true);
     await createComment.mutateAsync({ content: trimmed });
   }, [newComment, createComment]);
 
@@ -230,6 +233,13 @@ export function CardComments({ cardId }: CardCommentsProps) {
           )}
         </h3>
       </div>
+
+      {/* AI Comment Suggestions */}
+      <CommentSuggestions
+        cardId={cardId}
+        onSelect={(text) => setNewComment(text)}
+        hasCommented={hasCommented}
+      />
 
       {/* New comment input */}
       <div className="flex gap-[12px]">

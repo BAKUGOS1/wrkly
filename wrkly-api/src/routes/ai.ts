@@ -5,7 +5,9 @@ import { requireWorkspaceMember } from '../middleware/workspace-auth';
 import { NotFoundError, AppError } from '../lib/errors';
 import prisma from '../lib/prisma';
 import { aiService } from '../services/ai';
-import type { ParsedAction, BoardContext } from '../services/ai';
+import type { ParsedAction, BoardContext, BoardInsightsContext, ProjectPlan } from '../services/ai';
+import { executeTool } from '../services/ai-tools';
+import type { ToolCallResult } from '../services/ai-tools';
 import { cardEvents, listEvents } from '../lib/realtime';
 import { createRateLimit } from '../middleware/rate-limit';
 import { isFeatureEnabled } from '../lib/feature-flags';
@@ -64,6 +66,11 @@ const commandLimiter = createRateLimit({ windowMs: 60 * 60 * 1000, maxRequests: 
 const summarizeLimiter = createRateLimit({ windowMs: 60 * 60 * 1000, maxRequests: 10, keyPrefix: 'ai-sum' });
 const generateTasksLimiter = createRateLimit({ windowMs: 60 * 60 * 1000, maxRequests: 10, keyPrefix: 'ai-gen' });
 const assistContentLimiter = createRateLimit({ windowMs: 60 * 60 * 1000, maxRequests: 30, keyPrefix: 'ai-ast' });
+const insightsLimiter = createRateLimit({ windowMs: 60 * 60 * 1000, maxRequests: 5, keyPrefix: 'ai-ins' });
+const suggestAssigneeLimiter = createRateLimit({ windowMs: 60 * 60 * 1000, maxRequests: 15, keyPrefix: 'ai-asg' });
+const suggestRepliesLimiter = createRateLimit({ windowMs: 60 * 60 * 1000, maxRequests: 30, keyPrefix: 'ai-rep' });
+const ultraplanLimiter = createRateLimit({ windowMs: 60 * 60 * 1000, maxRequests: 3, keyPrefix: 'ai-ulp' });
+const agentLimiter = createRateLimit({ windowMs: 60 * 60 * 1000, maxRequests: 10, keyPrefix: 'ai-agt' });
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 /** Fetch a full board with lists + cards for AI context. */
@@ -522,5 +529,520 @@ export async function aiRoutes(app: FastifyInstance) {
     const result = await aiService.assistCardContent(currentContent, action, customPrompt);
 
     return reply.send({ result });
+  });
+
+  // ── POST /api/ai/insights ──────────────────────────────────────────────────
+
+  const insightsSchema = z.object({ boardId: z.string() });
+
+  app.post('/insights', { preHandler: [authenticate, insightsLimiter] }, async (request, reply) => {
+    if (!isFeatureEnabled('AI_INSIGHTS')) {
+      return reply.status(503).send({ error: 'AI features are currently disabled', feature: 'AI_INSIGHTS' });
+    }
+    const parsed = insightsSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.status(400).send({
+        error: 'Validation error',
+        details: parsed.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
+      });
+    }
+
+    const { boardId } = parsed.data;
+    const workspaceId = await getBoardWorkspaceId(boardId);
+    await requireWorkspaceMember(request, workspaceId, 'MEMBER');
+
+    // Build extended context with members, card details, and activity
+    const baseContext = await fetchBoardContext(boardId);
+
+    // Get workspace members with card counts
+    const wsMembers = await prisma.workspaceMember.findMany({
+      where: { workspaceId },
+      select: {
+        userId: true,
+        user: { select: { name: true } },
+      },
+    });
+
+    const members = await Promise.all(
+      wsMembers.map(async (m) => {
+        const openCards = await prisma.card.count({
+          where: {
+            isArchived: false,
+            assignees: { some: { userId: m.userId } },
+            list: { board: { workspaceId }, isArchived: false },
+          },
+        });
+        const doneCards = await prisma.card.count({
+          where: {
+            isArchived: false,
+            assignees: { some: { userId: m.userId } },
+            list: {
+              name: { in: ['Done', 'Completed', 'Closed'] },
+              board: { workspaceId },
+              isArchived: false,
+            },
+          },
+        });
+        return { userId: m.userId, name: m.user.name, openCards, doneCards };
+      })
+    );
+
+    // Fetch cards with full details
+    const cardsWithDates = await prisma.card.findMany({
+      where: { list: { boardId, isArchived: false }, isArchived: false },
+      orderBy: { createdAt: 'desc' },
+      take: 60,
+      select: {
+        id: true,
+        title: true,
+        dueDate: true,
+        createdAt: true,
+        list: { select: { name: true } },
+        assignees: { select: { user: { select: { name: true } } } },
+        labels: { select: { label: { select: { name: true } } } },
+      },
+    });
+
+    // Fetch recent activity
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const recentActivity = await prisma.activityLog.findMany({
+      where: { boardId, createdAt: { gte: sevenDaysAgo } },
+      orderBy: { createdAt: 'desc' },
+      take: 30,
+      select: { action: true, createdAt: true },
+    });
+
+    const insightsContext: BoardInsightsContext = {
+      ...baseContext,
+      members,
+      cardsWithDates: cardsWithDates.map((c) => ({
+        id: c.id,
+        title: c.title,
+        listName: c.list.name,
+        dueDate: c.dueDate?.toISOString() ?? null,
+        createdAt: c.createdAt.toISOString(),
+        assignees: c.assignees.map((a) => a.user.name),
+        labels: c.labels.map((l) => l.label?.name).filter((n): n is string => n !== null),
+      })),
+      recentActivity: recentActivity.map((a) => ({
+        action: a.action,
+        createdAt: a.createdAt.toISOString(),
+      })),
+    };
+
+    const insights = await aiService.analyzeBoardHealth(insightsContext);
+    return reply.send(insights);
+  });
+
+  // ── POST /api/ai/suggest-assignee ───────────────────────────────────────────
+
+  const suggestAssigneeSchema = z.object({
+    boardId: z.string(),
+    cardId: z.string(),
+  });
+
+  app.post('/suggest-assignee', { preHandler: [authenticate, suggestAssigneeLimiter] }, async (request, reply) => {
+    if (!isFeatureEnabled('AI_SUGGEST')) {
+      return reply.status(503).send({ error: 'AI features are currently disabled', feature: 'AI_SUGGEST' });
+    }
+    const parsed = suggestAssigneeSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.status(400).send({
+        error: 'Validation error',
+        details: parsed.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
+      });
+    }
+
+    const { boardId, cardId } = parsed.data;
+    const workspaceId = await getBoardWorkspaceId(boardId);
+    await requireWorkspaceMember(request, workspaceId, 'MEMBER');
+
+    // Get card details
+    const card = await prisma.card.findUnique({
+      where: { id: cardId },
+      select: {
+        title: true,
+        list: { select: { name: true } },
+        labels: { select: { label: { select: { name: true } } } },
+      },
+    });
+    if (!card) return reply.status(404).send({ error: 'Card not found' });
+
+    // Get workspace members with workload stats
+    const wsMembers = await prisma.workspaceMember.findMany({
+      where: { workspaceId },
+      select: {
+        userId: true,
+        user: { select: { name: true } },
+      },
+    });
+
+    const membersWithStats = await Promise.all(
+      wsMembers.map(async (m) => {
+        const openCards = await prisma.card.count({
+          where: {
+            isArchived: false,
+            assignees: { some: { userId: m.userId } },
+            list: { board: { workspaceId }, isArchived: false },
+          },
+        });
+        // Get labels this member typically works on
+        const memberLabels = await prisma.cardLabel.findMany({
+          where: { card: { assignees: { some: { userId: m.userId } } } },
+          select: { label: { select: { name: true } } },
+          take: 20,
+        });
+        const labelNames = [...new Set(
+          memberLabels.map((cl) => cl.label?.name).filter((n): n is string => n !== null)
+        )];
+        return { userId: m.userId, name: m.user.name, openCards, labels: labelNames };
+      })
+    );
+
+    const cardLabels = card.labels.map((l) => l.label?.name).filter((n): n is string => n !== null);
+
+    const suggestions = await aiService.suggestAssignee(
+      card.title,
+      cardLabels,
+      card.list.name,
+      membersWithStats
+    );
+
+    return reply.send({ suggestions });
+  });
+
+  // ── POST /api/ai/suggest-replies ────────────────────────────────────────────
+
+  const suggestRepliesSchema = z.object({
+    cardId: z.string(),
+  });
+
+  app.post('/suggest-replies', { preHandler: [authenticate, suggestRepliesLimiter] }, async (request, reply) => {
+    if (!isFeatureEnabled('AI_SUGGEST')) {
+      return reply.status(503).send({ error: 'AI features are currently disabled', feature: 'AI_SUGGEST' });
+    }
+    const parsed = suggestRepliesSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.status(400).send({
+        error: 'Validation error',
+        details: parsed.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
+      });
+    }
+
+    const { cardId } = parsed.data;
+
+    // Get card info + recent comments
+    const card = await prisma.card.findUnique({
+      where: { id: cardId },
+      select: {
+        title: true,
+        description: true,
+        list: { select: { boardId: true } },
+        comments: {
+          orderBy: { createdAt: 'desc' },
+          take: 5,
+          select: {
+            content: true,
+            user: { select: { name: true } },
+          },
+        },
+      },
+    });
+    if (!card) return reply.status(404).send({ error: 'Card not found' });
+
+    // Verify board access
+    const boardId = card.list.boardId;
+    const workspaceId = await getBoardWorkspaceId(boardId);
+    await requireWorkspaceMember(request, workspaceId, 'MEMBER');
+
+    const recentComments = card.comments.reverse().map((c) => ({
+      user: c.user.name,
+      content: c.content,
+    }));
+
+    const suggestions = await aiService.suggestCommentReplies(
+      card.title,
+      card.description,
+      recentComments
+    );
+
+    return reply.send({ suggestions });
+  });
+
+  // ── POST /api/ai/ultraplan ────────────────────────────────────────────────
+
+  const ultraplanSchema = z.object({
+    boardId: z.string(),
+    goal: z.string().min(5).max(2000),
+  });
+
+  app.post('/ultraplan', { preHandler: [authenticate, ultraplanLimiter] }, async (request, reply) => {
+    if (!isFeatureEnabled('AI_ULTRAPLAN')) {
+      return reply.status(503).send({ error: 'AI features are currently disabled', feature: 'AI_ULTRAPLAN' });
+    }
+    const parsed = ultraplanSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.status(400).send({
+        error: 'Validation error',
+        details: parsed.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
+      });
+    }
+
+    const { boardId, goal } = parsed.data;
+    const workspaceId = await getBoardWorkspaceId(boardId);
+    await requireWorkspaceMember(request, workspaceId, 'MEMBER');
+
+    // Gather context for the planner
+    const board = await prisma.board.findUnique({
+      where: { id: boardId },
+      select: {
+        name: true,
+        lists: {
+          where: { isArchived: false },
+          select: { name: true },
+          orderBy: { position: 'asc' },
+        },
+      },
+    });
+    if (!board) return reply.status(404).send({ error: 'Board not found' });
+
+    const wsMembers = await prisma.workspaceMember.findMany({
+      where: { workspaceId },
+      select: { user: { select: { name: true } } },
+    });
+    const memberNames = wsMembers.map((m) => m.user.name);
+    const existingListNames = board.lists.map((l) => l.name);
+
+    const plan = await aiService.generateProjectPlan(goal, board.name, memberNames, existingListNames);
+
+    const userId = (request as any).userId as string;
+    await logAiActivity(workspaceId, boardId, userId, 'ai:ultraplan_generated', { goal });
+
+    return reply.send(plan);
+  });
+
+  // ── POST /api/ai/ultraplan/execute ────────────────────────────────────────
+
+  const ultraplanExecuteSchema = z.object({
+    boardId: z.string(),
+    lists: z.array(
+      z.object({
+        name: z.string().min(1).max(100),
+        cards: z.array(
+          z.object({
+            title: z.string().min(1).max(500),
+            description: z.string().optional(),
+            suggestedAssignee: z.string().nullable().optional(),
+            estimatedDays: z.number().optional(),
+            labels: z.array(z.string()).optional(),
+            priority: z.string().optional(),
+          })
+        ),
+      })
+    ),
+  });
+
+  app.post('/ultraplan/execute', { preHandler: [authenticate] }, async (request, reply) => {
+    const parsed = ultraplanExecuteSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.status(400).send({
+        error: 'Validation error',
+        details: parsed.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
+      });
+    }
+
+    const { boardId, lists } = parsed.data;
+    const workspaceId = await getBoardWorkspaceId(boardId);
+    await requireWorkspaceMember(request, workspaceId, 'MEMBER');
+    const userId = (request as any).userId as string;
+
+    // Bulk create via transaction
+    const results = await prisma.$transaction(async (tx) => {
+      const created: Array<{ listName: string; cardCount: number }> = [];
+
+      // Get current max list position
+      const lastList = await tx.list.findFirst({
+        where: { boardId, isArchived: false },
+        orderBy: { position: 'desc' },
+        select: { position: true },
+      });
+      let listPosition = lastList ? lastList.position + 1.0 : 1.0;
+
+      for (const list of lists) {
+        // Check if list already exists
+        let dbList = await tx.list.findFirst({
+          where: { boardId, name: list.name, isArchived: false },
+          select: { id: true },
+        });
+
+        if (!dbList) {
+          dbList = await tx.list.create({
+            data: { boardId, name: list.name, position: listPosition },
+            select: { id: true },
+          });
+          listPosition += 1.0;
+        }
+
+        let cardPosition = 1.0;
+        for (const card of list.cards) {
+          const newCard = await tx.card.create({
+            data: {
+              listId: dbList.id,
+              title: card.title,
+              description: card.description ?? null,
+              position: cardPosition,
+              createdById: userId,
+              dueDate: card.estimatedDays
+                ? new Date(Date.now() + card.estimatedDays * 24 * 60 * 60 * 1000)
+                : null,
+            },
+            select: { id: true },
+          });
+
+          // Assign member if suggested
+          if (card.suggestedAssignee) {
+            const member = await tx.workspaceMember.findFirst({
+              where: {
+                workspaceId,
+                user: { name: { contains: card.suggestedAssignee, mode: 'insensitive' } },
+              },
+              select: { userId: true },
+            });
+            if (member) {
+              await tx.cardAssignee.create({
+                data: { cardId: newCard.id, userId: member.userId },
+              });
+            }
+          }
+
+          // Create labels
+          if (card.labels && card.labels.length > 0) {
+            for (const labelName of card.labels) {
+              let label = await tx.label.findFirst({
+                where: { boardId, name: { equals: labelName, mode: 'insensitive' } },
+                select: { id: true },
+              });
+              if (!label) {
+                const colorIdx = await tx.label.count({ where: { boardId } });
+                const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#f43f5e', '#f97316', '#eab308', '#22c55e', '#06b6d4'];
+                label = await tx.label.create({
+                  data: { boardId, name: labelName, color: colors[colorIdx % colors.length] },
+                  select: { id: true },
+                });
+              }
+              await tx.cardLabel.upsert({
+                where: { cardId_labelId: { cardId: newCard.id, labelId: label.id } },
+                create: { cardId: newCard.id, labelId: label.id },
+                update: {},
+              });
+            }
+          }
+
+          cardPosition += 1.0;
+        }
+
+        created.push({ listName: list.name, cardCount: list.cards.length });
+      }
+
+      return created;
+    });
+
+    const totalCards = results.reduce((sum, r) => sum + r.cardCount, 0);
+    await logAiActivity(workspaceId, boardId, userId, 'ai:ultraplan_executed', {
+      listsCreated: results.length,
+      cardsCreated: totalCards,
+    });
+
+    return reply.send({
+      success: true,
+      listsCreated: results.length,
+      cardsCreated: totalCards,
+      details: results,
+    });
+  });
+
+  // ── POST /api/ai/agent ────────────────────────────────────────────────────
+
+  const agentSchema = z.object({
+    boardId: z.string(),
+    command: z.string().min(1).max(1000),
+  });
+
+  const agentExecuteSchema = z.object({
+    boardId: z.string(),
+    toolCalls: z.array(
+      z.object({
+        name: z.string(),
+        args: z.record(z.string(), z.any()),
+      })
+    ),
+  });
+
+  // Plan — returns tool calls for preview
+  app.post('/agent', { preHandler: [authenticate, agentLimiter] }, async (request, reply) => {
+    if (!isFeatureEnabled('AI_AGENT')) {
+      return reply.status(503).send({ error: 'AI features are currently disabled', feature: 'AI_AGENT' });
+    }
+    const parsed = agentSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.status(400).send({
+        error: 'Validation error',
+        details: parsed.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
+      });
+    }
+
+    const { boardId, command } = parsed.data;
+    const workspaceId = await getBoardWorkspaceId(boardId);
+    await requireWorkspaceMember(request, workspaceId, 'MEMBER');
+
+    const context = await fetchBoardContext(boardId);
+
+    // Check for board memory to enrich context
+    const memory = await prisma.boardMemory.findUnique({
+      where: { boardId },
+      select: { summary: true },
+    });
+
+    const plan = await aiService.planWithTools(command, context, memory?.summary);
+
+    return reply.send(plan);
+  });
+
+  // Execute — runs the approved tool calls
+  app.post('/agent/execute', { preHandler: [authenticate] }, async (request, reply) => {
+    const parsed = agentExecuteSchema.safeParse(request.body);
+    if (!parsed.success) {
+      return reply.status(400).send({
+        error: 'Validation error',
+        details: parsed.error.issues.map((i) => ({ field: i.path.join('.'), message: i.message })),
+      });
+    }
+
+    const { boardId, toolCalls } = parsed.data;
+    const workspaceId = await getBoardWorkspaceId(boardId);
+    await requireWorkspaceMember(request, workspaceId, 'MEMBER');
+    const userId = (request as any).userId as string;
+
+    const results: ToolCallResult[] = [];
+    for (const tc of toolCalls) {
+      const result = await executeTool(tc.name, tc.args, boardId, workspaceId, userId);
+      results.push(result);
+    }
+
+    const succeeded = results.filter((r) => r.success).length;
+    const failed = results.filter((r) => !r.success).length;
+
+    await logAiActivity(workspaceId, boardId, userId, 'ai:agent_executed', {
+      toolCallCount: toolCalls.length,
+      succeeded,
+      failed,
+    });
+
+    return reply.send({
+      results,
+      summary: `Executed ${succeeded}/${toolCalls.length} actions successfully${failed > 0 ? ` (${failed} failed)` : ''}.`,
+    });
   });
 }

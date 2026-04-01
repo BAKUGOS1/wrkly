@@ -135,6 +135,8 @@ export async function boardRoutes(app: FastifyInstance) {
         name: true,
         description: true,
         background: true,
+        workspaceId: true,
+        workspace: { select: { slug: true } },
         createdAt: true,
         updatedAt: true,
         lists: {
@@ -178,6 +180,7 @@ export async function boardRoutes(app: FastifyInstance) {
     // Flatten join table shapes for cleaner API response
     const shaped = {
       ...board,
+      workspaceSlug: board.workspace.slug,
       lists: board.lists.map((list: any) => ({
         ...list,
         cards: list.cards.map((card: any) => ({
@@ -196,6 +199,7 @@ export async function boardRoutes(app: FastifyInstance) {
 
     return reply.send({ board: shaped });
   });
+
 
   // ── PATCH /api/boards/:id ───────────────────────────────────────────────
   app.patch('/boards/:id', { preHandler: authenticate }, async (request, reply) => {

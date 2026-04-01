@@ -62,7 +62,51 @@ async function getCardContext(cardId: string) {
 // ── Routes ────────────────────────────────────────────────────────────────────
 
 export async function cardRoutes(app: FastifyInstance) {
+  // ── 0. GET /api/cards/mine ─────────────────────────────────────────────────
+  // Must be registered BEFORE /:id to avoid route conflict
+  app.get('/cards/mine', { preHandler: authenticate }, async (request, reply) => {
+    const assignees = await prisma.cardAssignee.findMany({
+      where: { userId: request.userId },
+      select: {
+        card: {
+          select: {
+            id: true,
+            title: true,
+            description: true,
+            dueDate: true,
+            isArchived: true,
+            labels: {
+              select: {
+                label: { select: { id: true, name: true, color: true } },
+              },
+            },
+            list: {
+              select: {
+                name: true,
+                board: { select: { id: true, name: true } },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    const cards = assignees
+      .map((a) => a.card)
+      .filter((c) => !c.isArchived)
+      .sort((a, b) => {
+        if (!a.dueDate && !b.dueDate) return 0;
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
+      });
+
+    return reply.send({ cards });
+  });
+
+
   // ── 1. POST /api/lists/:listId/cards ──────────────────────────────────────
+
   app.post('/lists/:listId/cards', { preHandler: authenticate }, async (request, reply) => {
     const { listId } = request.params as { listId: string };
 

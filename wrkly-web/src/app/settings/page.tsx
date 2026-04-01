@@ -30,7 +30,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { UserCircle, Palette, Bell, Shield, Upload, Computer, Moon, Sun, AlertTriangle, Loader2 } from 'lucide-react';
+import { UserCircle, Palette, Bell, Shield, Upload, Computer, Moon, Sun, AlertTriangle, Loader2, Sparkles, Bot, Zap, BrainCircuit } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { apiFetch } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
@@ -78,7 +78,7 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const [activeTab, setActiveTab] = useState<'profile' | 'appearance' | 'notifications' | 'account'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'appearance' | 'notifications' | 'account' | 'ai'>('profile');
   
   // Profile State
   const [avatarUrl, setAvatarUrl] = useState<string | null>(user?.avatarUrl ?? null);
@@ -241,6 +241,7 @@ export default function SettingsPage() {
             { key: 'appearance' as const, label: 'Appearance', icon: Palette },
             { key: 'notifications' as const, label: 'Notifications', icon: Bell },
             { key: 'account' as const, label: 'Security', icon: Shield },
+            { key: 'ai' as const, label: 'AI Settings', icon: Sparkles },
           ]).map(({ key, label, icon: Icon }) => (
             <button
               key={key}
@@ -304,6 +305,17 @@ export default function SettingsPage() {
           >
             <Shield className="h-[18px] w-[18px]" />
             Security & Account
+          </button>
+
+          <button
+            onClick={() => setActiveTab('ai')}
+            className={cn(
+              "flex items-center gap-[12px] h-[40px] px-[12px] rounded-[8px] text-[14px] font-medium transition-colors",
+              activeTab === 'ai' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-surface-container hover:text-foreground"
+            )}
+          >
+            <Sparkles className="h-[18px] w-[18px]" />
+            AI Settings
           </button>
         </nav>
       </div>
@@ -631,6 +643,77 @@ export default function SettingsPage() {
                   </div>
                 </div>
 
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'ai' && (
+            <div className="space-y-[24px]">
+              <div>
+                <h3 className="text-[16px] font-semibold text-foreground">AI Features</h3>
+                <p className="text-[13px] text-muted-foreground mt-[4px]">Configure how AI works across your boards</p>
+              </div>
+
+              {/* Agent Mode */}
+              <div className="rounded-[12px] border border-border/50 bg-surface p-[20px] space-y-[16px]">
+                <h4 className="text-[14px] font-semibold text-foreground flex items-center gap-2">
+                  <Bot className="h-4 w-4 text-primary" /> Command Bar Mode
+                </h4>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[13px] font-medium">Agent Mode (Tool-Calling)</p>
+                    <p className="text-[12px] text-muted-foreground mt-0.5">AI uses OpenAI function-calling to plan and execute multi-step board actions. Toggle in the Command Bar settings.</p>
+                  </div>
+                  <Switch
+                    checked={typeof window !== 'undefined' ? localStorage.getItem('wrkly:agent-mode') !== 'false' : true}
+                    onCheckedChange={(checked) => {
+                      localStorage.setItem('wrkly:agent-mode', String(checked));
+                      toast({ title: checked ? '🤖 Agent Mode ON' : '⚡ Classic Mode ON' });
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* AI Power Features */}
+              <div className="rounded-[12px] border border-border/50 bg-surface p-[20px] space-y-[16px]">
+                <h4 className="text-[14px] font-semibold text-foreground flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-primary" /> Power Features
+                </h4>
+                <div className="space-y-[12px]">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[13px] font-medium">Project Auto-Pilot (ULTRAPLAN)</p>
+                      <p className="text-[12px] text-muted-foreground mt-0.5">Generate complete project plans (up to 50 cards) from a single prompt. Access via Command Bar.</p>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                  <Separator />
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-[13px] font-medium">AI Board Insights (Auto-generate)</p>
+                      <p className="text-[12px] text-muted-foreground mt-0.5">Automatically generate board health, bottleneck and velocity insights when opening a board.</p>
+                    </div>
+                    <Switch defaultChecked />
+                  </div>
+                </div>
+              </div>
+
+              {/* Memory Engine */}
+              <div className="rounded-[12px] border border-border/50 bg-surface p-[20px] space-y-[16px]">
+                <h4 className="text-[14px] font-semibold text-foreground flex items-center gap-2">
+                  <BrainCircuit className="h-4 w-4 text-primary" /> Memory Engine
+                </h4>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[13px] font-medium">Board Memory Consolidation</p>
+                    <p className="text-[12px] text-muted-foreground mt-0.5">Background job runs every 24 hours to compress board history into AI-readable summaries for faster, cheaper AI responses.</p>
+                  </div>
+                  <Switch defaultChecked />
+                </div>
+                <div className="flex items-center gap-2 rounded-lg bg-primary/5 border border-primary/10 px-3 py-2">
+                  <Sparkles className="h-3.5 w-3.5 text-primary shrink-0" />
+                  <p className="text-[12px] text-muted-foreground">Memory consolidation runs server-side on a 24-hour schedule. No action needed.</p>
+                </div>
               </div>
             </div>
           )}

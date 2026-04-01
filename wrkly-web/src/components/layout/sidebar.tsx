@@ -9,7 +9,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Loader2,
-  FileText,
   CheckSquare,
   Settings,
   LogOut
@@ -92,8 +91,7 @@ export function Sidebar() {
 
   const navItems = [
     { href: '/workspaces', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '#', label: 'My Tasks', icon: CheckSquare },
-    { href: '#', label: 'Reports', icon: FileText },
+    { href: '/my-tasks', label: 'My Tasks', icon: CheckSquare },
   ];
 
   if (collapsed) {
@@ -215,7 +213,13 @@ export function Sidebar() {
           <h2 className="text-[11px] font-semibold tracking-wider text-muted-foreground uppercase">
             Workspaces
           </h2>
-          <Button variant="ghost" size="icon" className="h-[24px] w-[24px] text-muted-foreground">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-[24px] w-[24px] text-muted-foreground"
+            onClick={() => useUIStore.getState().setActiveModal('create-workspace')}
+            title="Create workspace"
+          >
             <Plus className="h-[14px] w-[14px]" />
           </Button>
         </div>

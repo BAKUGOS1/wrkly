@@ -26,4 +26,9 @@ export const queryKeys = {
   automations: {
     byBoard: (boardId: string) => ['automations', boardId] as const,
   },
+  ai: {
+    insights: (boardId: string) => ['ai', 'insights', boardId] as const,
+    suggestAssignee: (boardId: string, cardId: string) => ['ai', 'suggest-assignee', boardId, cardId] as const,
+    suggestReplies: (cardId: string) => ['ai', 'suggest-replies', cardId] as const,
+  },
 } as const;

@@ -7,6 +7,7 @@ import { UserPlus, Check } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useWorkspaceMembers } from '@/hooks/use-workspaces';
 import { useUpdateCard } from '@/hooks/use-cards';
+import { AssigneeSuggestion } from '@/components/ai/assignee-suggestion';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function MemberPicker({ workspaceId, boardId, card }: { workspaceId: string; boardId: string; card: any }) {
@@ -39,6 +40,13 @@ export function MemberPicker({ workspaceId, boardId, card }: { workspaceId: stri
       </PopoverTrigger>
       <PopoverContent className="w-64 p-3 border-border" align="start">
         <h4 className="mb-2 text-center text-sm font-semibold text-muted-foreground tracking-tight">Members</h4>
+        {/* AI Assignee Suggestion */}
+        <AssigneeSuggestion
+          boardId={boardId}
+          cardId={card.id}
+          hasAssignees={activeUserIds.length > 0}
+          onAssign={(userId) => toggleMember(userId)}
+        />
         <div className="flex flex-col gap-1 max-h-60 overflow-y-auto pr-1">
           {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
           {members.map((m: any) => {

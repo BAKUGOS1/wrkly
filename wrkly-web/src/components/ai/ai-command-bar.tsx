@@ -11,6 +11,10 @@ import {
   FileText,
   Loader2,
   Sparkles,
+  BarChart3,
+  History,
+  Rocket,
+  Bot,
 } from 'lucide-react';
 import {
   CommandDialog,
@@ -32,6 +36,26 @@ import { ActionPreview } from './action-preview';
 import type { ParsedAction } from './action-preview';
 import { BoardSummaryDialog } from './board-summary-dialog';
 import { GenerateTasksDialog } from './generate-tasks-dialog';
+import { BoardInsightsPanel } from './board-insights-panel';
+import { UltraplanDialog } from './ultraplan-dialog';
+import { AgentExecution } from './agent-execution';
+
+// ── History helpers ──────────────────────────────────────────────────────────
+
+const HISTORY_KEY = 'wrkly:ai-command-history';
+const MAX_HISTORY = 5;
+
+function getHistory(): string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+  } catch { return []; }
+}
+function addHistory(cmd: string) {
+  const history = getHistory().filter((h) => h !== cmd);
+  history.unshift(cmd);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history.slice(0, MAX_HISTORY)));
+}
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -75,9 +99,19 @@ export function AiCommandBar() {
   // Dialog states
   const [summaryOpen, setSummaryOpen] = useState(false);
   const [generateOpen, setGenerateOpen] = useState(false);
+  const [insightsOpen, setInsightsOpen] = useState(false);
+  const [ultraplanOpen, setUltraplanOpen] = useState(false);
   
   // AI Command Mode Parse State
   const [parsedCommand, setParsedCommand] = useState<CommandResponse | null>(null);
+  const [history] = useState(() => getHistory());
+
+  // Agent Mode state
+  const [agentMode, setAgentMode] = useState(() => {
+    if (typeof window === 'undefined') return true;
+    return localStorage.getItem('wrkly:agent-mode') !== 'false';
+  });
+  const [agentPlan, setAgentPlan] = useState<{ toolCalls: Array<{ name: string; args: Record<string, unknown> }>; summary: string } | null>(null);
 
   // Sync open state with store
   useEffect(() => {
@@ -88,6 +122,7 @@ export function AiCommandBar() {
     if (!open) {
       setQuery('');
       setParsedCommand(null);
+      setAgentPlan(null);
     }
     toggleCommandBar();
   }, [toggleCommandBar]);
@@ -117,6 +152,9 @@ export function AiCommandBar() {
     },
     onSuccess: (data) => {
       setParsedCommand(data);
+      // Save to history (strip leading /)
+      const cmd = query.startsWith('/') ? query.slice(1).trim() : query.trim();
+      if (cmd) addHistory(cmd);
     },
     onError: (err) => {
       let description = err instanceof Error ? err.message : 'Try rephrasing your request.';
@@ -168,6 +206,33 @@ export function AiCommandBar() {
     },
   });
 
+  // Agent Mode mutation
+  const agentPlanMutation = useMutation({
+    mutationFn: async (command: string) => {
+      if (!currentBoardId) throw new Error('Must be on a board to use AI agent');
+      const res = await apiFetch<{ toolCalls: Array<{ name: string; args: Record<string, unknown> }>; summary: string }>(
+        '/api/ai/agent',
+        {
+          method: 'POST',
+          body: JSON.stringify({ boardId: currentBoardId, command }),
+        }
+      );
+      return res;
+    },
+    onSuccess: (data) => {
+      setAgentPlan(data);
+      const cmd = query.startsWith('/') ? query.slice(1).trim() : query.trim();
+      if (cmd) addHistory(cmd);
+    },
+    onError: (err) => {
+      toast({
+        title: 'Agent failed to plan',
+        description: err instanceof Error ? err.message : 'Try rephrasing.',
+        variant: 'destructive',
+      });
+    },
+  });
+
   // ── Search Logic ───────────────────────────────────────────────────────────
 
   const isAiMode = query.startsWith('/');
@@ -184,10 +249,14 @@ export function AiCommandBar() {
   // ── Handlers ───────────────────────────────────────────────────────────────
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && isAiMode && query.length > 2 && !parsedCommand && !parseMutation.isPending) {
+    if (e.key === 'Enter' && isAiMode && query.length > 2 && !parsedCommand && !agentPlan && !parseMutation.isPending && !agentPlanMutation.isPending) {
       e.preventDefault();
-      // Strip the leading "/" for the AI route
-      parseMutation.mutate(query.slice(1).trim());
+      const cmd = query.slice(1).trim();
+      if (agentMode) {
+        agentPlanMutation.mutate(cmd);
+      } else {
+        parseMutation.mutate(cmd);
+      }
     }
   };
 
@@ -210,6 +279,10 @@ export function AiCommandBar() {
         setSummaryOpen(true);
       } else if (action === 'ai-generate-tasks') {
         setGenerateOpen(true);
+      } else if (action === 'ai-insights') {
+        setInsightsOpen(true);
+      } else if (action === 'ai-ultraplan') {
+        setUltraplanOpen(true);
       }
     },
     [handleOpenChange]
@@ -256,14 +329,14 @@ export function AiCommandBar() {
 
         <CommandList className={isAiMode && parsedCommand ? 'max-h-none h-fit' : undefined}>
           {/* ── AI Mode State ── */}
-          {isAiMode && currentBoardId && parseMutation.isPending && (
+          {isAiMode && currentBoardId && (parseMutation.isPending || agentPlanMutation.isPending) && (
             <div className="flex flex-col items-center justify-center gap-3 py-10 text-sm text-purple-500">
               <div className="flex gap-1 items-center">
                 <span className="animate-bounce">●</span>
                 <span className="animate-bounce" style={{ animationDelay: '0.2s' }}>●</span>
                 <span className="animate-bounce" style={{ animationDelay: '0.4s' }}>●</span>
               </div>
-              AI is thinking...
+              {agentMode ? 'Agent is planning...' : 'AI is thinking...'}
             </div>
           )}
 
@@ -292,11 +365,46 @@ export function AiCommandBar() {
             </div>
           )}
 
-          {/* Prompt the user to press Enter if they're typing a command */}
-          {isAiMode && currentBoardId && AI_CONFIG.enabled && !parseMutation.isPending && !parsedCommand && query.length > 2 && (
-            <div className="py-4 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
-              Press <kbd className="bg-muted px-2 py-0.5 rounded text-xs border">Enter</kbd> to ask AI
+          {/* Agent plan preview */}
+          {isAiMode && agentPlan && AI_CONFIG.agentEnabled && (
+            <div className="p-2">
+              <AgentExecution
+                boardId={currentBoardId!}
+                toolCalls={agentPlan.toolCalls}
+                summary={agentPlan.summary}
+                onClose={() => handleOpenChange(false)}
+              />
             </div>
+          )}
+
+          {/* Prompt the user to press Enter if they're typing a command */}
+          {isAiMode && currentBoardId && AI_CONFIG.enabled && !parseMutation.isPending && !agentPlanMutation.isPending && !parsedCommand && !agentPlan && query.length > 2 && (
+            <div className="py-4 text-center text-sm text-muted-foreground flex items-center justify-center gap-2">
+              Press <kbd className="bg-muted px-2 py-0.5 rounded text-xs border">Enter</kbd> to ask {agentMode ? 'Agent' : 'AI'}
+            </div>
+          )}
+
+          {/* ── AI History (shown when AI mode is active but no query) ── */}
+          {isAiMode && currentBoardId && AI_CONFIG.enabled && !parseMutation.isPending && !agentPlanMutation.isPending && !parsedCommand && !agentPlan && query === '/' && history.length > 0 && (
+            <CommandGroup heading="Recent AI Commands">
+              {history.map((cmd, i) => (
+                <CommandItem
+                  key={i}
+                  onSelect={() => {
+                    setQuery(`/${cmd}`);
+                    if (agentMode) {
+                      agentPlanMutation.mutate(cmd);
+                    } else {
+                      parseMutation.mutate(cmd);
+                    }
+                  }}
+                  className="text-purple-600 dark:text-purple-400"
+                >
+                  <History className="mr-2 h-4 w-4" />
+                  {cmd}
+                </CommandItem>
+              ))}
+            </CommandGroup>
           )}
 
           {/* ── Standard Search Mode State ── */}
@@ -383,9 +491,38 @@ export function AiCommandBar() {
                         <Sparkles className="mr-2 h-4 w-4" />
                         Summarize this board
                       </CommandItem>
+                      <CommandItem onSelect={() => handleQuickAction('ai-insights')} className="text-purple-600 dark:text-purple-400">
+                        <BarChart3 className="mr-2 h-4 w-4" />
+                        Board Insights & Analytics
+                      </CommandItem>
                       <CommandItem onSelect={() => handleQuickAction('ai-generate-tasks')} className="text-purple-600 dark:text-purple-400">
                         <Sparkles className="mr-2 h-4 w-4" />
                         Generate tasks from description
+                      </CommandItem>
+                    </CommandGroup>
+                  )}
+                  {AI_CONFIG.ultraplanEnabled && (
+                    <CommandGroup heading="AI Power Tools" className={!currentBoardId ? 'opacity-50 pointer-events-none' : ''}>
+                      <CommandItem onSelect={() => handleQuickAction('ai-ultraplan')} className="text-purple-600 dark:text-purple-400">
+                        <Rocket className="mr-2 h-4 w-4" />
+                        Project Auto-Pilot (ULTRAPLAN)
+                      </CommandItem>
+                    </CommandGroup>
+                  )}
+                  {/* Agent mode toggle */}
+                  {AI_CONFIG.agentEnabled && currentBoardId && (
+                    <CommandGroup heading="AI Settings">
+                      <CommandItem
+                        onSelect={() => {
+                          const next = !agentMode;
+                          setAgentMode(next);
+                          localStorage.setItem('wrkly:agent-mode', String(next));
+                          toast({ title: next ? '🤖 Agent Mode ON' : '⚡ Classic Mode ON', description: next ? 'AI will use tool-calling for commands' : 'AI will use parse + preview mode' });
+                        }}
+                      >
+                        <Bot className="mr-2 h-4 w-4" />
+                        {agentMode ? 'Switch to Classic Mode' : 'Switch to Agent Mode'}
+                        <span className="ml-auto text-[10px] text-muted-foreground">{agentMode ? 'Agent' : 'Classic'}</span>
                       </CommandItem>
                     </CommandGroup>
                   )}
@@ -433,6 +570,16 @@ export function AiCommandBar() {
             boardId={currentBoardId}
             open={generateOpen}
             onOpenChange={setGenerateOpen}
+          />
+          <BoardInsightsPanel
+            boardId={currentBoardId}
+            open={insightsOpen}
+            onOpenChange={setInsightsOpen}
+          />
+          <UltraplanDialog
+            boardId={currentBoardId}
+            open={ultraplanOpen}
+            onOpenChange={setUltraplanOpen}
           />
         </>
       )}

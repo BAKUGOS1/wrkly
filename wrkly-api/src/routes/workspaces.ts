@@ -69,7 +69,20 @@ export async function workspaceRoutes(app: FastifyInstance) {
     return reply.send({ workspaces });
   });
 
-  // ── POST /api/workspaces ─────────────────────────────────────────────────
+  // ── GET /api/workspaces/:id ──────────────────────────────────────────────
+  app.get('/:id', { preHandler: authenticate }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    await requireWorkspaceMember(request, id);
+
+    const workspace = await prisma.workspace.findUnique({
+      where: { id },
+      select: { id: true, name: true, slug: true, description: true, ownerId: true, createdAt: true },
+    });
+    if (!workspace) return reply.status(404).send({ error: 'Workspace not found' });
+
+    return reply.send({ workspace });
+  });
+
   app.post('/', { preHandler: authenticate }, async (request, reply) => {
     const result = createWorkspaceSchema.safeParse(request.body);
     if (!result.success) {
