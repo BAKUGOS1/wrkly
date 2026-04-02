@@ -7,11 +7,18 @@ import prisma from './prisma';
 let redisAvailable = false;
 
 function tryAttachRedisAdapter(io: Server): void {
-  const redisUrl = process.env.REDIS_URL;
+  let redisUrl = process.env.REDIS_URL;
   if (!redisUrl) {
     console.warn('[socket] REDIS_URL not set — running without Redis adapter (single-process only)');
     return;
   }
+  
+  // Guard against malformed Railway vars (quotes or missing protocol)
+  redisUrl = redisUrl.replace(/^["']|["']$/g, '');
+  if (!redisUrl.startsWith('redis://') && !redisUrl.startsWith('rediss://')) {
+    redisUrl = `redis://${redisUrl}`;
+  }
+
   try {
     // Dynamic imports to avoid crash when Redis is not available
     const { createAdapter } = require('@socket.io/redis-adapter');

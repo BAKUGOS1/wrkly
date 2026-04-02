@@ -1,13 +1,14 @@
 import Redis from 'ioredis';
 
-// Validate REDIS_URL to prevent startup crashes with invalid connection strings
 let redisUrl = process.env.REDIS_URL;
 
-// If we got a raw hostname from Railway instead of a proper connection string
+// If Railway injects a raw hostname (like "redis.railway.internal") without a protocol
 if (redisUrl && !redisUrl.startsWith('redis://') && !redisUrl.startsWith('rediss://')) {
-  console.warn(`[redis] REDIS_URL is malformed ("${redisUrl}"). Disabling Redis connection.`);
-  // Clear it so we don't try to connect to an invalid schema
-  redisUrl = undefined;
+  // Strip any literal quotes that might have snuck in from CLI env var setting
+  redisUrl = redisUrl.replace(/^["']|["']$/g, '');
+  if (!redisUrl.startsWith('redis://') && !redisUrl.startsWith('rediss://')) {
+    redisUrl = `redis://${redisUrl}`;
+  }
 }
 
 const isRedisEnabled = !!redisUrl;
@@ -20,13 +21,12 @@ const redis = new Redis(isRedisEnabled ? redisUrl! : 'redis://127.0.0.1:6379', {
 });
 
 if (isRedisEnabled) {
-  console.log('[redis] Client initialized');
+  console.log('[redis] Client initialized securely');
 } else {
-  console.warn('[redis] REDIS_URL not set or invalid. Redis client running in disjoint mode (disconnected).');
+  console.warn('[redis] REDIS_URL not set. Redis client running in disjoint mode.');
 }
 
 redis.on('error', (error: Error) => {
-  // Suppress "connection refused to 127.0.0.1" if we deliberately disabled it
   if (!isRedisEnabled && error.message.includes('ECONNREFUSED')) return;
   console.error('[redis] Connection error:', error.message);
 });

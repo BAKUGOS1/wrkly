@@ -1,6 +1,6 @@
 import { Queue, Worker, type ConnectionOptions, type WorkerOptions, type QueueOptions } from 'bullmq';
 
-const REDIS_URL = process.env.REDIS_URL;
+let REDIS_URL = process.env.REDIS_URL;
 
 function buildConnection(): ConnectionOptions {
   if (!REDIS_URL) {
@@ -8,7 +8,9 @@ function buildConnection(): ConnectionOptions {
     return { host: '127.0.0.1', port: 6379, maxRetriesPerRequest: null };
   }
 
-  // Gracefully handle malformed Railway variables (e.g. "redis.railway.internal" without redis://)
+  // Strip literal quotes if set incorrectly from CLI
+  REDIS_URL = REDIS_URL.replace(/^["']|["']$/g, '');
+
   const fullUrl = REDIS_URL.startsWith('redis://') || REDIS_URL.startsWith('rediss://') 
     ? REDIS_URL 
     : `redis://${REDIS_URL}`;
@@ -20,7 +22,7 @@ function buildConnection(): ConnectionOptions {
       port:     parseInt(url.port || '6379', 10),
       password: url.password || undefined,
       tls:      url.protocol === 'rediss:' ? {} : undefined,
-      maxRetriesPerRequest: null, // Required by BullMQ
+      maxRetriesPerRequest: null,
     };
     console.log(`[queue] URL parsed successfully. Host: ${url.hostname}`);
     return conn;
