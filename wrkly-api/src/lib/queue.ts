@@ -1,19 +1,34 @@
 import { Queue, Worker, type ConnectionOptions, type WorkerOptions, type QueueOptions } from 'bullmq';
 
-// ── Shared connection options ─────────────────────────────────────────────────
-// Use a plain ConnectionOptions object (host/port/password) rather than an
-// IORedis instance to avoid the dual-version type conflict in this monorepo
-// (wrkly-api: ioredis@5.10.0 vs root: ioredis@5.9.3).
+// ── Redis connection ───────────────────────────────────────────────────────────
+// Parses REDIS_URL (Railway private URL) into host/port/password parts.
+// BullMQ requires a plain ConnectionOptions object (not an ioredis instance)
+// to avoid the dual-version type conflict in this monorepo.
 
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
-const parsedUrl = new URL(redisUrl);
+const REDIS_URL = process.env.REDIS_URL;
 
-export const connection: ConnectionOptions = {
-  host:     process.env.REDIS_HOST     ?? parsedUrl.hostname,
-  port:     parseInt(process.env.REDIS_PORT ?? parsedUrl.port ?? '6379', 10),
-  password: process.env.REDIS_PASSWORD ?? (parsedUrl.password || undefined),
-  maxRetriesPerRequest: null, // Required by BullMQ
-};
+function buildConnection(): ConnectionOptions {
+  if (!REDIS_URL) {
+    // No Redis configured — return localhost as placeholder.
+    // Workers will fail gracefully (error events only, no crash).
+    console.warn('[queue] REDIS_URL not set — BullMQ will not connect');
+    return { host: '127.0.0.1', port: 6379, maxRetriesPerRequest: null };
+  }
+
+  const url = new URL(REDIS_URL);
+  const conn: ConnectionOptions = {
+    host:     url.hostname,
+    port:     parseInt(url.port || '6379', 10),
+    password: url.password || undefined,
+    tls:      url.protocol === 'rediss:' ? {} : undefined,
+    maxRetriesPerRequest: null, // Required by BullMQ
+  };
+
+  console.log(`[queue] Connecting to Redis at ${url.hostname}:${url.port}`);
+  return conn;
+}
+
+export const connection: ConnectionOptions = buildConnection();
 
 // ── Factory helpers ───────────────────────────────────────────────────────────
 
@@ -23,8 +38,8 @@ const defaultQueueOptions: QueueOptions = {
   defaultJobOptions: {
     attempts: 3,
     backoff:  { type: 'exponential', delay: 2000 },
-    removeOnComplete: 100, // keep last 100 completed jobs
-    removeOnFail:     200, // keep last 200 failed for inspection
+    removeOnComplete: 100,
+    removeOnFail:     200,
   },
 };
 
