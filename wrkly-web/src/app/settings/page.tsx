@@ -31,11 +31,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
-import { UserCircle, Palette, Bell, Shield, Upload, Computer, Moon, Sun, AlertTriangle, Loader2, Sparkles, Bot, Zap, BrainCircuit } from 'lucide-react';
+import { UserCircle, Palette, Bell, Shield, Upload, Computer, Moon, Sun, AlertTriangle, Loader2, Sparkles, Bot, Zap, BrainCircuit, CreditCard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { apiFetch } from '@/lib/api';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
+import { BillingTab } from '@/components/settings/billing-tab';
 
 // --- Schemas ---
 
@@ -80,13 +81,13 @@ export default function SettingsPage() {
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState<'profile' | 'appearance' | 'notifications' | 'account' | 'ai'>('profile');
+  const [activeTab, setActiveTab] = useState<'profile' | 'appearance' | 'notifications' | 'account' | 'ai' | 'billing'>('profile');
 
-  // Read ?tab= from URL on mount (e.g. /settings?tab=account for change password)
+  // Read ?tab= from URL on mount (e.g. /settings?tab=billing)
   useEffect(() => {
     const tab = searchParams.get('tab');
-    if (tab === 'account' || tab === 'profile' || tab === 'appearance' || tab === 'notifications' || tab === 'ai') {
-      setActiveTab(tab);
+    if (tab === 'account' || tab === 'profile' || tab === 'appearance' || tab === 'notifications' || tab === 'ai' || tab === 'billing') {
+      setActiveTab(tab as typeof activeTab);
     }
   }, [searchParams]);
 
@@ -330,6 +331,17 @@ export default function SettingsPage() {
           >
             <Sparkles className="h-[18px] w-[18px]" />
             AI Settings
+          </button>
+
+          <button
+            onClick={() => setActiveTab('billing')}
+            className={cn(
+              "flex items-center gap-[12px] h-[40px] px-[12px] rounded-[8px] text-[14px] font-medium transition-colors",
+              activeTab === 'billing' ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-surface-container hover:text-foreground"
+            )}
+          >
+            <CreditCard className="h-[18px] w-[18px]" />
+            Billing & Plan
           </button>
         </nav>
       </div>
@@ -729,6 +741,15 @@ export default function SettingsPage() {
                   <p className="text-[12px] text-muted-foreground">Memory consolidation runs server-side on a 24-hour schedule. No action needed.</p>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* BILLING TAB */}
+          {activeTab === 'billing' && (
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <h3 className="text-[24px] font-bold text-foreground font-manrope mb-[8px]">Billing &amp; Plan</h3>
+              <p className="text-[14px] text-muted-foreground mb-[32px]">Manage your subscription and usage.</p>
+              <BillingTab />
             </div>
           )}
 

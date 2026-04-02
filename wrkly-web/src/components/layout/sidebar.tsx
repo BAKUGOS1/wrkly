@@ -11,7 +11,8 @@ import {
   Loader2,
   CheckSquare,
   Settings,
-  LogOut
+  LogOut,
+  BarChart2,
 } from 'lucide-react';
 import { useUIStore } from '@/stores/ui-store';
 import { useAuthStore } from '@/stores/auth-store';
@@ -89,9 +90,16 @@ export function Sidebar() {
 
   const boards = boardsData?.boards ?? [];
 
+  // Derive active workspace slug from pathname for analytics link
+  const activeWorkspaceSlug = (() => {
+    const match = pathname.match(/\/workspace\/([^/]+)/);
+    return match ? match[1] : (workspaces?.[0] as WorkspaceWithCounts & { slug?: string } | undefined)?.slug ?? null;
+  })();
+
   const navItems = [
     { href: '/workspaces', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/my-tasks', label: 'My Tasks', icon: CheckSquare },
+    ...(activeWorkspaceSlug ? [{ href: `/workspace/${activeWorkspaceSlug}/analytics`, label: 'Analytics', icon: BarChart2 }] : []),
   ];
 
   if (collapsed) {

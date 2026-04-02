@@ -36,6 +36,11 @@ model User {
   passwordResetToken   String?
   passwordResetExpiry  DateTime?
 
+  // Billing
+  plan                   String    @default("FREE") // FREE | PRO
+  stripeCustomerId       String?
+  stripeSubscriptionId   String?
+
   workspaceMembers  WorkspaceMember[]
   ownedWorkspaces   Workspace[]        @relation("WorkspaceOwner")
   createdBoards     Board[]            @relation("BoardCreator")

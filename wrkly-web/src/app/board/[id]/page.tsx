@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api';
 import { useAuthStore } from '@/stores/auth-store';
@@ -9,6 +9,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ShareBoardDialog } from '@/components/board/share-board-dialog';
+import { AutomationsDrawer } from '@/components/automations/automations-drawer';
+import { PresenceAvatars } from '@/components/board/presence-avatars';
+import { LiveCursors } from '@/components/board/live-cursors';
+import { useBoardPresence } from '@/hooks/use-board-presence';
 import { Filter, Zap, Share2, Settings } from 'lucide-react';
 import { BoardFilterBar, EMPTY_FILTERS, type BoardFilters } from '@/components/board/board-filter-bar';
 import {
@@ -41,7 +45,9 @@ export default function BoardPage({ params }: { params: { id: string } }) {
   const token = useAuthStore((s) => s.token);
   const [shareOpen, setShareOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
+  const [automationsOpen, setAutomationsOpen] = useState(false);
   const [filters, setFilters] = useState<BoardFilters>(EMPTY_FILTERS);
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   // Fetch board
   const { data, isLoading } = useQuery({
@@ -60,6 +66,11 @@ export default function BoardPage({ params }: { params: { id: string } }) {
       ),
     enabled: !!data?.board?.workspaceId,
   });
+
+  // Live presence — who else is viewing this board right now
+  const { onlineUsers, cursors, broadcastCursor, getColorForUser } = useBoardPresence(
+    data?.board?.id ?? ''
+  );
 
   if (isLoading) {
     return (
@@ -121,8 +132,16 @@ export default function BoardPage({ params }: { params: { id: string } }) {
           </h1>
         </div>
 
-        <div className="flex items-center gap-[12px]">
-          {/* Real Member Avatars */}
+        <div className="flex items-center gap-[10px]">
+          {/* Live Presence Avatars */}
+          {onlineUsers.length > 0 && (
+            <>
+              <PresenceAvatars users={onlineUsers} getColor={getColorForUser} />
+              <div className="h-[16px] w-[1px] bg-border mx-[2px]" />
+            </>
+          )}
+
+          {/* Static Member Avatars */}
           {displayMembers.length > 0 && (
             <div className="flex -space-x-[8px] mr-[4px]">
               {displayMembers.map((m) => {
@@ -167,18 +186,14 @@ export default function BoardPage({ params }: { params: { id: string } }) {
           </Button>
 
           {/* Automations button */}
-          {board.workspaceSlug && (
-            <Button
-              variant="outline"
-              className="h-[32px] px-[12px] text-[13px] rounded-[8px] bg-surface-container-lowest border-border/50 text-muted-foreground hover:text-foreground"
-              asChild
-            >
-              <Link href={`/workspace/${board.workspaceSlug}`}>
-                <Zap className="mr-[6px] h-[14px] w-[14px]" />
-                Automations
-              </Link>
-            </Button>
-          )}
+          <Button
+            variant="outline"
+            className="h-[32px] px-[12px] text-[13px] rounded-[8px] bg-surface-container-lowest border-border/50 text-muted-foreground hover:text-foreground"
+            onClick={() => setAutomationsOpen(true)}
+          >
+            <Zap className="mr-[6px] h-[14px] w-[14px]" />
+            Automations
+          </Button>
 
           {/* Board settings */}
           {board.workspaceSlug && (
@@ -224,8 +239,14 @@ export default function BoardPage({ params }: { params: { id: string } }) {
       )}
 
       {/* Kanban Canvas Wrapper */}
-      <div className="flex-1 overflow-hidden relative">
+      <div ref={canvasRef} className="flex-1 overflow-hidden relative">
         <BoardView board={board} filters={filters} />
+        {/* Live cursors overlay */}
+        <LiveCursors
+          cursors={cursors}
+          containerRef={canvasRef}
+          onMouseMove={broadcastCursor}
+        />
       </div>
 
       {/* Share Dialog */}
@@ -235,6 +256,13 @@ export default function BoardPage({ params }: { params: { id: string } }) {
         workspaceId={board.workspaceId}
         open={shareOpen}
         onOpenChange={setShareOpen}
+      />
+
+      {/* Automations Drawer */}
+      <AutomationsDrawer
+        boardId={board.id}
+        open={automationsOpen}
+        onOpenChange={setAutomationsOpen}
       />
     </div>
   );

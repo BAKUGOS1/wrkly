@@ -221,6 +221,17 @@ export function initSocket(fastify: FastifyInstance): Server {
       }
     });
 
+    // ── Cursor position broadcasting ────────────────────────────────────────
+
+    socket.on(
+      'cursor:move',
+      ({ boardId, name, x, y }: { boardId: string; name: string; x: number; y: number }) => {
+        if (!boardId || !joinedBoards.has(boardId)) return;
+        // Broadcast cursor to everyone else in the room (not back to sender)
+        socket.to(`board:${boardId}`).emit('cursor:move', { userId, name, x, y });
+      }
+    );
+
     // ── Disconnect ──────────────────────────────────────────────────────────
 
     socket.on('disconnect', (reason) => {
