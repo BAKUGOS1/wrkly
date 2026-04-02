@@ -1,38 +1,39 @@
 import { Queue, Worker, type ConnectionOptions, type WorkerOptions, type QueueOptions } from 'bullmq';
 
-// ── Redis connection ───────────────────────────────────────────────────────────
-// Parses REDIS_URL (Railway private URL) into host/port/password parts.
-// BullMQ requires a plain ConnectionOptions object (not an ioredis instance)
-// to avoid the dual-version type conflict in this monorepo.
-
 const REDIS_URL = process.env.REDIS_URL;
 
 function buildConnection(): ConnectionOptions {
   if (!REDIS_URL) {
-    // No Redis configured — return localhost as placeholder.
-    // Workers will fail gracefully (error events only, no crash).
     console.warn('[queue] REDIS_URL not set — BullMQ will not connect');
     return { host: '127.0.0.1', port: 6379, maxRetriesPerRequest: null };
   }
 
-  const url = new URL(REDIS_URL);
-  const conn: ConnectionOptions = {
-    host:     url.hostname,
-    port:     parseInt(url.port || '6379', 10),
-    password: url.password || undefined,
-    tls:      url.protocol === 'rediss:' ? {} : undefined,
-    maxRetriesPerRequest: null, // Required by BullMQ
-  };
+  // Gracefully handle malformed Railway variables (e.g. "redis.railway.internal" without redis://)
+  const fullUrl = REDIS_URL.startsWith('redis://') || REDIS_URL.startsWith('rediss://') 
+    ? REDIS_URL 
+    : `redis://${REDIS_URL}`;
 
-  console.log(`[queue] Connecting to Redis at ${url.hostname}:${url.port}`);
-  return conn;
+  try {
+    const url = new URL(fullUrl);
+    const conn: ConnectionOptions = {
+      host:     url.hostname,
+      port:     parseInt(url.port || '6379', 10),
+      password: url.password || undefined,
+      tls:      url.protocol === 'rediss:' ? {} : undefined,
+      maxRetriesPerRequest: null, // Required by BullMQ
+    };
+    console.log(`[queue] URL parsed successfully. Host: ${url.hostname}`);
+    return conn;
+  } catch (err) {
+    console.warn(`[queue] Failed to parse REDIS_URL ("${REDIS_URL}"). Disabling BullMQ connection.`);
+    return { host: '127.0.0.1', port: 6379, maxRetriesPerRequest: null };
+  }
 }
 
 export const connection: ConnectionOptions = buildConnection();
 
 // ── Factory helpers ───────────────────────────────────────────────────────────
 
-/** Standard Queue options applied to all Wrkly queues. */
 const defaultQueueOptions: QueueOptions = {
   connection,
   defaultJobOptions: {
@@ -43,7 +44,6 @@ const defaultQueueOptions: QueueOptions = {
   },
 };
 
-/** Standard Worker options — concurrency 1 prevents concurrent cron runs. */
 const defaultWorkerOptions: WorkerOptions = {
   connection,
   concurrency: 1,
