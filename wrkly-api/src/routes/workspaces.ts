@@ -71,11 +71,11 @@ export async function workspaceRoutes(app: FastifyInstance) {
 
   // ── GET /api/workspaces/:id ──────────────────────────────────────────────
   app.get('/:id', { preHandler: authenticate }, async (request, reply) => {
-    const { id } = request.params as { id: string };
-    await requireWorkspaceMember(request, id);
+    const { id: rawId } = request.params as { id: string };
+    const member = await requireWorkspaceMember(request, rawId);
 
     const workspace = await prisma.workspace.findUnique({
-      where: { id },
+      where: { id: member.workspaceId },
       select: { id: true, name: true, slug: true, description: true, ownerId: true, createdAt: true },
     });
     if (!workspace) return reply.status(404).send({ error: 'Workspace not found' });
@@ -115,8 +115,9 @@ export async function workspaceRoutes(app: FastifyInstance) {
 
   // ── PATCH /api/workspaces/:id ────────────────────────────────────────────
   app.patch('/:id', { preHandler: authenticate }, async (request, reply) => {
-    const { id } = request.params as { id: string };
-    await requireWorkspaceMember(request, id, 'ADMIN');
+    const { id: rawId } = request.params as { id: string };
+    const member = await requireWorkspaceMember(request, rawId, 'ADMIN');
+    const id = member.workspaceId;
 
     const result = updateWorkspaceSchema.safeParse(request.body);
     if (!result.success) {
@@ -139,18 +140,19 @@ export async function workspaceRoutes(app: FastifyInstance) {
 
   // ── DELETE /api/workspaces/:id ───────────────────────────────────────────
   app.delete('/:id', { preHandler: authenticate }, async (request, reply) => {
-    const { id } = request.params as { id: string };
-    await requireWorkspaceMember(request, id, 'OWNER');
+    const { id: rawId } = request.params as { id: string };
+    const member = await requireWorkspaceMember(request, rawId, 'OWNER');
 
-    await prisma.workspace.delete({ where: { id } });
+    await prisma.workspace.delete({ where: { id: member.workspaceId } });
 
     return reply.status(204).send();
   });
 
   // ── GET /api/workspaces/:id/members ─────────────────────────────────────
   app.get('/:id/members', { preHandler: authenticate }, async (request, reply) => {
-    const { id } = request.params as { id: string };
-    await requireWorkspaceMember(request, id);
+    const { id: rawId } = request.params as { id: string };
+    const memberRecord = await requireWorkspaceMember(request, rawId);
+    const id = memberRecord.workspaceId;
 
     const members = await prisma.workspaceMember.findMany({
       where: { workspaceId: id },
@@ -165,8 +167,9 @@ export async function workspaceRoutes(app: FastifyInstance) {
 
   // ── POST /api/workspaces/:id/members ────────────────────────────────────
   app.post('/:id/members', { preHandler: authenticate }, async (request, reply) => {
-    const { id } = request.params as { id: string };
-    await requireWorkspaceMember(request, id, 'ADMIN');
+    const { id: rawId } = request.params as { id: string };
+    const memberRecord = await requireWorkspaceMember(request, rawId, 'ADMIN');
+    const id = memberRecord.workspaceId;
 
     const result = addMemberSchema.safeParse(request.body);
     if (!result.success) {
@@ -204,8 +207,9 @@ export async function workspaceRoutes(app: FastifyInstance) {
 
   // ── PATCH /api/workspaces/:id/members/:userId ────────────────────────────
   app.patch('/:id/members/:userId', { preHandler: authenticate }, async (request, reply) => {
-    const { id, userId } = request.params as { id: string; userId: string };
-    await requireWorkspaceMember(request, id, 'OWNER');
+    const { id: rawId, userId } = request.params as { id: string; userId: string };
+    const memberRecord = await requireWorkspaceMember(request, rawId, 'OWNER');
+    const id = memberRecord.workspaceId;
 
     if (userId === request.userId) {
       throw new ForbiddenError('Cannot change your own role');
@@ -243,12 +247,21 @@ export async function workspaceRoutes(app: FastifyInstance) {
 
   // ── DELETE /api/workspaces/:id/members/:userId ───────────────────────────
   app.delete('/:id/members/:userId', { preHandler: authenticate }, async (request, reply) => {
-    const { id, userId } = request.params as { id: string; userId: string };
+    const { id: rawId, userId } = request.params as { id: string; userId: string };
     const isSelf = userId === request.userId;
+
+    let id = rawId;
 
     // Must be ADMIN/OWNER to remove others; anyone can remove themselves
     if (!isSelf) {
-      await requireWorkspaceMember(request, id, 'ADMIN');
+      const memberRecord = await requireWorkspaceMember(request, rawId, 'ADMIN');
+      id = memberRecord.workspaceId;
+    } else {
+      // Still need to resolve slug to ID to delete correctly
+      const ws = await prisma.workspace.findFirst({
+         where: { OR: [{ id: rawId }, { slug: rawId }] }
+      });
+      if (ws) id = ws.id;
     }
 
     const targetMember = await prisma.workspaceMember.findUnique({

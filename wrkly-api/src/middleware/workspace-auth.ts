@@ -21,13 +21,28 @@ interface WorkspaceMemberRecord {
 
 export async function requireWorkspaceMember(
   request: FastifyRequest,
-  workspaceId: string,
+  workspaceIdOrSlug: string,
   minRole?: WorkspaceRole
 ): Promise<WorkspaceMemberRecord> {
+  // First, resolve the workspace by ID or Slug
+  const workspace = await prisma.workspace.findFirst({
+    where: {
+      OR: [
+        { id: workspaceIdOrSlug },
+        { slug: workspaceIdOrSlug },
+      ],
+    },
+    select: { id: true },
+  });
+
+  if (!workspace) {
+    throw new ForbiddenError('You are not a member of this workspace');
+  }
+
   const member = await prisma.workspaceMember.findUnique({
     where: {
       workspaceId_userId: {
-        workspaceId,
+        workspaceId: workspace.id,
         userId: request.userId,
       },
     },

@@ -29,8 +29,9 @@ async function getBoardWorkspaceId(boardId: string): Promise<string> {
 export async function boardRoutes(app: FastifyInstance) {
   // ── GET /api/workspaces/:workspaceId/boards ─────────────────────────────
   app.get('/workspaces/:workspaceId/boards', { preHandler: authenticate }, async (request, reply) => {
-    const { workspaceId } = request.params as { workspaceId: string };
-    await requireWorkspaceMember(request, workspaceId);
+    const { workspaceId: rawWorkspaceId } = request.params as { workspaceId: string };
+    const member = await requireWorkspaceMember(request, rawWorkspaceId);
+    const workspaceId = member.workspaceId;
 
     const boards = await prisma.board.findMany({
       where: { workspaceId, isArchived: false },
@@ -89,8 +90,9 @@ export async function boardRoutes(app: FastifyInstance) {
 
   // ── POST /api/workspaces/:workspaceId/boards ────────────────────────────
   app.post('/workspaces/:workspaceId/boards', { preHandler: authenticate }, async (request, reply) => {
-    const { workspaceId } = request.params as { workspaceId: string };
-    await requireWorkspaceMember(request, workspaceId, 'MEMBER');
+    const { workspaceId: rawWorkspaceId } = request.params as { workspaceId: string };
+    const member = await requireWorkspaceMember(request, rawWorkspaceId, 'MEMBER');
+    const workspaceId = member.workspaceId;
 
     const parsed = createBoardSchema.safeParse(request.body);
     if (!parsed.success) {

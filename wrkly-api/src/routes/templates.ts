@@ -26,8 +26,9 @@ export async function templateRoutes(app: FastifyInstance) {
     '/workspaces/:workspaceId/boards/from-template',
     { preHandler: authenticate },
     async (request, reply) => {
-      const { workspaceId } = request.params as { workspaceId: string };
-      await requireWorkspaceMember(request, workspaceId, 'MEMBER');
+      const { workspaceId: rawWorkspaceId } = request.params as { workspaceId: string };
+      const member = await requireWorkspaceMember(request, rawWorkspaceId, 'MEMBER');
+      const workspaceId = member.workspaceId;
 
       const parsed = fromTemplateSchema.safeParse(request.body);
       if (!parsed.success) {
