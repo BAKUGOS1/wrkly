@@ -5,10 +5,13 @@ import { Queue, Worker, type ConnectionOptions, type WorkerOptions, type QueueOp
 // IORedis instance to avoid the dual-version type conflict in this monorepo
 // (wrkly-api: ioredis@5.10.0 vs root: ioredis@5.9.3).
 
+const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+const parsedUrl = new URL(redisUrl);
+
 export const connection: ConnectionOptions = {
-  host:     process.env.REDIS_HOST     ?? 'localhost',
-  port:     parseInt(process.env.REDIS_PORT ?? '6379', 10),
-  password: process.env.REDIS_PASSWORD,
+  host:     process.env.REDIS_HOST     ?? parsedUrl.hostname,
+  port:     parseInt(process.env.REDIS_PORT ?? parsedUrl.port ?? '6379', 10),
+  password: process.env.REDIS_PASSWORD ?? parsedUrl.password || undefined,
   maxRetriesPerRequest: null, // Required by BullMQ
 };
 
