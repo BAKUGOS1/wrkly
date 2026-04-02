@@ -11,7 +11,7 @@ const parsedUrl = new URL(redisUrl);
 export const connection: ConnectionOptions = {
   host:     process.env.REDIS_HOST     ?? parsedUrl.hostname,
   port:     parseInt(process.env.REDIS_PORT ?? parsedUrl.port ?? '6379', 10),
-  password: process.env.REDIS_PASSWORD ?? parsedUrl.password || undefined,
+  password: process.env.REDIS_PASSWORD ?? (parsedUrl.password || undefined),
   maxRetriesPerRequest: null, // Required by BullMQ
 };
 
