@@ -21,6 +21,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import Link from 'next/link';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { CardDetailModal } from '@/components/board/card-detail-modal';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -43,6 +45,11 @@ interface Board {
 
 export default function BoardPage({ params }: { params: { id: string } }) {
   const token = useAuthStore((s) => s.token);
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const activeCardId = searchParams.get('card');
+
   const [shareOpen, setShareOpen] = useState(false);
   const [filterOpen, setFilterOpen] = useState(false);
   const [automationsOpen, setAutomationsOpen] = useState(false);
@@ -264,6 +271,16 @@ export default function BoardPage({ params }: { params: { id: string } }) {
         open={automationsOpen}
         onOpenChange={setAutomationsOpen}
       />
+
+      {/* Card Detail Modal */}
+      {activeCardId && (
+        <CardDetailModal
+          cardId={activeCardId}
+          boardId={board.id}
+          workspaceId={board.workspaceId}
+          onClose={() => router.push(pathname)}
+        />
+      )}
     </div>
   );
 }
