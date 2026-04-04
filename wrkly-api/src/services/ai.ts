@@ -138,13 +138,19 @@ function contextString(board: BoardContext): string {
 // ── Service class ─────────────────────────────────────────────────────────────
 
 class AIService {
-  private client: OpenAI;
+  private _client: OpenAI | null = null;
 
-  constructor() {
-    this.client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
-      timeout: 30_000,
-    });
+  private get client(): OpenAI {
+    if (!this._client) {
+      if (!process.env.OPENAI_API_KEY) {
+        throw new Error('OPENAI_API_KEY is missing. AI features cannot execute.');
+      }
+      this._client = new OpenAI({
+        apiKey: process.env.OPENAI_API_KEY,
+        timeout: 30_000,
+      });
+    }
+    return this._client;
   }
 
   // ── 1. parseCommand ─────────────────────────────────────────────────────────
